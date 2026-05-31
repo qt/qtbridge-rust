@@ -17,7 +17,7 @@ roles. These are [`QListModel`] and [`QTableModel`].
 Exposing a Rust type to QML and starting the declarative UI is as simple as:
 
 Main.rs
-```
+```rust
 use qtbridge::{qobject_impl, QApp};
 
 #[derive(Default)]
@@ -85,7 +85,7 @@ can be built from source or downloaded from <https://download.qt.io/>.
 To ensure qmake is available, add the Qt bin directory to your PATH.
 
 - On Windows:
-```sh
+```bat
 set PATH=%PATH%;D:\dev\qt_build\qtbase\bin\
 ```
 
@@ -104,9 +104,9 @@ export DYLD_FRAMEWORK_PATH=/Users/john_doe/dev/qt_build/qtbase/lib:$DYLD_FRAMEWO
 ### Dependency
 
 QtBridge has a single crate with all public APIs:
-```TOML
+```toml
 [dependencies]
-qtbridge
+qtbridge = "*"
 ```
 
 ### Provided Examples
