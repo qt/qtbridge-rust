@@ -38,7 +38,7 @@ fn main() {
     .expect("DEP_QTBRIDGE_TYPE_LIB_INCLUDE not set - This variable should have been set by qtbridge-runtime");
 
     let qt = QtInstallation::default();
-    let mut builder = cxx_build::bridges(&FILES_BRIDGE);
+    let mut builder = cxx_build::bridges(FILES_BRIDGE);
     builder
         .std("c++17")
         .flag_if_supported("/Zc:__cplusplus")
