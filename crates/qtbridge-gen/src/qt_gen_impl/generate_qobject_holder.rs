@@ -11,7 +11,6 @@ pub fn generate_qobject_holder(
     iface_ident: &syn::Ident,      // The name of the Qt-interface the struct is implementing
     impl_generics: &syn::Generics, // All the generics added to the implementation and their clauses
 ) -> syn::Result<syn::ItemImpl> {
-    let struct_ident = struct_ident;
 
     let iface_name = iface_ident;
     let iface_module = naming::rust::module::from_struct_name(iface_name);

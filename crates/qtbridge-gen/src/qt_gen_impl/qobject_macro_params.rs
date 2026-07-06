@@ -3,7 +3,7 @@
 
 use qtbridge_gen_common::parse_utils::parse_name_value;
 
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct QObjectMacroParams {
     pub base: Option<syn::Ident>,
     pub no_drop: bool,
@@ -11,19 +11,6 @@ pub struct QObjectMacroParams {
     pub singleton: bool,
     pub link_me: bool,
     pub convert_to_camel_case: bool,
-}
-
-impl Default for QObjectMacroParams {
-    fn default() -> Self {
-        Self {
-            base: None,
-            no_drop: false,
-            no_qml_element: false,
-            singleton: false,
-            link_me: false,
-            convert_to_camel_case: false,
-        }
-    }
 }
 
 mod keywords {

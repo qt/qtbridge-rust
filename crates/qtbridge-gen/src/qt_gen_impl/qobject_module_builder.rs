@@ -92,11 +92,11 @@ impl QObjectModuleBuilder {
         let mut output_items = Vec::new();
         match &src_module {
             Some(module) => {
-                output_items = self.handle_item_mod(&module)?
+                output_items = self.handle_item_mod(module)?
             }
             None => match syn::parse2(input) {
                 Ok(impl_) => output_items.push(self.handle_item_impl(&impl_)?),
-                Err(_) => return Err(syn::Error::new(Span::call_site(), format!("#[qobject] macro can only be applied to a `mod` or `impl` block."))),
+                Err(_) => return Err(syn::Error::new(Span::call_site(), "#[qobject] macro can only be applied to a `mod` or `impl` block.".to_string())),
             }
         };
 
@@ -157,7 +157,7 @@ impl QObjectModuleBuilder {
                 generated_traits.push(("QmlRegister", Ok(qml_reg.register_impl)));
             }
         } else if self.params.singleton {
-            return Err(syn::Error::new(self.struct_ident.span(), format!("Singleton is not available for generic structs.")));
+            return Err(syn::Error::new(self.struct_ident.span(), "Singleton is not available for generic structs.".to_string()));
         }
 
         for (trait_name, trait_impl_result) in generated_traits {
@@ -240,19 +240,14 @@ impl QObjectModuleBuilder {
         let path = &input.trait_.as_ref().unwrap().1;
         let last_seg_ident = get_ident_of_last_path_segment_or_err(path)?;
 
-        match last_seg_ident.to_string().as_str() {
-            "Drop" => {
-                if !self.params.no_drop {
-                    if path.is_ident("Drop") ||
-                    is_path_with_segments_str(path, "std::ops::Drop") ||
-                    is_path_with_segments_str(path, "core::ops::Drop")
-                    {
-                        self.is_drop_found = true;
-                        return adjust_drop_impl(input)
-                    }
-                }
-            },
-            _ => {},
+        if last_seg_ident.to_string().as_str() == "Drop"
+            && !self.params.no_drop
+            && (path.is_ident("Drop") ||
+            is_path_with_segments_str(path, "std::ops::Drop") ||
+            is_path_with_segments_str(path, "core::ops::Drop"))
+        {
+            self.is_drop_found = true;
+            return adjust_drop_impl(input)
         }
 
         // Will be handled later

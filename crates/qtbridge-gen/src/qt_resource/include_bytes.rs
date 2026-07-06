@@ -47,7 +47,7 @@ pub fn include_bytes_qml(input: TokenStream) -> TokenStream {
     let span_file_path = ws_dir.join(&span_file);
     let span_file_dir = span_file_path
         .parent()
-        .expect(&format!("Failed to get parent dir of {}", span_file_path.display()));
+        .unwrap_or_else(|| panic!("Failed to get parent dir of {}", span_file_path.display()));
 
     let include_path = span_file_dir.join(&file);
     let raw_data = std::fs::read(&include_path)
@@ -116,7 +116,7 @@ pub fn include_bytes_qml(input: TokenStream) -> TokenStream {
     // RCCResourceLibrary::output
     data.extend_from_slice(b"qres");
     append_u32_be(&mut data, 3); // version
-    for _ in 0..16 { data.push(0); } // reserve space
+    data.extend(std::iter::repeat_n(0, 16)); // reserve space
 
     // see qtbase/src/tools/rcc
     // RCCFileInfo::writeDataBlobs
@@ -139,11 +139,9 @@ pub fn include_bytes_qml(input: TokenStream) -> TokenStream {
     let tree_offset = data.len();
     // root
     append_folder_entry(&mut data, 0, 2, 1, 1, 0);
-    let mut i = 2;
     // folders
-    for n_off in &names_offsets[..names_offsets.len().saturating_sub(1)] {
+    for (i, n_off) in (2..).zip(names_offsets[..names_offsets.len().saturating_sub(1)].iter()) {
         append_folder_entry(&mut data, *n_off as u32, 2, 1, i, 0);
-        i = i + 1;
     }
 
     append_file_entry(&mut data, *names_offsets.last().unwrap() as u32, 0, 0, 1, 0, 0);
