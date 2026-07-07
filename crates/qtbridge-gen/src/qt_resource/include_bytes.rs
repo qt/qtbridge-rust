@@ -6,8 +6,6 @@ use proc_macro2::Span;
 use proc_macro::TokenStream;
 use syn::spanned::Spanned;
 
-use qtbridge_build_utils;
-
 struct Input {
     file: String,
     prefix: Option<String>,
@@ -41,10 +39,16 @@ pub fn include_bytes_qml(input: TokenStream) -> TokenStream {
     let span_file = input_span.local_file()
         .expect("Failed to get path of file from span");
 
-    let ws_dir = qtbridge_build_utils::file_system_utils::get_workspace_dir()
-        .expect("Failed to get workspace dir");
-
-    let span_file_path = ws_dir.join(&span_file);
+    // `local_file()` returns the call-site path relative to rustc's working
+    // directory. As a proc-macro we run inside rustc, so `current_dir()` is
+    // exactly that directory and is the correct anchor to join against.
+    let span_file_path = if span_file.is_absolute() {
+        span_file
+    } else {
+        std::env::current_dir()
+            .expect("Failed to get current dir")
+            .join(&span_file)
+    };
     let span_file_dir = span_file_path
         .parent()
         .unwrap_or_else(|| panic!("Failed to get parent dir of {}", span_file_path.display()));
