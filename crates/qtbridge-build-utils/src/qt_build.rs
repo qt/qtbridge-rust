@@ -150,3 +150,23 @@ impl QtInstallation {
         }
     }
 }
+
+pub fn get_cxx_qt_lib_manifest_dir() -> Result<PathBuf, String> {
+    const MANIFEST_VAR_NAME: &str = "DEP_CXX_QT_LIB_CXX_QT_MANIFEST_PATH";
+    let manifest_path_var = std::env::var(MANIFEST_VAR_NAME)
+        .map_err(|err| format!("Failed to get environment variable '{MANIFEST_VAR_NAME}'. Error: '{err}'"))?;
+    let path = PathBuf::from(&manifest_path_var)
+        .parent()
+        .ok_or_else(|| format!("Failed to get parent of manifest path '{manifest_path_var}'"))?
+        .to_owned();
+    Ok(path)
+}
+
+pub fn get_cxx_qt_lib_include_path() -> Result<PathBuf, String> {
+    // Looks like there is no a metadata entry emitted by `cxx-qt-lib` that specifies headers location.
+    // Therefore, we assume the headers are located in the 'include' subdirectory next to
+    // the directory containing `manifest.json`.
+    let path = get_cxx_qt_lib_manifest_dir()?
+        .join("include");
+    Ok(path)
+}

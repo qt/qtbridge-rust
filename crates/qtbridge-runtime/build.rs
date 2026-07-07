@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 use std::path::Path;
-use qtbridge_build_utils::qt_build::QtInstallation;
+use qtbridge_build_utils::qt_build::{QtInstallation, get_cxx_qt_lib_include_path};
 
 fn main() {
 
@@ -64,6 +64,8 @@ fn main() {
 
     let type_lib_include = std::env::var("DEP_QTBRIDGE_TYPE_LIB_INCLUDE")
     .expect("DEP_QTBRIDGE_TYPE_LIB_INCLUDE not set. This variable should have been set by qtbridge-type-lib");
+    let cxx_qt_include_dir = get_cxx_qt_lib_include_path()
+        .expect("Failed to get cxx-qt-lib include dir");
 
     let qt = QtInstallation::default();
     let mut builder = cxx_build::bridges(rust_bridge_files);
@@ -73,6 +75,7 @@ fn main() {
         .flag_if_supported("/permissive-")
         .include("../")
         .include(type_lib_include)
+        .include(cxx_qt_include_dir)
         .include("src");
     qt.configure_builder(&mut builder);
 
