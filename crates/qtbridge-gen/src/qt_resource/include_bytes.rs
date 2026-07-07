@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 use quote::quote;
-use proc_macro2::Span;
 use proc_macro::TokenStream;
 use syn::spanned::Spanned;
 
@@ -26,18 +25,30 @@ impl syn::parse::Parse for Input {
         })
     }
 }
-
 pub fn include_bytes_qml(input: TokenStream) -> TokenStream {
+    include_bytes_qml_impl(input)
+        .unwrap_or_else(syn::Error::into_compile_error)
+        .into()
+}
+
+pub fn include_bytes_qml_impl(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> {
 
     let input2 = proc_macro2::TokenStream::from(input.clone());
     let input_span = input2.span();
 
-    let Input{ file, prefix } = syn::parse2(input.into())
-        .unwrap();
+    let Input{ file, prefix } = syn::parse2(input2)?;
     let prefix = prefix.unwrap_or_default();
 
-    let span_file = input_span.local_file()
-        .expect("Failed to get path of file from span");
+    // `local_file()` gives the on-disk path of the invoking source file, just
+    // like the built-in `include_bytes!`. It requires a toolchain that exposes
+    // the source location to procedural macros; if it doesn't, emit a clear
+    // diagnostic instead of panicking.
+    let Some(span_file) = input_span.local_file() else {
+        return Err(syn::Error::new(input_span,
+            "include_bytes_qml! could not determine the invoking source file path. \
+             This requires a compiler/toolchain that exposes the on-disk source \
+             location to procedural macros."));
+    };
 
     // `local_file()` returns the call-site path relative to rustc's working
     // directory. As a proc-macro we run inside rustc, so `current_dir()` is
@@ -45,18 +56,24 @@ pub fn include_bytes_qml(input: TokenStream) -> TokenStream {
     let span_file_path = if span_file.is_absolute() {
         span_file
     } else {
-        std::env::current_dir()
-            .expect("Failed to get current dir")
-            .join(&span_file)
+        match std::env::current_dir() {
+            Ok(dir) => dir.join(&span_file),
+            Err(err) => return Err(syn::Error::new(input_span,
+                format!("include_bytes_qml! failed to resolve the current directory.\nError: {err}"))),
+        }
     };
-    let span_file_dir = span_file_path
-        .parent()
-        .unwrap_or_else(|| panic!("Failed to get parent dir of {}", span_file_path.display()));
+
+    let Some(span_file_dir) = span_file_path.parent() else {
+        return Err(syn::Error::new(input_span,
+            format!("include_bytes_qml! failed to get the parent directory of '{}'.", span_file_path.display())));
+    };
 
     let include_path = span_file_dir.join(&file);
-    let raw_data = std::fs::read(&include_path)
-        .map_err(|err| syn::Error::new(Span::call_site(), format!("Failed to read file '{}'.\nError: {err}", include_path.display())))
-        .unwrap();
+    let raw_data = match std::fs::read(&include_path) {
+        Ok(data) => data,
+        Err(err) => return Err(syn::Error::new(input_span,
+            format!("Failed to read file '{}'.\nError: {err}", include_path.display()))),
+    };
 
     let mut folder_chain: Vec<&str> = prefix.split('/').filter(|s| !s.is_empty()).collect();
     folder_chain.extend(file.split('/'));
@@ -157,10 +174,11 @@ pub fn include_bytes_qml(input: TokenStream) -> TokenStream {
     write_u32_be(&mut data, 16, names_offset as u32);
     write_u32_be(&mut data, 20, overall_flags as u32);
 
-    quote!{
+    let output: proc_macro2::TokenStream = quote!{
         // tell the compiler that a rebuild is required when #file changes.
         // include_bytes! is a build-in macro that has this side effect.
         let _ = include_bytes!(#file);
         qtbridge::qresource::register_bytes(&[#(#data),*]);
-    }.into()
+    };
+    Ok(output)
 }
