@@ -55,7 +55,7 @@ To use this library, you need:
    - Linux (`x86_64`)
    - Windows (`x64`)
    - macOS (`arm64`) - experimental
-- **Rust and Cargo** (stable, version >= 1.87) from [rustup.rs](https://rustup.rs)
+- **Rust and Cargo** (stable, version >= 1.88) from [rustup.rs](https://rustup.rs)
 - **C++ toolchain** (see [Qt platform requirements](https://doc.qt.io/qt-6/supported-platforms.html))
 - [**Qt 6**](#qt-installation)
 
