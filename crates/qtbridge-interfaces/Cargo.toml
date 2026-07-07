@@ -12,6 +12,7 @@ description = "Qt Bridge: Proxies and interfaces between Rust and Qt"
 
 [dependencies]
 cxx.workspace = true
+cxx-qt-lib.workspace = true
 qtbridge-type-lib = { workspace = true }
 qtbridge-runtime = { workspace = true }
 

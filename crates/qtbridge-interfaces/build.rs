@@ -4,7 +4,7 @@
 use std::path::PathBuf;
 
 use qtbridge_build_utils::file_system_utils::find_files;
-use qtbridge_build_utils::qt_build::QtInstallation;
+use qtbridge_build_utils::qt_build::{QtInstallation, get_cxx_qt_lib_include_path};
 
 const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
@@ -37,6 +37,9 @@ fn main() {
     let runtime_include = std::env::var("DEP_QTBRIDGE_RUNTIME_INCLUDE")
     .expect("DEP_QTBRIDGE_TYPE_LIB_INCLUDE not set - This variable should have been set by qtbridge-runtime");
 
+    let cxx_qt_include_dir = get_cxx_qt_lib_include_path()
+        .expect("Failed to get cxx-qt-lib include dir");
+
     let qt = QtInstallation::default();
     let mut builder = cxx_build::bridges(FILES_BRIDGE);
     builder
@@ -46,7 +49,8 @@ fn main() {
         .include("src")
         .include("../")
         .include(type_lib_include)
-        .include(runtime_include);
+        .include(runtime_include)
+        .include(cxx_qt_include_dir);
     qt.configure_builder(&mut builder);
 
     FILES_CPP.iter()

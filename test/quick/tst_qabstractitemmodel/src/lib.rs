@@ -175,7 +175,7 @@ mod backend {
     impl QAbstractItemModel for Backend {
         fn index(&self, row: i32, column: i32, parent: &QModelIndex) -> QModelIndex {
             if parent.is_valid() {
-                let parent_ptr = parent.internal_pointer() as *const Row;
+                let parent_ptr = parent.internal_pointer_mut() as *const Row;
                 if !parent_ptr.is_null() {
                     let parent_row_ref = unsafe { &*parent_ptr };
                     let maybe_row_ref = parent_row_ref.get_child(row as usize);
@@ -196,7 +196,7 @@ mod backend {
 
         fn parent(&self, child: &QModelIndex) -> QModelIndex {
             if child.is_valid() {
-                let child_ptr: *const Row = child.internal_pointer() as *const Row;
+                let child_ptr: *const Row = child.internal_pointer_mut() as *const Row;
                 if let Some(child_row_ref) = unsafe { child_ptr.as_ref() } {
                     if let Some(parent_ref) = self.root.parent_of(child_row_ref) {
                         if let Some(grandparent_ref) = self.root.parent_of(parent_ref) {
@@ -212,7 +212,7 @@ mod backend {
         }
 
         fn row_count(&self, parent: &QModelIndex) -> i32 {
-            let parent_ptr: *const Row = parent.internal_pointer() as *const Row;
+            let parent_ptr: *const Row = parent.internal_pointer_mut() as *const Row;
             if !parent_ptr.is_null() {
                 let parent_ref: &Row = unsafe { &*parent_ptr };
                 return parent_ref.row_count() as i32;
@@ -222,7 +222,7 @@ mod backend {
 
         fn column_count(&self, parent: &QModelIndex) -> i32 {
             // columns are usually the same for all rows. At least that is what the views expect
-            let parent_ptr: *const Row = parent.internal_pointer() as *const Row;
+            let parent_ptr: *const Row = parent.internal_pointer_mut() as *const Row;
             if !parent_ptr.is_null() {
                 let parent_ref: &Row = unsafe { &*parent_ptr };
                 return parent_ref.column_count() as i32;
@@ -232,7 +232,7 @@ mod backend {
 
         fn data(&self, index: &QModelIndex, role: i32) -> QVariant {
             if index.is_valid() {
-                let ptr = index.internal_pointer() as *const Row;
+                let ptr = index.internal_pointer_mut() as *const Row;
                 if !ptr.is_null() {
                     let row_ref: &Row = unsafe { &*ptr };
                     if let Some(cell) = row_ref.get_cell(index.column() as usize) {

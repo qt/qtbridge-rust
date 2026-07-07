@@ -1,4 +1,4 @@
-pub const GENERATED_FILES_CPP: [&'static str; 39] = [
+pub const GENERATED_FILES_CPP: &[&'static str] = &[
     "src/generated/core/qbytearray/cpp/qbytearray.cpp",
     "src/generated/core/qhash/cpp/qhash_i32_qbytearray.cpp",
     "src/generated/core/qhash/cpp/qhash_qbytearray_qvariant.cpp",
@@ -28,7 +28,6 @@ pub const GENERATED_FILES_CPP: [&'static str; 39] = [
     "src/generated/core/qmetaobject/cpp/qmetaobject.cpp",
     "src/generated/core/qmetatype/cpp/qmetatype.cpp",
     "src/generated/core/qmetatypeinterface/cpp/qmetatypeinterface.cpp",
-    "src/generated/core/qmodelindex/cpp/qmodelindex.cpp",
     "src/generated/core/qobject/cpp/qobject.cpp",
     "src/generated/core/qqmllistproperty/cpp/qqmllistproperty.cpp",
     "src/generated/core/qsignalblocker/cpp/qsignalblocker.cpp",
