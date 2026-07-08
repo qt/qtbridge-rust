@@ -219,10 +219,6 @@ impl QtGenericTypeWithArgs {
         &self.args
     }
 
-    pub fn args_iter_mut(&mut self) -> impl Iterator<Item = &mut QtGenericArg> {
-        self.args.iter_mut()
-    }
-
     /// Return the name of concrete type obtained after generic arguments substitution
     pub fn get_monomorphed_type_name(&self) -> Option<String> {
         let mut result = self.gen_name().to_owned();

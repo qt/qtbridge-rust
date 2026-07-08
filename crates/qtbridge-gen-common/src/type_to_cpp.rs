@@ -29,11 +29,6 @@ pub fn path_to_cpp(src: &syn::Path) -> syn::Result<String> {
     map.path_to_cpp(src)
 }
 
-pub fn path_to_cpp_allow_unknown(src: &syn::Path) -> syn::Result<String> {
-    let map = TypeMapToCpp::new(MapUnknown::Map);
-    map.path_to_cpp(src)
-}
-
 
 enum MapUnknown {
     Map,

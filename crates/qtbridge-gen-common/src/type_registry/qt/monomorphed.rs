@@ -49,10 +49,6 @@ impl QtMonomorphedType {
     pub fn source(&self) -> &QtGenericTypeWithArgs {
         self.source.as_ref()
     }
-
-    pub fn source_mut(&mut self) -> &mut QtGenericTypeWithArgs {
-        self.source.as_mut()
-    }
 }
 
 impl TypeName for QtMonomorphedType {
