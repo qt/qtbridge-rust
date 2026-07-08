@@ -3,6 +3,3 @@
 
 mod generated;
 pub use generated::*;
-
-mod qt_type_register;
-pub use qt_type_register::*;

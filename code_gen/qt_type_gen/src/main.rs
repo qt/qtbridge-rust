@@ -134,8 +134,6 @@ fn generate() -> Result<(), String> {
     println!("Moving staged files to '{}'", dst_crate_root.display());
     generator.place_files(&dst_crate_root, &generator_output)?;
 
-    TypeGenerator::store_qt_type_init_code(&dst_crate_root.join("src/qt_types.rs"))?;
-
     println!("Done");
 
     Ok(())

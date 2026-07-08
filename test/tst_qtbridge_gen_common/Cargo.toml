@@ -9,9 +9,3 @@ description = "Tests of qtbridge_gen_common functionality"
 
 [dependencies]
 qtbridge-gen-common = { path = "../../crates/qtbridge-gen-common" }
-qtbridge-type-lib = { path = "../../crates/qtbridge-type-lib" }
-insta = { version = "1", features = ["glob"] }
-pretty_assertions = "1"
-proc-macro2.workspace = true
-quote.workspace = true
-syn.workspace = true
