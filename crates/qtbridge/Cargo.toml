@@ -16,7 +16,6 @@ qtbridge-gen = { workspace = true }
 qtbridge-type-lib = { workspace = true }
 qtbridge-runtime = { workspace = true }
 qtbridge-interfaces = { workspace = true }
-serde_json = { workspace = true, optional = true }
 
 [features]
-serde_json = ["dep:serde_json", "qtbridge-runtime/serde_json"]
+serde_json = ["qtbridge-runtime/serde_json"]

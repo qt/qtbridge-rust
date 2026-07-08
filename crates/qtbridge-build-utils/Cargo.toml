@@ -11,7 +11,5 @@ repository.workspace = true
 description = "Build utilities for qtbridge."
 
 [dependencies]
-dirs = { version = "6.0" }
 qt-build-utils = { workspace = true }
-qt-version = { workspace = true }
 cc = "1"
