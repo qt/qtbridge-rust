@@ -5,7 +5,7 @@ use quote::ToTokens;
 use syn::spanned::Spanned;
 
 use qtbridge_gen_common::signature_utils::{get_return_type, get_typed_arg_type, is_arg_self_ref};
-use qtbridge_gen_common::type_registry::meta_types::check_meta_call_type;
+use crate::meta_call_check::check_meta_call_type;
 
 
 /// Deduces a property's type from its getter function.

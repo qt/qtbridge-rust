@@ -5,10 +5,10 @@ use proc_macro2::TokenStream;
 use quote::{ToTokens, quote};
 use syn::{spanned::Spanned, Ident, LitStr};
 use qtbridge_gen_common::case_conv;
-use qtbridge_gen_common::function_with_attributes::{BlockOrSemi, FunctionWithAttributes};
+use crate::function_with_attributes::{BlockOrSemi, FunctionWithAttributes};
 use qtbridge_gen_common::parse_utils::{parse_name_value, partition_attr_by};
 use qtbridge_gen_common::signature_utils::is_self_mut;
-use qtbridge_gen_common::type_registry::meta_types::check_meta_call_signature;
+use crate::meta_call_check::check_meta_call_signature;
 
 use crate::qt_gen_impl::qt_meta_gen;
 use crate::qt_gen_impl::qobject_macro_params::QObjectMacroParams;

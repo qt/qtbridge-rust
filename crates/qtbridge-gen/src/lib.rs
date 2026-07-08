@@ -3,6 +3,8 @@
 
 use proc_macro::TokenStream;
 
+mod function_with_attributes;
+mod meta_call_check;
 mod qt_derive;
 mod qt_gen_impl;
 mod qt_resource;

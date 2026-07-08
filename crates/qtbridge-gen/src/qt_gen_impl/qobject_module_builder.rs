@@ -5,7 +5,7 @@ use proc_macro2::{Span, TokenStream};
 use quote::{ToTokens, format_ident, quote};
 use syn::spanned::Spanned;
 
-use qtbridge_gen_common::function_with_attributes::FunctionWithAttributes;
+use crate::function_with_attributes::FunctionWithAttributes;
 use qtbridge_gen_common::parse_utils::is_path_with_segments_str;
 use qtbridge_gen_common::type_utils::{get_ident_of_last_path_segment_or_err, path_from_type};
 use crate::qt_gen_impl::generate_qobject_holder::generate_qobject_holder;

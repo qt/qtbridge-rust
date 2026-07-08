@@ -7,11 +7,11 @@ use syn::{Ident, LitStr};
 use syn::spanned::Spanned;
 
 use qtbridge_gen_common::case_conv;
-use qtbridge_gen_common::function_with_attributes::{FunctionWithAttributes, BlockOrSemi};
+use crate::function_with_attributes::{FunctionWithAttributes, BlockOrSemi};
 use qtbridge_gen_common::parse_utils::{parse_name_value, partition_attr_by};
 use qtbridge_gen_common::signature_utils::{get_typed_args, get_typed_args_types, is_self_mut};
 use qtbridge_gen_common::type_utils::remove_refs;
-use qtbridge_gen_common::type_registry::meta_types::check_meta_call_signature;
+use crate::meta_call_check::check_meta_call_signature;
 use crate::qt_gen_impl::qt_meta_gen;
 use crate::qt_gen_impl::qobject_macro_params::QObjectMacroParams;
 use qt_meta_gen::meta_call_bridge_generator::MetaCallBridgeGenerator;

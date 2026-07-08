@@ -5,7 +5,6 @@ mod containers;
 pub mod cxx_types;
 mod holders;
 mod cell;
-pub mod meta_types;
 mod pointers;
 mod primitives;
 pub mod qt;

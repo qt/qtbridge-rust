@@ -6,7 +6,6 @@ pub mod cpp_fn_sign;
 pub mod cpp_include;
 pub mod format_code;
 pub mod function_bridge;
-pub mod function_with_attributes;
 pub mod multi_type_mapping;
 pub mod naming;
 pub mod parse_utils;
