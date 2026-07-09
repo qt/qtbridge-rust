@@ -4,7 +4,6 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use crate::QMetaTypeGet;
 use crate::QObjectHolder;
 use crate::QMetaInfo;
 use crate::qqmllistproperty::{list_append, list_count, list_at, list_clear};
@@ -15,7 +14,7 @@ use qtbridge_type_lib::QMetaType;
 use qtbridge_type_lib::QMetaTypeInterface;
 use qtbridge_type_lib::{QVariant, list_property_to_qvariant};
 
-pub trait QmlRegister : QMetaTypeGet + QObjectHolder + Default
+pub trait QmlRegister : QObjectHolder + Default
 {
     const URI: &str;
     const ELEMENT_NAME: &str;
@@ -30,7 +29,7 @@ pub trait QmlRegister : QMetaTypeGet + QObjectHolder + Default
         thread_local!(static LIST_IFACE_MAP: RefCell<HashMap<i32, *const QMetaTypeInterface>>
             = RefCell::new(HashMap::new()));
 
-        let element = <Self as QMetaTypeGet>::get_qmetatype();
+        let element = <Self as QMetaInfo>::get_qmetatype();
         let key = element.id();
 
         let existing = LIST_IFACE_MAP.with_borrow(|m| m.get(&key).copied().unwrap_or_default());
@@ -82,7 +81,7 @@ pub trait QmlRegister : QMetaTypeGet + QObjectHolder + Default
 
         if Self::IS_SINGLETON {
             qtbridge_type_lib::qml_register_singleton(
-                <Self as QMetaTypeGet>::get_qmetatype(),
+                <Self as QMetaInfo>::get_qmetatype(),
                 monomorphize_singleton_ctor::<Self>(),
                 Self::URI.as_bytes(),
                 Self::MAJOR_VERSION,
@@ -95,7 +94,7 @@ pub trait QmlRegister : QMetaTypeGet + QObjectHolder + Default
             list_metatype.register_type();
 
             qtbridge_type_lib::qml_register_element(
-                <Self as QMetaTypeGet>::get_qmetatype(),
+                <Self as QMetaInfo>::get_qmetatype(),
                 list_metatype,
                 <<Self as QMetaInfo>::CppProxy as QCppProxy>::get_size() as u32,
                 <<Self as QMetaInfo>::CppProxy as QCppProxy>::parser_status_cast(),

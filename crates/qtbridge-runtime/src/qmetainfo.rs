@@ -6,6 +6,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use crate::qproxies::QCppProxy;
 use crate::{DynamicMetaObjectBuilder, DynamicMetaObjectData};
+use qtbridge_type_lib::QMetaType;
 
 #[cfg(doc)]
 use qtbridge_type_lib::QMetaObject;
@@ -37,6 +38,11 @@ pub trait QMetaInfo : 'static {
     /// Return DynamicMetaObjectData containing information
     /// about signals/slots/properties for given Rust object.
     fn get_shared_dynamic_meta_object_data() -> &'static DynamicMetaObjectData;
+
+    /// Returns the [`QMetaType`] identifying this type, unique per concrete
+    /// type (including per generic instantiation).
+    /// This function is usually implemented by a macro.
+    fn get_qmetatype() -> QMetaType;
 
     /// Creates a new `DynamicMetaObjectData` object and returns
     /// a raw pointer to the heap-allocated object.

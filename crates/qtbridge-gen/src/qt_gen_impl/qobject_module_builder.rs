@@ -12,7 +12,6 @@ use crate::qt_gen_impl::generate_qobject_holder::generate_qobject_holder;
 use crate::qt_gen_impl::qt_meta_gen;
 use crate::qt_gen_impl::qt_meta_gen::generate_dispatch_meta_call::generate_dispatch_meta_call;
 use qt_meta_gen::generate_meta::{QMetaInfoContext, generate_qmetainfo_trait_impl};
-use qt_meta_gen::generate_qmetatype_get::{generate_qmeta_type_get};
 use qt_meta_gen::traits::{QmlName, find_duplicate_by_qml_name};
 use qt_meta_gen::{ExpandTokens, QClassInfo, QPropertyInfo, QSignalInfo, QSlotInfo};
 
@@ -137,7 +136,6 @@ impl QObjectModuleBuilder {
         let mut generated_traits = vec![
             ("DispatchMetaCall", generate_dispatch_meta_call(&self.struct_ident, &self.struct_generics, &self.signals, &self.slots, &self.properties)),
             ("QMetaInfo",        generate_qmetainfo_trait_impl(&ctx)),
-            ("QMetaTypeGet",     generate_qmeta_type_get(&self.struct_ident, &self.struct_generics)),
             ("QObjectHolder",    generate_qobject_holder(&self.struct_ident, &iface_ident, &self.struct_generics)),
         ];
 

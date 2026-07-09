@@ -119,8 +119,6 @@ pub mod node {
                 })
             })
         }
-    }
-    impl qtbridge::qtbridge_runtime::QMetaTypeGet for Node {
         fn get_qmetatype() -> qtbridge::qtbridge_type_lib::QMetaType {
             use std::sync::OnceLock;
             static META_TYPE_INTERFACE: OnceLock<qtbridge::qtbridge_type_lib::QMetaTypeInterface> =

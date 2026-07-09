@@ -53,6 +53,18 @@ pub fn generate_qmetainfo_trait_impl(ctx: &QMetaInfoContext) -> syn::Result<syn:
         }
     };
 
+    let get_qmetatype_body = if has_generics {
+        quote! {
+            let iface = qtbridge::qtbridge_runtime::qmetatypeforqobject::interface_for_generic::<Self>();
+        }
+    } else {
+        quote! {
+            use std::sync::OnceLock;
+            static META_TYPE_INTERFACE: OnceLock<qtbridge::qtbridge_type_lib::QMetaTypeInterface> = OnceLock::new();
+            let iface = META_TYPE_INTERFACE.get_or_init(qtbridge::qtbridge_runtime::qmetatypeforqobject::init_interface_for::<Self>);
+        }
+    };
+
     let code = quote! {
         impl #impl_generics qtbridge::qtbridge_runtime::QMetaInfo for #struct_ident #type_generics #where_clause {
 
@@ -73,6 +85,11 @@ pub fn generate_qmetainfo_trait_impl(ctx: &QMetaInfoContext) -> syn::Result<syn:
 
             fn get_shared_dynamic_meta_object_data() -> &'static qtbridge::qtbridge_runtime::DynamicMetaObjectData {
                 #get_dyn_meta_object_body
+            }
+
+            fn get_qmetatype() -> qtbridge::qtbridge_type_lib::QMetaType {
+                #get_qmetatype_body
+                qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface as *const _)
             }
         }
     };

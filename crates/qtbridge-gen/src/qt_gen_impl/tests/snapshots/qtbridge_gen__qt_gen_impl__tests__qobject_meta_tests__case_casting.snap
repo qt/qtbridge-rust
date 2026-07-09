@@ -66,4 +66,13 @@ impl qtbridge::qtbridge_runtime::QMetaInfo for SomeStruct {
             })
         })
     }
+    fn get_qmetatype() -> qtbridge::qtbridge_type_lib::QMetaType {
+        use std::sync::OnceLock;
+        static META_TYPE_INTERFACE: OnceLock<qtbridge::qtbridge_type_lib::QMetaTypeInterface> =
+            OnceLock::new();
+        let iface = META_TYPE_INTERFACE.get_or_init(
+            qtbridge::qtbridge_runtime::qmetatypeforqobject::init_interface_for::<Self>,
+        );
+        qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface as *const _)
+    }
 }

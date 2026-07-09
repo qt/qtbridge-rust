@@ -4,7 +4,7 @@
 #![cfg(not(miri))]
 #![cfg(test)]
 use qtbridge::qobject;
-use qtbridge::qtbridge_runtime::{QMetaInfo, QMetaTypeGet};
+use qtbridge::qtbridge_runtime::QMetaInfo;
 use qtbridge::qtbridge_runtime::qproxies::QCppProxy;
 
 #[qobject]
@@ -32,15 +32,17 @@ mod trivial2 {
 
 #[test]
 fn test_structs_have_unique_metatype() {
-    let a = <trivial1::Backend1 as QMetaTypeGet>::get_qmetatype();
-    let b = <trivial2::Backend2 as QMetaTypeGet>::get_qmetatype();
+    use qtbridge::qtbridge_runtime::QMetaInfo;
+    let a = <trivial1::Backend1 as QMetaInfo>::get_qmetatype();
+    let b = <trivial2::Backend2 as QMetaInfo>::get_qmetatype();
     assert_ne!(a, b, "QMetaTypes are not unique for 2 different types");
 }
 
 #[test]
 fn test_generics_have_unique_metatype() {
-    let a = <generic_trivial::Backend<i32> as QMetaTypeGet>::get_qmetatype();
-    let b = <generic_trivial::Backend<String> as QMetaTypeGet>::get_qmetatype();
+    use qtbridge::qtbridge_runtime::QMetaInfo;
+    let a = <generic_trivial::Backend<i32> as QMetaInfo>::get_qmetatype();
+    let b = <generic_trivial::Backend<String> as QMetaInfo>::get_qmetatype();
     assert_ne!(a, b, "QMetaTypes are not unique for 2 generic instantiations");
 }
 
