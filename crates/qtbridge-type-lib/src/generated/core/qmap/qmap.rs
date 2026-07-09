@@ -50,7 +50,7 @@ where
     /// # use qtbridge_type_lib::{QMap, QString};
     /// let mut map = QMap::<i32, QString>::default();
     /// map.insert(&91, &"a".into());
-    /// assert_eq!(map[&91], "a");
+    /// assert_eq!(map[&91], "a".into());
     /// ```
     pub fn insert(&mut self, key: &K, value: &V) {
         <Self as QMapImpl<K, V>>::insert(self, key, value)
@@ -138,7 +138,7 @@ where
     ///     (2, "b"),
     ///     (3, "c"),
     /// ]);
-    /// assert_eq!(map.value(&3), "c");
+    /// assert_eq!(map.value(&3), "c".into());
     /// ```
     pub fn value(&self, key: &K) -> V {
         <Self as QMapImpl<K, V>>::value(self, key)

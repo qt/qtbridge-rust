@@ -32,7 +32,6 @@ pub const GENERATED_FILES_BRIDGE: &[&'static str] = &[
     "src/generated/core/qobject/qobject.rs",
     "src/generated/core/qqmllistproperty/qqmllistproperty.rs",
     "src/generated/core/qsignalblocker/qsignalblocker.rs",
-    "src/generated/core/qstring/qstring.rs",
     "src/generated/core/qutf8stringview/qutf8stringview.rs",
     "src/generated/core/qvariant/qvariant.rs",
     "src/generated/gui/qguiapplication/qguiapplication.rs",
