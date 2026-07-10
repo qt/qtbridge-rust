@@ -154,9 +154,20 @@ fn wrong_type_is_rejected_by_qml() {
         }
     "#;
 
+    quicktest::install_message_capture();
     QApp::new()
         .add_initial_property("reporter", &reporter_var)
         .load_qml(qml.as_bytes());
+    let messages = quicktest::take_captured_messages();
+
+    // Robust check: QML should refuse the assignment with a diagnostic that
+    // mentions the offending and target types. We deliberately do not pin the
+    // exact wording.
+    let combined = messages.join("\n").to_lowercase();
+    assert!(
+        combined.contains("cannot assign") && combined.contains("dog") && combined.contains("cat"),
+        "expected a QML type error rejecting a Dog for a Cat property, got: {messages:#?}"
+    );
 
     // Default Cat is untouched; crucially we reached here without a panic.
     assert_eq!(reporter.borrow().count, 0);
