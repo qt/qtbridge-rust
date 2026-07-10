@@ -1,6 +1,5 @@
 pub const GENERATED_FILES_BRIDGE: &[&'static str] = &[
     "src/generated/core/itemdatarole/itemdatarole.rs",
-    "src/generated/core/qbytearray/qbytearray.rs",
     "src/generated/core/qhash/qhash_i32_qbytearray.rs",
     "src/generated/core/qhash/qhash_qbytearray_qvariant.rs",
     "src/generated/core/qhash/qhash_qstring_qvariant.rs",
