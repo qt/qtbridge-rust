@@ -7,7 +7,8 @@ use qtbridge_build_utils::qt_build::QtInstallation;
 fn main() {
 
     let bridge_files = vec!(
-        "quicktestmain"
+        "quicktestmain",
+        "messagecapture"
     );
 
     let other_rust_files: Vec<&str> = vec!(

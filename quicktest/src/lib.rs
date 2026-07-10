@@ -4,5 +4,8 @@
 pub mod quicktestmain;
 pub use quicktestmain::*;
 
+pub mod messagecapture;
+pub use messagecapture::*;
+
 pub use quicktest_gen;
 pub use quicktest_gen::run_quick_test;
