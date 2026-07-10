@@ -44,6 +44,10 @@ pub trait QMetaInfo : 'static {
     /// This function is usually implemented by a macro.
     fn get_qmetatype() -> QMetaType;
 
+    /// Returns the [`QMetaType`] for a pointer to this type (`Self *`).
+    /// This function is usually implemented by a macro.
+    fn get_qobject_ptr_qmetatype() -> QMetaType;
+
     /// Creates a new `DynamicMetaObjectData` object and returns
     /// a raw pointer to the heap-allocated object.
     /// Ownership is not managed internally; the caller is responsible for it.

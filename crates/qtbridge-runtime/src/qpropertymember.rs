@@ -14,7 +14,7 @@ use qtbridge_type_lib::{
 #[cfg(feature = "serde_json")]
 use qtbridge_type_lib::{QJsonArray, QJsonValue};
 
-use crate::{QMetaTypeGet, QObjectHolder, QmlRegister};
+use crate::{QMetaTypeGet, QObjectHolder, QMetaInfo, QmlRegister};
 
 /// Enables a type to be used as a property.
 ///
@@ -110,7 +110,7 @@ impl QPropertyMember for String {
 
 impl<T: QObjectHolder> QPropertyMember for Rc<RefCell<T>> {
     fn qmetatype() -> QMetaType {
-        <*mut QObject as QMetaTypeGet>::get_qmetatype()
+        <T as QMetaInfo>::get_qobject_ptr_qmetatype()
     }
 
     fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {

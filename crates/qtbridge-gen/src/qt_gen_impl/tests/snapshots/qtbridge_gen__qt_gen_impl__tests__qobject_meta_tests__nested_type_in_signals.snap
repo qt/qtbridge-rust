@@ -106,6 +106,16 @@ pub mod node {
             );
             qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface as *const _)
         }
+        fn get_qobject_ptr_qmetatype() -> qtbridge::qtbridge_type_lib::QMetaType {
+            use std::sync::OnceLock;
+            static PTR_META_TYPE_INTERFACE: OnceLock<
+                qtbridge::qtbridge_type_lib::QMetaTypeInterface,
+            > = OnceLock::new();
+            let iface = PTR_META_TYPE_INTERFACE.get_or_init(
+                qtbridge::qtbridge_runtime::qmetatypeforqobject::init_ptr_interface_for::<Self>,
+            );
+            qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface as *const _)
+        }
     }
     impl qtbridge::qtbridge_runtime::QObjectHolder for Node {
         type ProxyRust = qtbridge::qtbridge_interfaces::qobject::QObjectProxyRust;

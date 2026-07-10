@@ -17,6 +17,16 @@ impl Cat {
 }
 
 #[derive(Default)]
+pub struct Dog {
+    pub legs: i32,
+}
+
+#[qobject]
+impl Dog {
+    qproperty!("legs", Member = legs);
+}
+
+#[derive(Default)]
 pub struct Reporter {
     pub count: i32,
 }
@@ -118,7 +128,42 @@ fn list_default_property_receives_children() {
     assert_eq!(reporter.borrow().count, 7);
 }
 
+fn wrong_type_is_rejected_by_qml() {
+    Cat::register();
+    Dog::register();
+    SingleHolder::register();
+
+    let reporter = Reporter::default_with_attached_qobject();
+    let reporter_var = reporter.borrow().as_qvariant();
+
+    // Assigning a `Dog` to `kitten` (declared type `Cat*`) must be refused by
+    // QML with a type error - not accepted and then panicked on in Rust. The
+    // property keeps its default `Cat` (legs == 0), so `report` still runs.
+    let qml = r#"
+        import QtQuick
+        import tst_qobject_macro
+        Item {
+            required property var reporter
+            SingleHolder {
+                id: holder
+                Dog { legs: 4 }
+            }
+            Component.onCompleted: {
+                reporter.report(holder.kitten.legs);
+            }
+        }
+    "#;
+
+    QApp::new()
+        .add_initial_property("reporter", &reporter_var)
+        .load_qml(qml.as_bytes());
+
+    // Default Cat is untouched; crucially we reached here without a panic.
+    assert_eq!(reporter.borrow().count, 0);
+}
+
 fn main() {
     single_object_default_property_receives_child();
     list_default_property_receives_children();
+    wrong_type_is_rejected_by_qml();
 }

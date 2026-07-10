@@ -14,7 +14,7 @@ use qtbridge_type_lib::{
 #[cfg(feature = "serde_json")]
 use qtbridge_type_lib::{QJsonArray, QJsonValue};
 
-use crate::{QMetaTypeGet, QObjectHolder, QmlRegister};
+use crate::{QMetaTypeGet, QObjectHolder, QMetaInfo, QmlRegister};
 
 /// Enables a type to be used as a signal or slot argument.
 ///
@@ -94,7 +94,7 @@ impl<T: QObjectHolder> QMetaCallArg for Rc<RefCell<T>> {
     }
 
     fn wire_metatype() -> QMetaType {
-        <*mut QObject as QMetaTypeGet>::get_qmetatype()
+        <T as QMetaInfo>::get_qobject_ptr_qmetatype()
     }
 }
 
