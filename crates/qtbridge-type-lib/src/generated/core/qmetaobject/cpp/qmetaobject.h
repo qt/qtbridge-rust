@@ -16,6 +16,8 @@ namespace rust::bridge::qmetaobject {
 
 QMetaType inlineCppFn_meta_type(QMetaObject const &self);
 
+bool inlineCppFn_inherits(QMetaObject const &self, QMetaObject const &base);
+
 bool inlineCppFn_invoke_method(QObject *obj, rust::Str name);
 
 bool inlineCppFn_invoke_method_with_args(QObject *obj, rust::Str name, QVariantList const &args);

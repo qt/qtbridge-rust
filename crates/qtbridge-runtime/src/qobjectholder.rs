@@ -79,22 +79,34 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
         let proxy_ptr = get_rust_proxy(qobj_ref);
         debug_assert!(!proxy_ptr.is_null());
 
-        // Verify the QObject really is of type `Self` before reinterpreting
-        // its proxy/object as `Self`'s - otherwise the casts below are UB.
-        let qobj_meta_obj  = qobj_ref.get_qmeta_object();
-        let self_meta_obj  = <Self as QMetaInfo>::get_shared_dynamic_meta_object_data().get_meta_object();
-        if qobj_meta_obj != self_meta_obj {
-            let qobj_name = unsafe { qobj_meta_obj.as_ref() }.map_or("<null>".into(), |m| m.meta_type().name());
-            let self_name = unsafe { self_meta_obj.as_ref() }.map_or("<null>".into(), |m| m.meta_type().name());
-            panic!("Value of wrong type is assigned to property: '{qobj_name}' instead of '{self_name}'")
+        // Verify the QObject really is a `Self` before reinterpreting its
+        // proxy/object as `Self`'s - otherwise the casts below are UB. Use an
+        // a inherits check rather than meta-object identity: a `Self`
+        // instantiated and extended in QML carries a derived `QMetaObject`
+        // that is not identical to `Self`'s dynamic meta-object, yet the
+        // underlying proxy/object is still a `Self` (QML only layers a
+        // meta-object on top, it does not change the Rust type).
+        let qobj_meta_obj = unsafe { qobj_ref.get_qmeta_object().as_ref() };
+        let self_meta_obj = unsafe {
+            <Self as QMetaInfo>::get_shared_dynamic_meta_object_data().get_meta_object().as_ref()
+        };
+        let inherits = match (qobj_meta_obj, self_meta_obj) {
+            (Some(d), Some(b)) => d.inherits(b),
+            _ => false,
+        };
+        if !inherits {
+            let qobj_name = qobj_meta_obj.map_or("<null>".into(), |m| m.meta_type().name());
+            let self_name = self_meta_obj.map_or("<null>".into(), |m| m.meta_type().name());
+            panic!("Value of wrong type: '{qobj_name}' is not a '{self_name}' (nor a subclass)")
         }
 
         let proxy = unsafe { &*(proxy_ptr as *const Self::ProxyRust) };
         let rc_adapter = proxy.get_rust_object_rc()
             .expect("Rust object associated with given QObject was already dropped");
 
-        // SAFETY: the metatype check above proves the `QObject` - and therefore
-        // the allocation behind `rc_adapter` - was created as `RefCell<Self>`.
+        // SAFETY: the inherits check above proves the `QObject` is a `Self` (or
+        // a QML-derived subclass of it) - and therefore the allocation behind
+        // `rc_adapter` - was created as `RefCell<Self>`.
         // The adapter `Rc` only layers a vtable over that same allocation, so
         // its data pointer addresses a real `RefCell<Self>` with matching size
         // and alignment; reinterpreting it back is sound. `into_raw` parks the

@@ -12,6 +12,11 @@ QMetaType inlineCppFn_meta_type(QMetaObject const &self)
     return self.metaType();
 }
 
+bool inlineCppFn_inherits(QMetaObject const &self, QMetaObject const &base)
+{
+    return self.inherits(&base);
+}
+
 bool inlineCppFn_invoke_method(QObject *obj, rust::Str name)
 {
     QByteArray nameBa = RustStrToQByteArray(name);

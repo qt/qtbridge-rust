@@ -23,6 +23,15 @@ mod qmetaobject {
         cpp(self)
     }
 
+    /// Returns `true` if the class described by this QMetaObject
+    /// inherits the type described by `base`.
+    pub fn inherits(&self, base: &QMetaObject) -> bool {
+        let cpp = cpp_fn!(|&self, base: &QMetaObject| -> bool {
+            return self.inherits(&base);
+        });
+        cpp(self, base)
+    }
+
     pub fn invoke_method(obj: *mut QObject, name: &str) -> bool {
         let cpp = cpp_fn!(|obj: *mut QObject, name: &str| -> bool {
             QByteArray nameBa = RustStrToQByteArray(name);

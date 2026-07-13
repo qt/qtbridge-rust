@@ -86,3 +86,8 @@ harness = false
 name = "property_default_property_tests"
 path = "tests/property_default_property_tests.rs"
 harness = false
+
+[[test]]
+name = "qml_overload_tests"
+path = "tests/qml_overload_tests.rs"
+harness = false

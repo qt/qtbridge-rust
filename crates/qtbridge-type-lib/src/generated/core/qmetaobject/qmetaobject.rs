@@ -23,6 +23,8 @@ mod ffi {
     unsafe extern "C++" {
         # [rust_name = inline_cpp_fn_meta_type]
         fn inlineCppFn_meta_type(_obj: &QMetaObject) -> QMetaType;
+        # [rust_name = inline_cpp_fn_inherits]
+        fn inlineCppFn_inherits(_obj: &QMetaObject, base: &QMetaObject) -> bool;
         # [rust_name = inline_cpp_fn_invoke_method]
         unsafe fn inlineCppFn_invoke_method(obj: *mut QObject, name: &str) -> bool;
         # [rust_name = inline_cpp_fn_invoke_method_with_args]
@@ -38,6 +40,13 @@ impl QMetaObject {
     pub fn meta_type(&self) -> QMetaType {
         let cpp = ffi::inline_cpp_fn_meta_type;
         cpp(self)
+    }
+    #[allow(dead_code)]
+    /// Returns `true` if the class described by this QMetaObject
+    /// inherits the type described by `base`.
+    pub fn inherits(&self, base: &QMetaObject) -> bool {
+        let cpp = ffi::inline_cpp_fn_inherits;
+        cpp(self, base)
     }
     #[allow(dead_code)]
     pub fn invoke_method(obj: *mut QObject, name: &str) -> bool {
