@@ -3,7 +3,7 @@
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use qtbridge_type_lib::{QMetaObject, QObject, QVariantList};
+use qtbridge_type_lib::{QObject, QVariantList};
 
 use crate::QObjectHolder;
 
@@ -12,10 +12,14 @@ pub mod ffi {
     unsafe extern "C++" {
         include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
         type QObject = qtbridge_type_lib::QObject;
+        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qvariant.h");
+        type QList_QVariant = qtbridge_type_lib::QList_QVariant;
 
         include!("cpp/qml_method_invoker.h");
 
         unsafe fn connect_destroyed_callback(obj: *mut QObject, flag_ptr: usize);
+
+        unsafe fn invoke_method(obj: *mut QObject, name: &str, args: &QList_QVariant) -> bool;
     }
 
     extern "Rust" {
@@ -75,6 +79,13 @@ macro_rules! invoke_method {
 /// Calls are scheduled on the Qt event loop and execute on the Qt thread.
 /// If the target object has been dropped, calls are silently discarded.
 ///
+/// Arguments follow the same coercion rules QML applies when it calls a
+/// method: an argument matches a parameter as long as it can be converted to
+/// the parameter's type. These rules apply uniformly, even when a Rust method
+/// is invoked from Rust; this path does *not* enforce Rust's exact-type
+/// semantics, so conversions QML permits (for example between numeric types,
+/// or between a number and its textual form) are permitted here too.
+///
 /// When a call executes, Qt borrows the `Rc<RefCell<_>>` held by the QML
 /// engine. If the object is already mutably borrowed on the Qt thread at
 /// that moment, the call will panic.
@@ -127,27 +138,30 @@ impl QmlMethodInvoker {
 
     /// Schedules `name` to run on the Qt thread via the Qt event loop.
     ///
-    /// `name` must be a `qslot` or `qsignal` on the target object.
-    /// Returns `false` if the target has been dropped or `name` is not found;
-    /// returns `true` otherwise.
+    /// `name` is resolved over the object's meta-object most-derived-first
+    /// (QML-added members, then Rust, then the C++ base). Returns `false` if
+    /// the target has been dropped or no method named `name` takes zero
+    /// arguments; returns `true` otherwise.
     pub fn invoke_method(&self, name: &str) -> bool {
         if !self.is_alive() {
             return false;
         }
-        QMetaObject::invoke_method(self.obj, name)
+        unsafe { ffi::invoke_method(self.obj, name, &QVariantList::default()) }
     }
 
     /// Schedules `name` to run on the Qt thread via the Qt event loop,
     /// passing `args` to the method.
     ///
-    /// `name` must be a `qslot` or `qsignal` on the target object.
-    /// Returns `false` if the target has been dropped, `name` is not found,
-    /// or the argument types do not match the method signature;
-    /// returns `true` otherwise.
+    /// `name` is resolved over the object's meta-object most-derived-first
+    /// (QML-added members, then Rust, then the C++ base), choosing the first
+    /// candidate whose parameter count matches `args` and whose arguments are
+    /// all convertible to the parameter types. Returns `false` if the target
+    /// has been dropped, no candidate matches, or a conversion fails; returns
+    /// `true` otherwise.
     pub fn invoke_method_with_args(&self, name: &str, args: &QVariantList) -> bool {
         if !self.is_alive() {
             return false;
         }
-        QMetaObject::invoke_method_with_args(self.obj, name, args)
+        unsafe { ffi::invoke_method(self.obj, name, args) }
     }
 }

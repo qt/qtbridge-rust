@@ -1,14 +1,12 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::{QObject, QMetaType, QVariantList};
+use crate::QMetaType;
 
 #[qt_gen::bridge]
 mod qmetaobject {
     include_in_cpp!(<QMetaObject>);
-    include_in_cpp!(<QMetaMethod>);
     include_in_cpp!(<QMetaType>);
-    include_in_cpp!(<QVariantList>);
 
     /// The QMetaObject struct contains meta-information about Qt objects.
     ///

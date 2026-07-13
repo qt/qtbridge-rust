@@ -17,41 +17,4 @@ bool inlineCppFn_inherits(QMetaObject const &self, QMetaObject const &base)
     return self.inherits(&base);
 }
 
-bool inlineCppFn_invoke_method(QObject *obj, rust::Str name)
-{
-    QByteArray nameBa = RustStrToQByteArray(name);
-    return QMetaObject::invokeMethod(obj, nameBa.constData(), Qt::QueuedConnection);
-}
-
-bool inlineCppFn_invoke_method_with_args(QObject *obj, rust::Str name, QVariantList const &args)
-{
-    const QByteArray nameBa = RustStrToQByteArray(name);
-    const QMetaObject *metaObj = obj->metaObject();
-    int methodIndex = -1;
-    for (int i = 0; i < metaObj->methodCount(); ++i) {
-        if (metaObj->method(i).name() == nameBa) {
-            methodIndex = i;
-            break;
-        }
-    }
-    if (methodIndex < 0)
-        return false;
-    const QMetaMethod method = metaObj->method(methodIndex);
-    const int paramCount = method.parameterCount();
-    if (args.size() < paramCount || paramCount > 10)
-        return false;
-    QGenericArgument gargs[10];
-    QVariant arg[10];
-    for (int i = 0; i < paramCount; ++i) {
-        const QMetaType targetType = method.parameterMetaType(i);
-        arg[i] = args.at(i);
-        if (!arg[i].convert(targetType))
-            return false;
-        gargs[i] = QGenericArgument(targetType.name(), arg[i].data());
-    }
-    return QMetaObject::invokeMethod(obj, nameBa.constData(), Qt::QueuedConnection, gargs[0],
-                                     gargs[1], gargs[2], gargs[3], gargs[4], gargs[5], gargs[6],
-                                     gargs[7], gargs[8], gargs[9]);
-}
-
 } // namespace rust::bridge::qmetaobject

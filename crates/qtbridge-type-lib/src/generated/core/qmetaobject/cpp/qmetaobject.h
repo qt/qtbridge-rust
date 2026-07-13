@@ -4,12 +4,8 @@
 #ifndef _QMETAOBJECT_RUST_BRIDGE_H_
 #define _QMETAOBJECT_RUST_BRIDGE_H_
 
-#include <QMetaMethod>
 #include <QMetaObject>
 #include <QMetaType>
-#include <QVariantList>
-#include "qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qvariant.h"
-#include "qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h"
 #include "rust/cxx.h"
 
 namespace rust::bridge::qmetaobject {
@@ -17,10 +13,6 @@ namespace rust::bridge::qmetaobject {
 QMetaType inlineCppFn_meta_type(QMetaObject const &self);
 
 bool inlineCppFn_inherits(QMetaObject const &self, QMetaObject const &base);
-
-bool inlineCppFn_invoke_method(QObject *obj, rust::Str name);
-
-bool inlineCppFn_invoke_method_with_args(QObject *obj, rust::Str name, QVariantList const &args);
 
 } // namespace rust::bridge::qmetaobject
 

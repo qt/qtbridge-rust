@@ -91,3 +91,8 @@ harness = false
 name = "qml_overload_tests"
 path = "tests/qml_overload_tests.rs"
 harness = false
+
+[[test]]
+name = "revert_collision_tests"
+path = "tests/revert_collision_tests.rs"
+harness = false
