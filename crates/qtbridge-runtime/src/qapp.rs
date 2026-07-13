@@ -5,7 +5,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use cxx::UniquePtr;
+use cxx_qt::casting::Upcast;
 use cxx_qt_lib::QObjectMutPtr;
+use cxx_qt_lib::QQmlEngine;
 use qtbridge_type_lib::{QGuiApplication, QQmlApplicationEngine, QString, QVariant, QVariantMap};
 use crate::qmlelement::QmlElement;
 use crate::qobjectholder::QObjectHolder;
@@ -250,5 +252,10 @@ impl QApp {
     pub fn application_name(&mut self, name: &str) -> &mut Self {
         self.app.pin_mut().set_application_name(&name.into());
         self
+    }
+
+    #[doc(hidden)]
+    pub fn qml_engine(&mut self) -> std::pin::Pin<&mut QQmlEngine> {
+        self.engine.pin_mut().upcast_pin()
     }
 }
