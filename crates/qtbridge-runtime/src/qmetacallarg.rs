@@ -51,7 +51,7 @@ macro_rules! impl_vec_direct {
     ($($t:ty => $qlist:ty),*) => {
         $(impl QMetaCallArg for Vec<$t> {
             type WireType = $qlist;
-            fn to_wire(&self) -> $qlist { self.into() }
+            fn to_wire(&self) -> $qlist { self.into_iter().collect() }
             fn from_wire(wire: &$qlist) -> Vec<$t> { wire.into() }
             fn wire_metatype() -> QMetaType { <$qlist as QMetaTypeGet>::get_qmetatype() }
         })*
@@ -69,9 +69,28 @@ impl_vec_direct!(
     i64    => QList_i64,
     u64    => QList_u64,
     f32    => QList_f32,
-    f64    => QList_f64,
-    String => QList_QString
+    f64    => QList_f64
 );
+
+impl QMetaCallArg for Vec<String> {
+    type WireType = QList_QString;
+
+    fn to_wire(&self) -> Self::WireType {
+        self.iter()
+            .map(QString::from)
+            .collect()
+    }
+
+    fn from_wire(wire: &Self::WireType) -> Self {
+        wire.iter()
+            .map(String::from)
+            .collect()
+    }
+
+    fn wire_metatype() -> QMetaType {
+        QList_QString::get_qmetatype()
+    }
+}
 
 impl QMetaCallArg for String {
     type WireType = QString;
@@ -95,11 +114,9 @@ impl QMetaCallArg for Vec<usize> {
     }
 
     fn from_wire(wire: &Self::WireType) -> Self {
-        let mut result = Vec::default();
-        for i in 0..wire.len() {
-            result.push(wire[i] as _);
-        }
-        result
+        wire.into_iter()
+            .map(|a| *a as usize)
+            .collect()
     }
 
     fn wire_metatype() -> QMetaType {
@@ -122,11 +139,9 @@ impl QMetaCallArg for Vec<isize> {
     }
 
     fn from_wire(wire: &Self::WireType) -> Self {
-        let mut result = Vec::default();
-        for i in 0..wire.len() {
-            result.push(wire[i] as _);
-        }
-        result
+        wire.into_iter()
+            .map(|a| *a as isize)
+            .collect()
     }
 
     fn wire_metatype() -> QMetaType {

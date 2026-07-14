@@ -15,33 +15,21 @@ mod ffi {
         type QJsonObject = crate::QJsonObject;
         include!("qtbridge-type-lib/src/generated/core/qjsonvalue/cpp/qjsonvalue.h");
         type QJsonValue = crate::QJsonValue;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qbytearray.h");
+        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist.h");
         type QList_QByteArray = crate::QList_QByteArray;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qstring.h");
         type QList_QString = crate::QList_QString;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_bool.h");
         type QList_bool = crate::QList_bool;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_f32.h");
         type QList_f32 = crate::QList_f32;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_f64.h");
         type QList_f64 = crate::QList_f64;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i16.h");
         type QList_i16 = crate::QList_i16;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i32.h");
         type QList_i32 = crate::QList_i32;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i64.h");
         type QList_i64 = crate::QList_i64;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i8.h");
         type QList_i8 = crate::QList_i8;
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_ptr_mut_qobject.h");
         type QList_ptr_mut_QObject = crate::QList_ptr_mut_QObject;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u16.h");
         type QList_u16 = crate::QList_u16;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u32.h");
         type QList_u32 = crate::QList_u32;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u64.h");
         type QList_u64 = crate::QList_u64;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u8.h");
         type QList_u8 = crate::QList_u8;
         include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = crate::QMetaType;
@@ -754,125 +742,87 @@ impl TryFrom<&QVariant> for QObjectList {
         }
     }
 }
+
+fn qvariant_to_vec<T, ConvertFn>(src: &QVariant, convert_fn: ConvertFn) -> Result<Vec<T>, ()>
+where
+    T: Clone + cxx_qt_lib::QListElement,
+    ConvertFn: FnOnce(&QVariant, &mut QList<T>) -> bool,
+{
+    let mut list = QList::default();
+    if !convert_fn(src, &mut list) {
+        return Err(())
+    }
+
+    let vec = list.iter()
+        .cloned()
+        .collect();
+    Ok(vec)
+}
+
 impl TryFrom<&QVariant> for Vec<bool> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_bool_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_bool_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<i8> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i8_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i8_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<u8> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u8_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u8_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<i16> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i16_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i16_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<u16> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u16_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u16_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<i32> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i32_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i32_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<u32> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u32_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u32_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<i64> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i64_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i64_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<u64> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u64_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u64_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<f32> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_f32_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_f32_try_from)
     }
 }
 impl TryFrom<&QVariant> for Vec<f64> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_f64_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
+        qvariant_to_vec(value, ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_f64_try_from)
     }
 }
 impl TryFrom<QVariant> for bool {

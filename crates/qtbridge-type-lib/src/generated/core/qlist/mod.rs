@@ -1,40 +1,31 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
+#![allow(non_camel_case_types)]
 
 pub mod qlist;
-pub mod qlist_bool;
-pub mod qlist_f32;
-pub mod qlist_f64;
-pub mod qlist_i16;
-pub mod qlist_i32;
-pub mod qlist_i64;
-pub mod qlist_i8;
 pub mod qlist_ptr_mut_qobject;
-pub mod qlist_qbytearray;
-pub mod qlist_qstring;
 pub mod qlist_qvariant;
-pub mod qlist_u16;
-pub mod qlist_u32;
-pub mod qlist_u64;
-pub mod qlist_u8;
-pub use qlist::QList;
 pub use qlist::QListImpl;
-pub use qlist_bool::QList_bool;
-pub use qlist_f32::QList_f32;
-pub use qlist_f64::QList_f64;
-pub use qlist_i16::QList_i16;
-pub use qlist_i32::QList_i32;
-pub use qlist_i64::QList_i64;
-pub use qlist_i8::QList_i8;
 pub use qlist_ptr_mut_qobject::QList_ptr_mut_QObject;
 pub use qlist_ptr_mut_qobject::QObjectList;
-pub use qlist_qbytearray::QByteArrayList;
-pub use qlist_qbytearray::QList_QByteArray;
-pub use qlist_qstring::QList_QString;
-pub use qlist_qstring::QStringList;
 pub use qlist_qvariant::QList_QVariant;
 pub use qlist_qvariant::QVariantList;
-pub use qlist_u16::QList_u16;
-pub use qlist_u32::QList_u32;
-pub use qlist_u64::QList_u64;
-pub use qlist_u8::QList_u8;
+
+pub type QList<T> = cxx_qt_lib::QList<T>;
+
+pub type QList_bool = QList<bool>;
+pub type QList_i8 = QList<i8>;
+pub type QList_u8 = QList<u8>;
+pub type QList_i16 = QList<i16>;
+pub type QList_u16 = QList<u16>;
+pub type QList_i32 = QList<i32>;
+pub type QList_u32 = QList<u32>;
+pub type QList_i64 = QList<i64>;
+pub type QList_u64 = QList<u64>;
+pub type QList_f32 = QList<f32>;
+pub type QList_f64 = QList<f64>;
+pub type QList_QString = QList<crate::QString>;
+pub type QList_QByteArray = QList<crate::QByteArray>;
+
+pub type QStringList = QList_QString;
+pub type QByteArrayList = QList_QByteArray;

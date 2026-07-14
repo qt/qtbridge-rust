@@ -18,18 +18,7 @@ mod ffi {
         include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
         include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
         include!("qtbridge-type-lib/src/generated/core/qstring/cpp/qstring.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_bool.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i8.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u8.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i16.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u16.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i32.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u32.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i64.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u64.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_f32.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_f64.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qstring.h");
+        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist.h");
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_ptr_mut_qobject.h");
 
         type QJsonArray = super::QJsonArray;

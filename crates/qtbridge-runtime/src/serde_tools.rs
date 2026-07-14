@@ -111,9 +111,7 @@ fn qjsonobject_to_serde(v: &QJsonObject) -> serde_json::Value {
 
 fn qvariantmap_to_serde(v: &QVariantMap) -> Result<serde_json::Value, ()> {
     let mut map = serde_json::Map::new();
-    let keys = v.keys();
-    for i in 0..keys.size() as usize {
-        let key = &keys[i];
+    for key in v.keys().iter() {
         let val = qvariant_to_serde(&v.value(key))?;
         map.insert(String::from(key), val);
     }

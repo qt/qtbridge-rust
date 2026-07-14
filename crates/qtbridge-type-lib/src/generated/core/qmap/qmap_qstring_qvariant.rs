@@ -1,7 +1,7 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::{QList, QList_QVariant, QMap, QMapImpl, QString, QVariant};
+use crate::{QList, QList_QString, QList_QVariant, QMap, QMapImpl, QString, QVariant};
 #[allow(non_camel_case_types)]
 /// This is a monomorphized form of type [QMap] for types [QString], [QVariant].
 pub type QMap_QString_QVariant = QMap<QString, QVariant>;

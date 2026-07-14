@@ -16,9 +16,9 @@ mod ffi {
         type QHash_i32_QByteArray = super::QHash_i32_QByteArray;
         include!("qtbridge-type-lib/src/generated/core/qbytearray/cpp/qbytearray.h");
         type QByteArray = crate::QByteArray;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qbytearray.h");
+        include!("cxx-qt-lib/core/qlist/qlist_QByteArray.h");
         type QList_QByteArray = crate::QList_QByteArray;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i32.h");
+        include!("cxx-qt-lib/core/qlist/qlist_i32.h");
         type QList_i32 = crate::QList_i32;
     }
     #[namespace = "rust::bridge::qhash_i32_qbytearray"]

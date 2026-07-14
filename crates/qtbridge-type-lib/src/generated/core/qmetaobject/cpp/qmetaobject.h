@@ -4,8 +4,10 @@
 #ifndef _QMETAOBJECT_RUST_BRIDGE_H_
 #define _QMETAOBJECT_RUST_BRIDGE_H_
 
+#include <QList>
 #include <QMetaObject>
 #include <QMetaType>
+#include <QVariant>
 #include "rust/cxx.h"
 
 namespace rust::bridge::qmetaobject {
