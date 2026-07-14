@@ -9,7 +9,7 @@ Item {
     id: testSuite
 
     TestCase {
-        name: "BindSingletonPropertyToVarProperty"
+        name: "BinaryTreeBindingsVarProperty"
         id: test1
 
         Item {
@@ -22,7 +22,7 @@ Item {
     }
 
     TestCase {
-        name: "BindSingletonPropertyToTypedProperty"
+        name: "BinaryTreeBindingsTypedProperty"
         id: test2
 
         Item {

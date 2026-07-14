@@ -137,30 +137,22 @@ impl Default for BackendImpl {
     }
 }
 
-fn run_qml(test_name: &str) -> i32 {
+fn qml_member_properties_work_in_mod_and_impl_positions() {
+    Backend::register();
+    BackendImpl::register();
+    Node::register();
+
     let args = vec![
         file!().into(),
         "-input".into(),
-        format!("{MANIFEST_DIR}/tests/qml/binary_tree_bindings.qml"),
+        format!("{MANIFEST_DIR}/tests/qml/member_property_bindings"),
     ];
-    quick_test_main(&args, &test_name.into())
-}
 
-fn qml_member_property_with_qobject_mod() {
-    Backend::register();
-    Node::register();
-    assert_eq!(run_qml("member_property_qobject"), 0, "quick test failed");
-}
-
-fn qml_member_property_with_qobject_impl() {
-    BackendImpl::register();
-    Node::register();
-    assert_eq!(run_qml("member_property_qobject_impl"), 0, "quick test failed");
+    let result = quick_test_main(&args, &"member_property".into());
+    assert_eq!(result, 0, "quick test failed");
 }
 
 fn main() {
     #[cfg(not(miri))]
-    qml_member_property_with_qobject_mod();
-    #[cfg(not(miri))]
-    qml_member_property_with_qobject_impl();
+    qml_member_properties_work_in_mod_and_impl_positions();
 }

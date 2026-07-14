@@ -10,17 +10,29 @@ use qtbridge::{QObjectHolder, QmlRegister, qobject};
 use quicktest::quick_test_main;
 
 const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
-pub static DROP_COUNTER: AtomicUsize = AtomicUsize::new(0);
+// Number of live `Node` instances: incremented on construction, decremented on
+// drop. Must be back to zero once every QML engine has been torn down.
+pub static INSTANCE_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 #[qobject]
 pub mod node {
     use super::{Ordering, RefCell, Rc};
 
-    #[derive(Default)]
     pub struct Node {
         value: i32,
         left: Option<Rc<RefCell<Node>>>,
         right: Option<Rc<RefCell<Node>>>,
+    }
+
+    impl Default for Node {
+        fn default() -> Self {
+            super::INSTANCE_COUNTER.fetch_add(1, Ordering::Relaxed);
+            Self {
+                value: 0,
+                left: None,
+                right: None,
+            }
+        }
     }
 
     impl Node {
@@ -37,11 +49,9 @@ pub mod node {
         fn right_changed(&mut self);
 
         pub fn new(value: i32) -> Self {
-            Self {
-                value,
-                left: None,
-                right: None,
-            }
+            let mut node = Self::default();
+            node.value = value;
+            node
         }
 
         pub fn set_value(&mut self, value: i32) {
@@ -99,7 +109,7 @@ pub mod node {
 
     impl Drop for Node {
         fn drop(&mut self) {
-            super::DROP_COUNTER.fetch_add(1, Ordering::Relaxed);
+            super::INSTANCE_COUNTER.fetch_sub(1, Ordering::Relaxed);
         }
     }
 }
@@ -151,55 +161,22 @@ pub mod backend {
 pub use node::Node;
 pub use backend::Backend;
 
-fn qml_binary_tree_sum_returns_expected_value() {
+fn qml_binary_tree_tests() {
     Node::register();
-    DROP_COUNTER.store(0, Ordering::Relaxed);
-
-    let args = vec![
-        file!().into(),
-        "-input".into(),
-        format!("{MANIFEST_DIR}/tests/qml/binary_tree_sum.qml")
-    ];
-
-    let result = quick_test_main(&args, &"binary_tree_sum".into());
-    assert_eq!(result, 0, "quick test failed");
-    assert_eq!(DROP_COUNTER.load(Ordering::Relaxed), 6, "Nodes objects are dangling");
-}
-
-fn qml_binary_tree_can_be_traversed() {
-    Node::register();
-    DROP_COUNTER.store(0, Ordering::Relaxed);
-
-    let args = vec![
-        file!().into(),
-        "-input".into(),
-        format!("{MANIFEST_DIR}/tests/qml/binary_tree_traverse.qml")
-    ];
-
-    let result = quick_test_main(&args, &"binary_tree_traverse".into());
-    assert_eq!(result, 0, "quick test failed");
-    assert_eq!(DROP_COUNTER.load(Ordering::Relaxed), 7, "Nodes objects are dangling");
-}
-
-fn qml_binary_tree_bindings() {
     backend::Backend::register();
-    Node::register();
 
     let args = vec![
         file!().into(),
         "-input".into(),
-        format!("{MANIFEST_DIR}/tests/qml/binary_tree_bindings.qml")
+        format!("{MANIFEST_DIR}/tests/qml/binary_tree")
     ];
 
-    let result = quick_test_main(&args, &"binary_tree_bindings".into());
+    let result = quick_test_main(&args, &"binary_tree".into());
     assert_eq!(result, 0, "quick test failed");
+    assert_eq!(INSTANCE_COUNTER.load(Ordering::Relaxed), 0, "Node objects are dangling");
 }
 
 fn main() {
     #[cfg(not(miri))]
-    qml_binary_tree_sum_returns_expected_value();
-    #[cfg(not(miri))]
-    qml_binary_tree_can_be_traversed();
-    #[cfg(not(miri))]
-    qml_binary_tree_bindings();
+    qml_binary_tree_tests();
 }

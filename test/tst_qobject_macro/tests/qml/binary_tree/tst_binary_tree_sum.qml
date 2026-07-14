@@ -6,6 +6,8 @@ import QtTest
 import tst_qobject_macro
 
 TestCase {
+    name: "BinaryTreeSum"
+
     Item {
         id: testTree
 
