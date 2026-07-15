@@ -87,17 +87,6 @@ sudo apt install -y qt6-base-dev qt6-declarative-dev
 sudo apt install -y qt6-base-private-dev
 ```
 
-On Ubuntu and Debian, the Qt 6 qmake binary is named `qmake6` and the `QMAKE`
-environment variable must be set correspondingly:
-```sh
-export QMAKE=qmake6
-```
-To make this permanent, add it to your ~/.bashrc:
-```sh
-echo 'export QMAKE=qmake6' >> ~/.bashrc
-source ~/.bashrc
-```
-
 #### Qt build from source or Qt installer
 
 ##### Windows
