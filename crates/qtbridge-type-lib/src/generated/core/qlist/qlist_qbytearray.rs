@@ -28,8 +28,6 @@ mod ffi {
         fn QList_Eq(lhs: &QList_QByteArray, rhs: &QList_QByteArray) -> bool;
         # [rust_name = inline_cpp_fn_append]
         fn inlineCppFn_append(_obj: &mut QList_QByteArray, value: QByteArray);
-        # [rust_name = inline_cpp_fn_capacity]
-        fn inlineCppFn_capacity(_obj: &QList_QByteArray) -> usize;
         # [rust_name = inline_cpp_fn_clear]
         fn inlineCppFn_clear(_obj: &mut QList_QByteArray);
         # [rust_name = inline_cpp_fn_contains]
@@ -140,10 +138,6 @@ impl QListImpl<QByteArray> for QList_QByteArray {
     fn append(&mut self, value: QByteArray) {
         let cpp = ffi::inline_cpp_fn_append;
         cpp(self, value);
-    }
-    fn capacity(&self) -> usize {
-        let cpp = ffi::inline_cpp_fn_capacity;
-        cpp(self)
     }
     fn clear(&mut self) {
         let cpp = ffi::inline_cpp_fn_clear;

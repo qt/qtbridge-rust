@@ -30,11 +30,6 @@ void inlineCppFn_append(QList_ptr_mut_QObject &self, QObject *value)
     self.append(value);
 }
 
-size_t inlineCppFn_capacity(QList_ptr_mut_QObject const &self)
-{
-    return self.capacity();
-}
-
 void inlineCppFn_clear(QList_ptr_mut_QObject &self)
 {
     self.clear();

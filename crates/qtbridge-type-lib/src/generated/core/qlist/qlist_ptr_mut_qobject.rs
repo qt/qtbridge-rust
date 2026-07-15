@@ -34,8 +34,6 @@ mod ffi {
         fn QList_Eq(lhs: &QList_ptr_mut_QObject, rhs: &QList_ptr_mut_QObject) -> bool;
         # [rust_name = inline_cpp_fn_append]
         unsafe fn inlineCppFn_append(_obj: &mut QList_ptr_mut_QObject, value: *mut QObject);
-        # [rust_name = inline_cpp_fn_capacity]
-        fn inlineCppFn_capacity(_obj: &QList_ptr_mut_QObject) -> usize;
         # [rust_name = inline_cpp_fn_clear]
         fn inlineCppFn_clear(_obj: &mut QList_ptr_mut_QObject);
         # [rust_name = inline_cpp_fn_contains]
@@ -162,10 +160,6 @@ impl QListImpl<*mut QObject> for QList_ptr_mut_QObject {
     fn append(&mut self, value: *mut QObject) {
         let cpp = ffi::inline_cpp_fn_append;
         unsafe { cpp(self, value) };
-    }
-    fn capacity(&self) -> usize {
-        let cpp = ffi::inline_cpp_fn_capacity;
-        cpp(self)
     }
     fn clear(&mut self) {
         let cpp = ffi::inline_cpp_fn_clear;

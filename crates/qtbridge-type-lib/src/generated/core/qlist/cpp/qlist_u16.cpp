@@ -30,11 +30,6 @@ void inlineCppFn_append(QList_u16 &self, uint16_t value)
     self.append(value);
 }
 
-size_t inlineCppFn_capacity(QList_u16 const &self)
-{
-    return self.capacity();
-}
-
 void inlineCppFn_clear(QList_u16 &self)
 {
     self.clear();

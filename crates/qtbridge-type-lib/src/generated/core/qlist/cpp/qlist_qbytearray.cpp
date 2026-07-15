@@ -33,11 +33,6 @@ void inlineCppFn_append(QList_QByteArray &self, QByteArray value)
     self.append(value);
 }
 
-size_t inlineCppFn_capacity(QList_QByteArray const &self)
-{
-    return self.capacity();
-}
-
 void inlineCppFn_clear(QList_QByteArray &self)
 {
     self.clear();

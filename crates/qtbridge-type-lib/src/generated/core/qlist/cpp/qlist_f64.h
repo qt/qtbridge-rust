@@ -19,8 +19,6 @@ bool QList_Eq(const QList_f64 &lhs, const QList_f64 &rhs);
 
 void inlineCppFn_append(QList_f64 &self, double value);
 
-size_t inlineCppFn_capacity(QList_f64 const &self);
-
 void inlineCppFn_clear(QList_f64 &self);
 
 bool inlineCppFn_contains(QList_f64 const &self, double const &value);

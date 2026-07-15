@@ -26,8 +26,6 @@ mod ffi {
         fn QList_Eq(lhs: &QList_bool, rhs: &QList_bool) -> bool;
         # [rust_name = inline_cpp_fn_append]
         fn inlineCppFn_append(_obj: &mut QList_bool, value: bool);
-        # [rust_name = inline_cpp_fn_capacity]
-        fn inlineCppFn_capacity(_obj: &QList_bool) -> usize;
         # [rust_name = inline_cpp_fn_clear]
         fn inlineCppFn_clear(_obj: &mut QList_bool);
         # [rust_name = inline_cpp_fn_contains]
@@ -137,10 +135,6 @@ impl QListImpl<bool> for QList_bool {
     fn append(&mut self, value: bool) {
         let cpp = ffi::inline_cpp_fn_append;
         cpp(self, value);
-    }
-    fn capacity(&self) -> usize {
-        let cpp = ffi::inline_cpp_fn_capacity;
-        cpp(self)
     }
     fn clear(&mut self) {
         let cpp = ffi::inline_cpp_fn_clear;

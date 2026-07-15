@@ -26,8 +26,6 @@ mod ffi {
         fn QList_Eq(lhs: &QList_f64, rhs: &QList_f64) -> bool;
         # [rust_name = inline_cpp_fn_append]
         fn inlineCppFn_append(_obj: &mut QList_f64, value: f64);
-        # [rust_name = inline_cpp_fn_capacity]
-        fn inlineCppFn_capacity(_obj: &QList_f64) -> usize;
         # [rust_name = inline_cpp_fn_clear]
         fn inlineCppFn_clear(_obj: &mut QList_f64);
         # [rust_name = inline_cpp_fn_contains]
@@ -137,10 +135,6 @@ impl QListImpl<f64> for QList_f64 {
     fn append(&mut self, value: f64) {
         let cpp = ffi::inline_cpp_fn_append;
         cpp(self, value);
-    }
-    fn capacity(&self) -> usize {
-        let cpp = ffi::inline_cpp_fn_capacity;
-        cpp(self)
     }
     fn clear(&mut self) {
         let cpp = ffi::inline_cpp_fn_clear;

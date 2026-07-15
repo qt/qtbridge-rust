@@ -28,8 +28,6 @@ mod ffi {
         fn QList_Eq(lhs: &QList_QString, rhs: &QList_QString) -> bool;
         # [rust_name = inline_cpp_fn_append]
         fn inlineCppFn_append(_obj: &mut QList_QString, value: QString);
-        # [rust_name = inline_cpp_fn_capacity]
-        fn inlineCppFn_capacity(_obj: &QList_QString) -> usize;
         # [rust_name = inline_cpp_fn_clear]
         fn inlineCppFn_clear(_obj: &mut QList_QString);
         # [rust_name = inline_cpp_fn_contains]
@@ -169,10 +167,6 @@ impl QListImpl<QString> for QList_QString {
     fn append(&mut self, value: QString) {
         let cpp = ffi::inline_cpp_fn_append;
         cpp(self, value);
-    }
-    fn capacity(&self) -> usize {
-        let cpp = ffi::inline_cpp_fn_capacity;
-        cpp(self)
     }
     fn clear(&mut self) {
         let cpp = ffi::inline_cpp_fn_clear;

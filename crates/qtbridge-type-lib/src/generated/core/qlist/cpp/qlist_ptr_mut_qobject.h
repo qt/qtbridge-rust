@@ -20,8 +20,6 @@ bool QList_Eq(const QList_ptr_mut_QObject &lhs, const QList_ptr_mut_QObject &rhs
 
 void inlineCppFn_append(QList_ptr_mut_QObject &self, QObject *value);
 
-size_t inlineCppFn_capacity(QList_ptr_mut_QObject const &self);
-
 void inlineCppFn_clear(QList_ptr_mut_QObject &self);
 
 bool inlineCppFn_contains(QList_ptr_mut_QObject const &self, QObject *const &value);

@@ -34,11 +34,6 @@ void inlineCppFn_append(QList_QVariant &self, QVariant value)
     self.append(value);
 }
 
-size_t inlineCppFn_capacity(QList_QVariant const &self)
-{
-    return self.capacity();
-}
-
 void inlineCppFn_clear(QList_QVariant &self)
 {
     self.clear();

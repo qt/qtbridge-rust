@@ -19,8 +19,6 @@ bool QList_Eq(const QList_i16 &lhs, const QList_i16 &rhs);
 
 void inlineCppFn_append(QList_i16 &self, int16_t value);
 
-size_t inlineCppFn_capacity(QList_i16 const &self);
-
 void inlineCppFn_clear(QList_i16 &self);
 
 bool inlineCppFn_contains(QList_i16 const &self, int16_t const &value);

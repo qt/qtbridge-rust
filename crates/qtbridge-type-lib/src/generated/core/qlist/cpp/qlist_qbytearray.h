@@ -22,8 +22,6 @@ bool QList_Eq(const QList_QByteArray &lhs, const QList_QByteArray &rhs);
 
 void inlineCppFn_append(QList_QByteArray &self, QByteArray value);
 
-size_t inlineCppFn_capacity(QList_QByteArray const &self);
-
 void inlineCppFn_clear(QList_QByteArray &self);
 
 bool inlineCppFn_contains(QList_QByteArray const &self, QByteArray const &value);

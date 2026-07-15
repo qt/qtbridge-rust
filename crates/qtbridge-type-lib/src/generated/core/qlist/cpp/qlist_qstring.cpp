@@ -33,11 +33,6 @@ void inlineCppFn_append(QList_QString &self, QString value)
     self.append(value);
 }
 
-size_t inlineCppFn_capacity(QList_QString const &self)
-{
-    return self.capacity();
-}
-
 void inlineCppFn_clear(QList_QString &self)
 {
     self.clear();

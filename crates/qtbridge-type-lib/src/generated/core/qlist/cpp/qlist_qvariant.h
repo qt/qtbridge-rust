@@ -22,8 +22,6 @@ bool QList_Eq(const QList_QVariant &lhs, const QList_QVariant &rhs);
 
 void inlineCppFn_append(QList_QVariant &self, QVariant value);
 
-size_t inlineCppFn_capacity(QList_QVariant const &self);
-
 void inlineCppFn_clear(QList_QVariant &self);
 
 bool inlineCppFn_contains(QList_QVariant const &self, QVariant const &value);

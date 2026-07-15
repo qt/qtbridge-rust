@@ -51,20 +51,6 @@ where
     pub fn append(&mut self, value: T) {
         <Self as QListImpl<T>>::append(self, value)
     }
-    /// Returns the maximum number of items that can be stored in the list without forcing a reallocation.
-    /// # Examples
-    /// ```
-    /// # use qtbridge_type_lib::QList;
-    /// let mut list = QList::default();
-    /// assert_eq!(0, list.capacity());
-    /// list.append(1);
-    /// assert!(1 <= list.capacity());
-    /// list.reserve(100);
-    /// assert_eq!(list.capacity(), 100);
-    /// ```
-    pub fn capacity(&self) -> usize {
-        <Self as QListImpl<T>>::capacity(self)
-    }
     /// Removes all the elements from the list.
     /// # Examples
     /// ```
@@ -123,14 +109,6 @@ where
     pub fn remove(&mut self, i: isize) {
         <Self as QListImpl<T>>::remove(self, i)
     }
-    /// Attempts to allocate memory for at least size elements.
-    /// # Examples
-    /// ```
-    /// # use qtbridge_type_lib::QList;
-    /// let mut list = QList::<i32>::default();
-    /// list.reserve(100);
-    /// assert_eq!(list.capacity(), 100);
-    /// ```
     pub fn reserve(&mut self, size: usize) {
         <Self as QListImpl<T>>::reserve(self, size)
     }
@@ -177,7 +155,6 @@ where
 #[doc(hidden)]
 pub trait QListImpl<T> {
     fn append(&mut self, value: T);
-    fn capacity(&self) -> usize;
     fn clear(&mut self);
     fn contains(&self, value: &T) -> bool;
     fn push_back(&mut self, value: T);

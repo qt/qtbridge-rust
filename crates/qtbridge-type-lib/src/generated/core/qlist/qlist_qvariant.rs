@@ -32,8 +32,6 @@ mod ffi {
         fn QList_Eq(lhs: &QList_QVariant, rhs: &QList_QVariant) -> bool;
         # [rust_name = inline_cpp_fn_append]
         fn inlineCppFn_append(_obj: &mut QList_QVariant, value: QVariant);
-        # [rust_name = inline_cpp_fn_capacity]
-        fn inlineCppFn_capacity(_obj: &QList_QVariant) -> usize;
         # [rust_name = inline_cpp_fn_clear]
         fn inlineCppFn_clear(_obj: &mut QList_QVariant);
         # [rust_name = inline_cpp_fn_contains]
@@ -179,10 +177,6 @@ impl QListImpl<QVariant> for QList_QVariant {
     fn append(&mut self, value: QVariant) {
         let cpp = ffi::inline_cpp_fn_append;
         cpp(self, value);
-    }
-    fn capacity(&self) -> usize {
-        let cpp = ffi::inline_cpp_fn_capacity;
-        cpp(self)
     }
     fn clear(&mut self) {
         let cpp = ffi::inline_cpp_fn_clear;
