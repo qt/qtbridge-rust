@@ -1,7 +1,6 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::QList;
 /// The QMap is a generic struct that provides an associative array.
 ///
 /// The following types are currently supported as entries in a QMap:
@@ -14,8 +13,6 @@ use crate::QList;
 pub struct QMap<K, V>
 where
     Self: QMapImpl<K, V>,
-    QList<K>: crate::QListImpl<K>,
-    QList<V>: crate::QListImpl<V>,
 {
     _d: std::mem::MaybeUninit<usize>,
     phantoms: core::marker::PhantomData<(K, V)>,
@@ -23,8 +20,6 @@ where
 impl<K, V> QMap<K, V>
 where
     Self: QMapImpl<K, V>,
-    QList<K>: crate::QListImpl<K>,
-    QList<V>: crate::QListImpl<V>,
 {
     /// Removes all the items from the map.
     /// # Examples
@@ -110,7 +105,7 @@ where
     /// ]);
     /// assert_eq!(map.keys(), [1, 2, 3]);
     /// ```
-    pub fn keys(&self) -> QList<K> {
+    pub fn keys(&self) -> <Self as QMapImpl<K, V>>::QListK {
         <Self as QMapImpl<K, V>>::keys(self)
     }
     /// Returns a list containing all the values in the map, in ascending order of their keys.
@@ -124,7 +119,7 @@ where
     /// ]);
     /// assert_eq!(map.values(), [QString::from("One"), QString::from("Two"), QString::from("Three")]);
     /// ```
-    pub fn values(&self) -> QList<V> {
+    pub fn values(&self) -> <Self as QMapImpl<K, V>>::QListV {
         <Self as QMapImpl<K, V>>::values(self)
     }
     /// Returns the value associated with the specified key.
@@ -144,25 +139,23 @@ where
 }
 #[doc(hidden)]
 pub trait QMapImpl<K, V>
-where
-    QList<K>: crate::QListImpl<K>,
-    QList<V>: crate::QListImpl<V>,
 {
+    type QListK;
+    type QListV;
+
     fn clear(&mut self);
     fn insert(&mut self, key: &K, value: &V);
     fn is_empty(&self) -> bool;
     fn remove(&mut self, key: &K) -> i32;
     fn size(&self) -> i32;
-    fn keys(&self) -> QList<K>;
-    fn values(&self) -> QList<V>;
+    fn keys(&self) -> Self::QListK;
+    fn values(&self) -> Self::QListV;
     fn value(&self, key: &K) -> V;
     fn do_drop(&mut self);
 }
 impl<K, V> Drop for QMap<K, V>
 where
     Self: QMapImpl<K, V>,
-    QList<K>: crate::QListImpl<K>,
-    QList<V>: crate::QListImpl<V>,
 {
     fn drop(&mut self) {
         <Self as QMapImpl<K, V>>::do_drop(self)

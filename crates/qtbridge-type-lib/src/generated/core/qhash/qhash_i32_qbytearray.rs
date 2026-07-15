@@ -94,6 +94,9 @@ impl std::ops::Index<&i32> for QHash<i32, QByteArray> {
     }
 }
 impl QHashImpl<i32, QByteArray> for QHash_i32_QByteArray {
+    type QListK = QList<i32>;
+    type QListV = QList<QByteArray>;
+
     fn clear(&mut self) {
         ffi::inline_cpp_fn_clear(self)
     }

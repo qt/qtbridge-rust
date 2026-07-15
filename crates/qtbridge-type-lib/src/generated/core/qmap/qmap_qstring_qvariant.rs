@@ -135,6 +135,9 @@ impl std::ops::Index<&QString> for QMap<QString, QVariant> {
     }
 }
 impl QMapImpl<QString, QVariant> for QMap_QString_QVariant {
+    type QListK = QList<QString>;
+    type QListV = QList<QVariant>;
+
     fn clear(&mut self) {
         ffi::inline_cpp_fn_clear(self)
     }
