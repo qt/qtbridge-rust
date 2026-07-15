@@ -156,9 +156,9 @@ impl QListImpl<QByteArray> for QList_QByteArray {
         let cpp = ffi::inline_cpp_fn_push_back;
         cpp(self, value);
     }
-    fn remove(&mut self, i: isize, n: isize) {
+    fn remove(&mut self, i: isize) {
         let cpp = ffi::inline_cpp_fn_remove;
-        cpp(self, i, n);
+        cpp(self, i, 1);
     }
     fn reserve(&mut self, size: usize) {
         let cpp = ffi::inline_cpp_fn_reserve;

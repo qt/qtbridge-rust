@@ -178,9 +178,9 @@ impl QListImpl<*mut QObject> for QList_ptr_mut_QObject {
         let cpp = ffi::inline_cpp_fn_push_back;
         unsafe { cpp(self, value) };
     }
-    fn remove(&mut self, i: isize, n: isize) {
+    fn remove(&mut self, i: isize) {
         let cpp = ffi::inline_cpp_fn_remove;
-        cpp(self, i, n);
+        cpp(self, i, 1);
     }
     fn reserve(&mut self, size: usize) {
         let cpp = ffi::inline_cpp_fn_reserve;
