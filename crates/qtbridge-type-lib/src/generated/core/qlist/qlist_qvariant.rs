@@ -1,12 +1,16 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::{QList, QListImpl, QVariant};
+use crate::{QListImpl, QVariant};
 #[allow(non_camel_case_types)]
 /// This is a monomorphized form of type [QList] for type [QVariant].
-pub type QList_QVariant = QList<QVariant>;
+pub struct QList_QVariant {
+    _d: std::mem::MaybeUninit<usize>,
+    _ptr: std::mem::MaybeUninit<usize>,
+    _size: std::mem::MaybeUninit<usize>,
+}
 /// This is an alias for type [QList] for type [QVariant].
-pub type QVariantList = QList<QVariant>;
+pub type QVariantList = QList_QVariant;
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
@@ -70,12 +74,17 @@ impl Clone for QList_QVariant {
         ffi::qlist_clone(self)
     }
 }
+impl Drop for QList_QVariant {
+    fn drop(&mut self) {
+        ffi::qlist_drop(self)
+    }
+}
 impl PartialEq for QList_QVariant {
     fn eq(&self, other: &Self) -> bool {
         ffi::qlist_eq(self, other)
     }
 }
-impl From<&[QVariant]> for QList<QVariant> {
+impl From<&[QVariant]> for QList_QVariant {
     fn from(value: &[QVariant]) -> Self {
         let mut result = Self::default();
         result.reserve(value.len());
@@ -85,7 +94,7 @@ impl From<&[QVariant]> for QList<QVariant> {
         result
     }
 }
-impl<const N: usize> From<[QVariant; N]> for QList<QVariant> {
+impl<const N: usize> From<[QVariant; N]> for QList_QVariant {
     fn from(value: [QVariant; N]) -> Self {
         let mut result = Self::default();
         result.reserve(N);
@@ -95,12 +104,12 @@ impl<const N: usize> From<[QVariant; N]> for QList<QVariant> {
         result
     }
 }
-impl From<&Vec<QVariant>> for QList<QVariant> {
+impl From<&Vec<QVariant>> for QList_QVariant {
     fn from(value: &Vec<QVariant>) -> Self {
         Self::from(value.as_slice())
     }
 }
-impl From<Vec<QVariant>> for QList<QVariant> {
+impl From<Vec<QVariant>> for QList_QVariant {
     fn from(value: Vec<QVariant>) -> Self {
         let mut result = Self::default();
         result.reserve(value.len());
@@ -110,8 +119,8 @@ impl From<Vec<QVariant>> for QList<QVariant> {
         result
     }
 }
-impl From<&QList<QVariant>> for Vec<QVariant> {
-    fn from(value: &QList<QVariant>) -> Self {
+impl From<&QList_QVariant> for Vec<QVariant> {
+    fn from(value: &QList_QVariant) -> Self {
         let mut v = Vec::with_capacity(value.len());
         for i in 0..value.len() {
             v.push(value[i].clone());
@@ -119,41 +128,51 @@ impl From<&QList<QVariant>> for Vec<QVariant> {
         v
     }
 }
-impl From<QList<QVariant>> for Vec<QVariant> {
-    fn from(value: QList<QVariant>) -> Self {
+impl From<QList_QVariant> for Vec<QVariant> {
+    fn from(value: QList_QVariant) -> Self {
         Self::from(&value)
     }
 }
-impl From<&QList<QVariant>> for QVariant {
-    fn from(value: &QList<QVariant>) -> Self {
+impl From<&QList_QVariant> for QVariant {
+    fn from(value: &QList_QVariant) -> Self {
         ffi::inline_cpp_fn_trait_impl_from_ref_qlist_qvariant_for_qvariant_from(value)
     }
 }
-impl TryFrom<&QVariant> for QList<QVariant> {
+impl TryFrom<&QVariant> for QList_QVariant {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
         let conv_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qlist_qvariant_try_from;
-        let mut result = QList::default();
+        let mut result = QList_QVariant::default();
         match conv_fn(value, &mut result) {
             true => Ok(result),
             false => Err(()),
         }
     }
 }
-impl std::ops::Index<usize> for QList<QVariant> {
+impl std::ops::Index<usize> for QList_QVariant {
     type Output = QVariant;
     fn index(&self, index: usize) -> &Self::Output {
         let cpp = ffi::inline_cpp_fn_trait_impl_std_ops_index_usize_for_qlist_qvariant_index;
         unsafe { cpp(self, index).as_ref() }.expect("Out of bounds access to QList")
     }
 }
-impl<const N: usize> PartialEq<[QVariant; N]> for QList<QVariant> {
+impl<const N: usize> PartialEq<[QVariant; N]> for QList_QVariant {
     fn eq(&self, other: &[QVariant; N]) -> bool {
         if self.len() != N {
             return false;
         }
         let cpp = ffi::inline_cpp_fn_trait_impl_partial_eq_array_of_qvariant_n_for_qlist_qvariant_eq;
         cpp(self, other)
+    }
+}
+impl QList_QVariant {
+    pub fn len(&self) -> usize {
+        let cpp = ffi::inline_cpp_fn_size;
+        cpp(self) as usize
+    }
+    pub fn first(&self) -> &QVariant {
+        let cpp = ffi::inline_cpp_fn_first;
+        cpp(self)
     }
 }
 impl QListImpl<QVariant> for QList_QVariant {

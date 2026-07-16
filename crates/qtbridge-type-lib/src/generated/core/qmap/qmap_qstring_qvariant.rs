@@ -1,8 +1,7 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::QList;
-use crate::{QMap, QMapImpl, QString, QVariant};
+use crate::{QList, QList_QVariant, QMap, QMapImpl, QString, QVariant};
 #[allow(non_camel_case_types)]
 /// This is a monomorphized form of type [QMap] for types [QString], [QVariant].
 pub type QMap_QString_QVariant = QMap<QString, QVariant>;
@@ -136,7 +135,7 @@ impl std::ops::Index<&QString> for QMap<QString, QVariant> {
 }
 impl QMapImpl<QString, QVariant> for QMap_QString_QVariant {
     type QListK = QList<QString>;
-    type QListV = QList<QVariant>;
+    type QListV = QList_QVariant;
 
     fn clear(&mut self) {
         ffi::inline_cpp_fn_clear(self)
@@ -159,7 +158,7 @@ impl QMapImpl<QString, QVariant> for QMap_QString_QVariant {
         let cpp = ffi::inline_cpp_fn_keys;
         cpp(self)
     }
-    fn values(&self) -> QList<QVariant> {
+    fn values(&self) -> QList_QVariant {
         let cpp = ffi::inline_cpp_fn_values;
         cpp(self)
     }

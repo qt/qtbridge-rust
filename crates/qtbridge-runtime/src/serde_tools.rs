@@ -122,7 +122,7 @@ fn qvariantmap_to_serde(v: &QVariantMap) -> Result<serde_json::Value, ()> {
 
 fn qvariantlist_to_serde(v: &QVariantList) -> Result<serde_json::Value, ()> {
     let mut array = Vec::new();
-    for i in 0..v.size() as usize {
+    for i in 0..v.len() {
         array.push(qvariant_to_serde(&v[i])?);
     }
     Ok(serde_json::Value::Array(array))
