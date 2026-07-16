@@ -8,7 +8,7 @@
 namespace rust::bridge::qmetatypeget {
 
 template <typename T>
-QMetaType QMetaTypeForType(const T *dummy)
+QMetaType QMetaTypeForType(const T *)
 {
     return QMetaType::fromType<T>();
 }
