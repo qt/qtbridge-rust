@@ -4,7 +4,7 @@
 use qtbridge_type_lib::{
     QJsonArray, QJsonObject, QJsonValue,
     QList, QList_bool, QList_QString, QList_f32, QList_f64, QList_i8, QList_i16, QList_i32, QList_i64,
-    QList_isize, QList_ptr_mut_QObject, QList_u8, QList_u16, QList_u32, QList_u64, QList_usize,
+    QList_ptr_mut_QObject, QList_u8, QList_u16, QList_u32, QList_u64,
     QMetaType, QObject, QString
 };
 
@@ -27,8 +27,6 @@ mod ffi {
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u32.h");
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i64.h");
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u64.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_isize.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_usize.h");
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_f32.h");
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_f64.h");
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qstring.h");
@@ -51,8 +49,6 @@ mod ffi {
         type QList_u32 = super::QList_u32;
         type QList_i64 = super::QList_i64;
         type QList_u64 = super::QList_u64;
-        type QList_isize = super::QList_isize;
-        type QList_usize = super::QList_usize;
         type QList_f32 = super::QList_f32;
         type QList_f64 = super::QList_f64;
         type QList_QString = super::QList_QString;
@@ -85,11 +81,6 @@ mod ffi {
         unsafe fn QMetaTypeForType(_: *const i64) -> QMetaType;
         #[rust_name = "get_qmeta_type_u64"]
         unsafe fn QMetaTypeForType(_: *const u64) -> QMetaType;
-
-        #[rust_name = "get_qmeta_type_isize"]
-        unsafe fn QMetaTypeForType(_: *const isize) -> QMetaType;
-        #[rust_name = "get_qmeta_type_usize"]
-        unsafe fn QMetaTypeForType(_: *const usize) -> QMetaType;
 
         #[rust_name = "get_qmeta_type_f32"]
         unsafe fn QMetaTypeForType(_: *const f32) -> QMetaType;
@@ -132,11 +123,6 @@ mod ffi {
         unsafe fn QMetaTypeForType(_: *const QList_i64) -> QMetaType;
         #[rust_name = "get_qmeta_type_qlist_u64"]
         unsafe fn QMetaTypeForType(_: *const QList_u64) -> QMetaType;
-
-        #[rust_name = "get_qmeta_type_qlist_isize"]
-        unsafe fn QMetaTypeForType(_: *const QList_isize) -> QMetaType;
-        #[rust_name = "get_qmeta_type_qlist_usize"]
-        unsafe fn QMetaTypeForType(_: *const QList_usize) -> QMetaType;
 
         #[rust_name = "get_qmeta_type_qlist_f32"]
         unsafe fn QMetaTypeForType(_: *const QList_f32) -> QMetaType;
@@ -190,8 +176,6 @@ impl_qmetatype_get! (
     u32          => get_qmeta_type_u32,
     i64          => get_qmeta_type_i64,
     u64          => get_qmeta_type_u64,
-    isize        => get_qmeta_type_isize,
-    usize        => get_qmeta_type_usize,
     f32          => get_qmeta_type_f32,
     f64          => get_qmeta_type_f64,
     QString      => get_qmeta_type_qstring,
@@ -211,10 +195,32 @@ impl_qmetatype_get_qlist! (
     u32          => get_qmeta_type_qlist_u32,
     i64          => get_qmeta_type_qlist_i64,
     u64          => get_qmeta_type_qlist_u64,
-    isize        => get_qmeta_type_qlist_isize,
-    usize        => get_qmeta_type_qlist_usize,
     f32          => get_qmeta_type_qlist_f32,
     f64          => get_qmeta_type_qlist_f64,
     QString      => get_qmeta_type_qlist_qstring,
     *mut QObject => get_qmeta_type_qlist_qobject
 );
+
+impl QMetaTypeGet for usize {
+    #[cfg(target_pointer_width = "64")]
+    fn get_qmetatype() -> QMetaType {
+        <u64 as QMetaTypeGet>::get_qmetatype()
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    fn get_qmetatype() -> QMetaType {
+        <u32 as QMetaTypeGet>::get_qmetatype()
+    }
+}
+
+impl QMetaTypeGet for isize {
+    #[cfg(target_pointer_width = "64")]
+    fn get_qmetatype() -> QMetaType {
+        <i64 as QMetaTypeGet>::get_qmetatype()
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    fn get_qmetatype() -> QMetaType {
+        <i32 as QMetaTypeGet>::get_qmetatype()
+    }
+}

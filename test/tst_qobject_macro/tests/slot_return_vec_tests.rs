@@ -121,11 +121,13 @@ fn get_qml_code_for(slot_type_suffix: &str) -> String {
     "#)
 }
 
-fn test_slot_return_impl<T>(expected: &[T])
+fn test_slot_return_impl<T, VarT>(expected: &[T])
 where
-    T: Debug + PartialEq,
-    Vec<T> : TryFrom<QVariant>,
-    <Vec<T> as TryFrom<QVariant>>::Error: Debug,
+    T: Debug + PartialEq + TryFrom<VarT>,
+    <T as TryFrom<VarT>>::Error: Debug,
+    Vec<T> :FromIterator<T>,
+    Vec<VarT>: TryFrom<QVariant>,
+    <Vec<VarT> as TryFrom<QVariant>>::Error: Debug,
 {
     let type_str = get_type_name::<T>();
     let suffix = capitalize_first_char(&type_str);
@@ -149,7 +151,11 @@ where
 
     // Check returned value.
     assert!(result_var.is_valid());
-    let result: Vec<T> = result_var.try_into().unwrap();
+    let result: Vec<T> = <Vec<VarT>>::try_from(result_var)
+        .unwrap()
+        .into_iter()
+        .map(|a| T::try_from(a).unwrap())
+        .collect();
     assert_eq!(expected, result);
 }
 
@@ -157,18 +163,18 @@ fn main() {
     if cfg!(miri) {
         return;
     }
-    test_slot_return_impl::<bool>(&[false, true, true, false]);
-    test_slot_return_impl::<i8>(&[-1, 0, 1, 2]);
-    test_slot_return_impl::<u8>(&[3, 4, 5]);
-    test_slot_return_impl::<i16>(&[-6, 7, 8, 9]);
-    test_slot_return_impl::<u16>(&[10, 11, 12]);
-    test_slot_return_impl::<i32>(&[13, -14, 15, -16]);
-    test_slot_return_impl::<u32>(&[17, 18, 19]);
-    test_slot_return_impl::<i64>(&[-20, 21, 22]);
-    test_slot_return_impl::<u64>(&[23, 24, 25]);
-    test_slot_return_impl::<isize>(&[-26, 27, 28]);
-    test_slot_return_impl::<usize>(&[29, 30, 31]);
-    test_slot_return_impl::<f32>(&[0.5, 0.25, 0.125]);
-    test_slot_return_impl::<f64>(&[0.25, 0.125, 0.0625]);
-    test_slot_return_impl::<String>(&["zero", "um", "dois", "três", "quatro"].map(ToOwned::to_owned));
+    test_slot_return_impl::<bool, bool>(&[false, true, true, false]);
+    test_slot_return_impl::<i8, i8>(&[-1, 0, 1, 2]);
+    test_slot_return_impl::<u8, u8>(&[3, 4, 5]);
+    test_slot_return_impl::<i16, i16>(&[-6, 7, 8, 9]);
+    test_slot_return_impl::<u16, u16>(&[10, 11, 12]);
+    test_slot_return_impl::<i32, i32>(&[13, -14, 15, -16]);
+    test_slot_return_impl::<u32, u32>(&[17, 18, 19]);
+    test_slot_return_impl::<i64, i64>(&[-20, 21, 22]);
+    test_slot_return_impl::<u64, u64>(&[23, 24, 25]);
+    test_slot_return_impl::<isize, i64>(&[-26, 27, 28]);
+    test_slot_return_impl::<usize, u64>(&[29, 30, 31]);
+    test_slot_return_impl::<f32, f32>(&[0.5, 0.25, 0.125]);
+    test_slot_return_impl::<f64, f64>(&[0.25, 0.125, 0.0625]);
+    test_slot_return_impl::<String, String>(&["zero", "um", "dois", "três", "quatro"].map(ToOwned::to_owned));
 }

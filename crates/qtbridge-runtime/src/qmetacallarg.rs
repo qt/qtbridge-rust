@@ -7,7 +7,7 @@ use std::rc::Rc;
 use qtbridge_type_lib::{
     QMetaType, QObject, QString, QObjectList,
     QList_bool, QList_i8, QList_u8, QList_i16, QList_u16,
-    QList_i32, QList_u32, QList_i64, QList_u64, QList_isize, QList_usize,
+    QList_i32, QList_u32, QList_i64, QList_u64,
     QList_f32, QList_f64, QList_QString,
 };
 
@@ -68,8 +68,6 @@ impl_vec_direct!(
     u32    => QList_u32,
     i64    => QList_i64,
     u64    => QList_u64,
-    isize  => QList_isize,
-    usize  => QList_usize,
     f32    => QList_f32,
     f64    => QList_f64,
     String => QList_QString
@@ -80,6 +78,60 @@ impl QMetaCallArg for String {
     fn to_wire(&self) -> QString { self.into() }
     fn from_wire(wire: &QString) -> String { wire.into() }
     fn wire_metatype() -> QMetaType { <QString as QMetaTypeGet>::get_qmetatype() }
+}
+
+impl QMetaCallArg for Vec<usize> {
+    #[cfg(target_pointer_width = "64")]
+    type WireType = QList_u64;
+    #[cfg(target_pointer_width = "32")]
+    type WireType = QList_u32;
+
+    fn to_wire(&self) -> Self::WireType {
+        let mut result = Self::WireType::default();
+        for elm in self {
+            result.append(*elm as _);
+        }
+        result
+    }
+
+    fn from_wire(wire: &Self::WireType) -> Self {
+        let mut result = Vec::default();
+        for i in 0..wire.len() {
+            result.push(wire[i] as _);
+        }
+        result
+    }
+
+    fn wire_metatype() -> QMetaType {
+        <Self::WireType as QMetaTypeGet>::get_qmetatype()
+    }
+}
+
+impl QMetaCallArg for Vec<isize> {
+    #[cfg(target_pointer_width = "64")]
+    type WireType = QList_i64;
+    #[cfg(target_pointer_width = "32")]
+    type WireType = QList_i32;
+
+    fn to_wire(&self) -> Self::WireType {
+        let mut result = Self::WireType::default();
+        for elm in self {
+            result.append(*elm as _);
+        }
+        result
+    }
+
+    fn from_wire(wire: &Self::WireType) -> Self {
+        let mut result = Vec::default();
+        for i in 0..wire.len() {
+            result.push(wire[i] as _);
+        }
+        result
+    }
+
+    fn wire_metatype() -> QMetaType {
+        <Self::WireType as QMetaTypeGet>::get_qmetatype()
+    }
 }
 
 impl<T: QObjectHolder> QMetaCallArg for Rc<RefCell<T>> {

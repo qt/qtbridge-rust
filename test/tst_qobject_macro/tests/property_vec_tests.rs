@@ -4,6 +4,7 @@
 mod common;
 
 use std::cell::RefCell;
+use std::fmt::Debug;
 use std::rc::Rc;
 
 use qtbridge::{QObjectHolder, qobject};
@@ -505,12 +506,13 @@ impl TestObjHelper for TestObjectImpl {
     }
 }
 
-fn test_property_can_be_read<TestObj, T>(values: TestValues, expected: &[T])
+fn test_property_can_be_read<TestObj, T, VarT>(values: TestValues, expected: &[T])
 where
     TestObj: TestObjHelper,
-    T: std::fmt::Debug + PartialEq,
-    Vec<T>: TryFrom<QVariant>,
-    <Vec<T> as TryFrom<QVariant>>::Error: std::fmt::Debug,
+    T: Debug + PartialEq + TryFrom<VarT>,
+    <T as TryFrom<VarT>>::Error: Debug,
+    Vec<VarT>: TryFrom<QVariant>,
+    <Vec<VarT> as TryFrom<QVariant>>::Error: Debug,
 {
     let obj = TestObj::create_with_values(values);
 
@@ -518,17 +520,21 @@ where
     let type_name = get_type_name::<Vec<T>>();
     let property_name = format!("property{}", capitalize_first_char(&type_name));
     let var = unsafe { &*obj.borrow().get_qobject_ptr() }.property(&property_name);
-    let actual: Vec<T> = var.try_into().unwrap();
+    let actual_var_t: Vec<VarT> = var.try_into().unwrap();
+    let actual: Vec<T> = actual_var_t.into_iter()
+        .map(|arg| arg.try_into().unwrap())
+        .collect();
     let property_type = TestObj::property_type();
     assert_eq!(actual, expected, "check failed for type {type_name} of {property_type}");
 }
 
-fn test_property_can_be_written<TestObj, T, GetValueFieldFn>(test_value: &[T], get_value: GetValueFieldFn)
+fn test_property_can_be_written<TestObj, T, VarT, GetValueFieldFn>(test_value: &[T], get_value: GetValueFieldFn)
 where
     TestObj: TestObjHelper,
     TestValues: for<'a> From<&'a TestObj>,
-    T: Clone + std::fmt::Debug + PartialEq,
-    QVariant: From<Vec<T>>,
+    T: Clone + Debug + PartialEq + TryInto<VarT>,
+    <T as TryInto<VarT>>::Error: Debug,
+    Vec<VarT>: Into<QVariant>,
     GetValueFieldFn: FnOnce(&TestValues) -> &[T],
 {
     let obj = TestObj::create_default();
@@ -538,7 +544,10 @@ where
     let property_name = format!("property{}", capitalize_first_char(&type_name));
     let qobj_ptr = obj.borrow().get_qobject_ptr();
     let qobj = unsafe { qobj_ptr.as_mut() }.unwrap();
-    qobj.set_property(&property_name, Vec::from(test_value).into());
+    let test_values_vec: Vec<VarT> = test_value.iter()
+        .map(|a| a.clone().try_into().unwrap())
+        .collect();
+    qobj.set_property(&property_name, test_values_vec.into());
     let values = TestValues::from(&obj.borrow());
     let property_type = TestObj::property_type();
     assert_eq!(test_value, get_value(&values), "check failed for type {type_name} of {property_type}");
@@ -549,46 +558,46 @@ where
     TestObj: TestObjHelper,
 {
     vec![
-        || test_property_can_be_read::<TestObj, bool>(
+        || test_property_can_be_read::<TestObj, bool, bool>(
                 TestValues { bool: vec![true, false, true], ..<_>::default() },
                 &[true, false, true]),
-        || test_property_can_be_read::<TestObj, i8>(
+        || test_property_can_be_read::<TestObj, i8, i8>(
                 TestValues { i8: vec![101, 102, 103], ..<_>::default() },
                 &[101, 102, 103]),
-        || test_property_can_be_read::<TestObj, u8>(
+        || test_property_can_be_read::<TestObj, u8, u8>(
                 TestValues { u8: vec![104, 105, 106], ..<_>::default() },
                 &[104, 105, 106]),
-        || test_property_can_be_read::<TestObj, i16>(
+        || test_property_can_be_read::<TestObj, i16, i16>(
                 TestValues { i16: vec![-107, 108, -109], ..<_>::default() },
                 &[-107, 108, -109]),
-        || test_property_can_be_read::<TestObj, u16>(
+        || test_property_can_be_read::<TestObj, u16, u16>(
                 TestValues { u16: vec![110, 111, 112], ..<_>::default() },
                 &[110, 111, 112]),
-        || test_property_can_be_read::<TestObj, i32>(
+        || test_property_can_be_read::<TestObj, i32, i32>(
                 TestValues { i32: vec![113, 114, -115], ..<_>::default() },
                 &[113, 114, -115]),
-        || test_property_can_be_read::<TestObj, u32>(
+        || test_property_can_be_read::<TestObj, u32, u32>(
                 TestValues { u32: vec![116, 117, 118], ..<_>::default() },
                 &[116, 117, 118]),
-        || test_property_can_be_read::<TestObj, i64>(
+        || test_property_can_be_read::<TestObj, i64, i64>(
                 TestValues { i64: vec![-119, 120, 121], ..<_>::default() },
                 &[-119, 120, 121]),
-        || test_property_can_be_read::<TestObj, u64>(
+        || test_property_can_be_read::<TestObj, u64, u64>(
                 TestValues { u64: vec![122, 123, 124], ..<_>::default() },
                 &[122, 123, 124]),
-        || test_property_can_be_read::<TestObj, isize>(
+        || test_property_can_be_read::<TestObj, isize, i64>(
                 TestValues { isize: vec![-125, 126, 127], ..<_>::default() },
                 &[-125, 126, 127]),
-        || test_property_can_be_read::<TestObj, usize>(
+        || test_property_can_be_read::<TestObj, usize, u64>(
                 TestValues { usize: vec![128, 129, 130], ..<_>::default() },
                 &[128, 129, 130]),
-        || test_property_can_be_read::<TestObj, f32>(
+        || test_property_can_be_read::<TestObj, f32, f32>(
                 TestValues { f32: vec![0.5, -0.125, 0.25], ..<_>::default() },
                 &[0.5, -0.125, 0.25]),
-        || test_property_can_be_read::<TestObj, f64>(
+        || test_property_can_be_read::<TestObj, f64, f64>(
                 TestValues { f64: vec![0.125, 0.0625, 0.03125], ..<_>::default() },
                 &[0.125, 0.0625, 0.03125]),
-        || test_property_can_be_read::<TestObj, String>(
+        || test_property_can_be_read::<TestObj, String, String>(
                 TestValues { string: vec!["Crème".into(), "brûlée".into()], ..<_>::default() },
                 &["Crème".into(), "brûlée".into()]),
     ]
@@ -600,20 +609,20 @@ where
     TestValues: for<'a> From<&'a TestObj>
 {
     vec![
-        || test_property_can_be_written::<TestObj, _, _>(&[false, false, true], |values| &values.bool),
-        || test_property_can_be_written::<TestObj, _, _>(&[i8::MIN, 0, i8::MAX], |values| &values.i8),
-        || test_property_can_be_written::<TestObj, _, _>(&[u8::MIN, 128, u8::MAX], |values| &values.u8),
-        || test_property_can_be_written::<TestObj, _, _>(&[i16::MIN, 1000, i16::MAX], |values| &values.i16),
-        || test_property_can_be_written::<TestObj, _, _>(&[u16::MAX, u16::MIN], |values| &values.u16),
-        || test_property_can_be_written::<TestObj, _, _>(&[i32::MIN, 0, 100, 240, i32::MAX], |values| &values.i32),
-        || test_property_can_be_written::<TestObj, _, _>(&[u32::MIN, 42, u32::MAX], |values| &values.u32),
-        || test_property_can_be_written::<TestObj, _, _>(&[i64::MIN, i64::MAX], |values| &values.i64),
-        || test_property_can_be_written::<TestObj, _, _>(&[u64::MIN, u64::MAX], |values| &values.u64),
-        || test_property_can_be_written::<TestObj, _, _>(&[isize::MIN, isize::MAX], |values| &values.isize),
-        || test_property_can_be_written::<TestObj, _, _>(&[usize::MIN, usize::MAX], |values| &values.usize),
-        || test_property_can_be_written::<TestObj, _, _>(&[0.25, 0.0, 0.5], |values| &values.f32),
-        || test_property_can_be_written::<TestObj, _, _>(&[0.125, -0.25, 0.0625], |values| &values.f64),
-        || test_property_can_be_written::<TestObj, _, _>(&["Xin".into(), "chào".into(), "thế giới".into()], |values| &values.string),
+        || test_property_can_be_written::<TestObj, _, bool, _>(&[false, false, true], |values| &values.bool),
+        || test_property_can_be_written::<TestObj, _, i8,  _>(&[i8::MIN, 0, i8::MAX], |values| &values.i8),
+        || test_property_can_be_written::<TestObj, _, u8,  _>(&[u8::MIN, 128, u8::MAX], |values| &values.u8),
+        || test_property_can_be_written::<TestObj, _, i16, _>(&[i16::MIN, 1000, i16::MAX], |values| &values.i16),
+        || test_property_can_be_written::<TestObj, _, u16, _>(&[u16::MAX, u16::MIN], |values| &values.u16),
+        || test_property_can_be_written::<TestObj, _, i32, _>(&[i32::MIN, 0, 100, 240, i32::MAX], |values| &values.i32),
+        || test_property_can_be_written::<TestObj, _, u32, _>(&[u32::MIN, 42, u32::MAX], |values| &values.u32),
+        || test_property_can_be_written::<TestObj, _, i64, _>(&[i64::MIN, i64::MAX], |values| &values.i64),
+        || test_property_can_be_written::<TestObj, _, u64, _>(&[u64::MIN, u64::MAX], |values| &values.u64),
+        || test_property_can_be_written::<TestObj, _, i64, _>(&[isize::MIN, isize::MAX], |values| &values.isize),
+        || test_property_can_be_written::<TestObj, _, u64, _>(&[usize::MIN, usize::MAX], |values| &values.usize),
+        || test_property_can_be_written::<TestObj, _, f32, _>(&[0.25, 0.0, 0.5], |values| &values.f32),
+        || test_property_can_be_written::<TestObj, _, f64, _>(&[0.125, -0.25, 0.0625], |values| &values.f64),
+        || test_property_can_be_written::<TestObj, _, String, _>(&["Xin".into(), "chào".into(), "thế giới".into()], |values| &values.string),
     ]
 }
 

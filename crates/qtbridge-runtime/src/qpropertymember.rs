@@ -7,7 +7,7 @@ use std::rc::Rc;
 use qtbridge_type_lib::{
     QMetaType, QObject, QString, QVariant,
     QList_bool, QList_i8, QList_u8, QList_i16, QList_u16,
-    QList_i32, QList_u32, QList_i64, QList_u64, QList_isize, QList_usize,
+    QList_i32, QList_u32, QList_i64, QList_u64,
     QList_f32, QList_f64, QList_QString,
 };
 
@@ -71,7 +71,29 @@ macro_rules! impl_primitive {
     }
 }
 
-impl_primitive!(bool, i8, u8, i16, u16, i32, u32, i64, u64, isize, usize, f32, f64);
+impl_primitive!(bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64);
+
+macro_rules! impl_primitive_as {
+    ($($t:ty as $underlying:ty),*) => {
+        $(impl QPropertyMember for $t {
+            fn qmetatype() -> QMetaType { <$underlying>::qmetatype() }
+            fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant { <$underlying>::to_qvariant(&(*self as $underlying), _owner) }
+            fn from_qvariant(value: &QVariant) -> Result<Self, ()> { <$underlying>::from_qvariant(value).map(|v| v as $t) }
+            fn property_eq(&self, other: &Self) -> bool { self == other }
+        })*
+    }
+}
+
+#[cfg(target_pointer_width = "64")]
+impl_primitive_as!(
+    usize as u64,
+    isize as i64
+);
+#[cfg(target_pointer_width = "32")]
+impl_primitive_as!(
+    usize as u32,
+    isize as i32
+);
 
 macro_rules! impl_vec {
     ($($t:ty => $qlist:ty),*) => {
@@ -94,11 +116,42 @@ impl_vec!(
     u32    => QList_u32,
     i64    => QList_i64,
     u64    => QList_u64,
-    isize  => QList_isize,
-    usize  => QList_usize,
     f32    => QList_f32,
     f64    => QList_f64,
     String => QList_QString
+);
+
+macro_rules! impl_vec_as {
+    ($($t:ty as $underlying:ty),*) => {
+        $(impl QPropertyMember for Vec<$t> {
+            fn qmetatype() -> QMetaType { <Vec<$underlying> as QPropertyMember>::qmetatype() }
+            fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
+                let vec: Vec<$underlying> = self.iter()
+                    .map(|a| *a as $underlying)
+                    .collect();
+                QVariant::from(vec)
+            }
+            fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
+                let vec = <Vec<$underlying>>::try_from(value)?;
+                Ok(vec.into_iter()
+                    .map(|a| a as $t)
+                    .collect())
+            }
+            fn property_eq(&self, other: &Self) -> bool { self == other }
+        })*
+    }
+}
+
+#[cfg(target_pointer_width = "64")]
+impl_vec_as! (
+    usize as u64,
+    isize as i64
+);
+
+#[cfg(target_pointer_width = "32")]
+impl_vec_as! (
+    usize as u32,
+    isize as i32
 );
 
 impl QPropertyMember for String {
