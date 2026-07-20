@@ -33,8 +33,6 @@ mod ffi {
         type QList_i64 = crate::QList_i64;
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_i8.h");
         type QList_i8 = crate::QList_i8;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_isize.h");
-        type QList_isize = crate::QList_isize;
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_ptr_mut_qobject.h");
         type QList_ptr_mut_QObject = crate::QList_ptr_mut_QObject;
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u16.h");
@@ -45,8 +43,6 @@ mod ffi {
         type QList_u64 = crate::QList_u64;
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_u8.h");
         type QList_u8 = crate::QList_u8;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_usize.h");
-        type QList_usize = crate::QList_usize;
         include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = crate::QMetaType;
         include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
@@ -122,10 +118,6 @@ mod ffi {
         fn inlineCppFn_TraitImpl_From_ref_Vec_i64_for_QVariant_from(value: &Vec<i64>) -> QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_from_ref_vec_u64_for_qvariant_from]
         fn inlineCppFn_TraitImpl_From_ref_Vec_u64_for_QVariant_from(value: &Vec<u64>) -> QVariant;
-        # [rust_name = inline_cpp_fn_trait_impl_from_ref_vec_isize_for_qvariant_from]
-        fn inlineCppFn_TraitImpl_From_ref_Vec_isize_for_QVariant_from(value: &Vec<isize>) -> QVariant;
-        # [rust_name = inline_cpp_fn_trait_impl_from_ref_vec_usize_for_qvariant_from]
-        fn inlineCppFn_TraitImpl_From_ref_Vec_usize_for_QVariant_from(value: &Vec<usize>) -> QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_from_ref_vec_f32_for_qvariant_from]
         fn inlineCppFn_TraitImpl_From_ref_Vec_f32_for_QVariant_from(value: &Vec<f32>) -> QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_from_ref_vec_f64_for_qvariant_from]
@@ -182,10 +174,6 @@ mod ffi {
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_Vec_i64_try_from(from: &QVariant, result: &mut QList_i64) -> bool;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_u64_try_from]
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_Vec_u64_try_from(from: &QVariant, result: &mut QList_u64) -> bool;
-        # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_isize_try_from]
-        fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_Vec_isize_try_from(from: &QVariant, result: &mut QList_isize) -> bool;
-        # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_usize_try_from]
-        fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_Vec_usize_try_from(from: &QVariant, result: &mut QList_usize) -> bool;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_f32_try_from]
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_Vec_f32_try_from(from: &QVariant, result: &mut QList_f32) -> bool;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_f64_try_from]
@@ -514,16 +502,6 @@ impl From<&Vec<u64>> for QVariant {
         ffi::inline_cpp_fn_trait_impl_from_ref_vec_u64_for_qvariant_from(value)
     }
 }
-impl From<&Vec<isize>> for QVariant {
-    fn from(value: &Vec<isize>) -> Self {
-        ffi::inline_cpp_fn_trait_impl_from_ref_vec_isize_for_qvariant_from(value)
-    }
-}
-impl From<&Vec<usize>> for QVariant {
-    fn from(value: &Vec<usize>) -> Self {
-        ffi::inline_cpp_fn_trait_impl_from_ref_vec_usize_for_qvariant_from(value)
-    }
-}
 impl From<&Vec<f32>> for QVariant {
     fn from(value: &Vec<f32>) -> Self {
         ffi::inline_cpp_fn_trait_impl_from_ref_vec_f32_for_qvariant_from(value)
@@ -598,16 +576,6 @@ impl From<Vec<f32>> for QVariant {
 }
 impl From<Vec<f64>> for QVariant {
     fn from(value: Vec<f64>) -> Self {
-        QVariant::from(&value)
-    }
-}
-impl From<Vec<isize>> for QVariant {
-    fn from(value: Vec<isize>) -> Self {
-        QVariant::from(&value)
-    }
-}
-impl From<Vec<usize>> for QVariant {
-    fn from(value: Vec<usize>) -> Self {
         QVariant::from(&value)
     }
 }
@@ -885,28 +853,6 @@ impl TryFrom<&QVariant> for Vec<u64> {
         }
     }
 }
-impl TryFrom<&QVariant> for Vec<isize> {
-    type Error = ();
-    fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_isize_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
-    }
-}
-impl TryFrom<&QVariant> for Vec<usize> {
-    type Error = ();
-    fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let convert_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_usize_try_from;
-        let mut x = QList::default();
-        match convert_fn(value, &mut x) {
-            true => Ok(x.into()),
-            false => Err(()),
-        }
-    }
-}
 impl TryFrom<&QVariant> for Vec<f32> {
     type Error = ();
     fn try_from(value: &QVariant) -> Result<Self, ()> {
@@ -1086,18 +1032,6 @@ impl TryFrom<QVariant> for Vec<f32> {
     }
 }
 impl TryFrom<QVariant> for Vec<f64> {
-    type Error = ();
-    fn try_from(value: QVariant) -> Result<Self, ()> {
-        Self::try_from(&value)
-    }
-}
-impl TryFrom<QVariant> for Vec<isize> {
-    type Error = ();
-    fn try_from(value: QVariant) -> Result<Self, ()> {
-        Self::try_from(&value)
-    }
-}
-impl TryFrom<QVariant> for Vec<usize> {
     type Error = ();
     fn try_from(value: QVariant) -> Result<Self, ()> {
         Self::try_from(&value)
