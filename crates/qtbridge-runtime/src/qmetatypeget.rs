@@ -197,8 +197,7 @@ impl_qmetatype_get_qlist! (
     u64          => get_qmeta_type_qlist_u64,
     f32          => get_qmeta_type_qlist_f32,
     f64          => get_qmeta_type_qlist_f64,
-    QString      => get_qmeta_type_qlist_qstring,
-    *mut QObject => get_qmeta_type_qlist_qobject
+    QString      => get_qmeta_type_qlist_qstring
 );
 
 impl QMetaTypeGet for usize {
@@ -222,5 +221,11 @@ impl QMetaTypeGet for isize {
     #[cfg(target_pointer_width = "32")]
     fn get_qmetatype() -> QMetaType {
         <i32 as QMetaTypeGet>::get_qmetatype()
+    }
+}
+
+ impl QMetaTypeGet for QList_ptr_mut_QObject {
+    fn get_qmetatype() -> QMetaType {
+        unsafe { ffi::get_qmeta_type_qlist_qobject(std::ptr::null()) }
     }
 }

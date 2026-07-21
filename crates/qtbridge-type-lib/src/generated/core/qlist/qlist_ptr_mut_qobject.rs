@@ -1,12 +1,16 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::{QList, QListImpl, QObject};
+use crate::{QListImpl, QObject};
 #[allow(non_camel_case_types)]
 /// This is a monomorphized form of type [QList] for type [*mut QObject].
-pub type QList_ptr_mut_QObject = QList<*mut QObject>;
+pub struct QList_ptr_mut_QObject {
+    _d: std::mem::MaybeUninit<usize>,
+    _ptr: std::mem::MaybeUninit<usize>,
+    _size: std::mem::MaybeUninit<usize>,
+}
 /// This is an alias for type [QList] for type [*mut QObject].
-pub type QObjectList = QList<*mut QObject>;
+pub type QObjectList = QList_ptr_mut_QObject;
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
@@ -68,12 +72,17 @@ impl Clone for QList_ptr_mut_QObject {
         ffi::qlist_clone(self)
     }
 }
+impl Drop for QList_ptr_mut_QObject {
+    fn drop(&mut self) {
+        ffi::qlist_drop(self)
+    }
+}
 impl PartialEq for QList_ptr_mut_QObject {
     fn eq(&self, other: &Self) -> bool {
         ffi::qlist_eq(self, other)
     }
 }
-impl From<&[*mut QObject]> for QList<*mut QObject> {
+impl From<&[*mut QObject]> for QList_ptr_mut_QObject {
     fn from(value: &[*mut QObject]) -> Self {
         let mut result = Self::default();
         result.reserve(value.len());
@@ -83,7 +92,7 @@ impl From<&[*mut QObject]> for QList<*mut QObject> {
         result
     }
 }
-impl<const N: usize> From<[*mut QObject; N]> for QList<*mut QObject> {
+impl<const N: usize> From<[*mut QObject; N]> for QList_ptr_mut_QObject {
     fn from(value: [*mut QObject; N]) -> Self {
         let mut result = Self::default();
         result.reserve(N);
@@ -93,12 +102,12 @@ impl<const N: usize> From<[*mut QObject; N]> for QList<*mut QObject> {
         result
     }
 }
-impl From<&Vec<*mut QObject>> for QList<*mut QObject> {
+impl From<&Vec<*mut QObject>> for QList_ptr_mut_QObject {
     fn from(value: &Vec<*mut QObject>) -> Self {
         Self::from(value.as_slice())
     }
 }
-impl From<Vec<*mut QObject>> for QList<*mut QObject> {
+impl From<Vec<*mut QObject>> for QList_ptr_mut_QObject {
     fn from(value: Vec<*mut QObject>) -> Self {
         let mut result = Self::default();
         result.reserve(value.len());
@@ -108,8 +117,8 @@ impl From<Vec<*mut QObject>> for QList<*mut QObject> {
         result
     }
 }
-impl From<&QList<*mut QObject>> for Vec<*mut QObject> {
-    fn from(value: &QList<*mut QObject>) -> Self {
+impl From<&QList_ptr_mut_QObject> for Vec<*mut QObject> {
+    fn from(value: &QList_ptr_mut_QObject) -> Self {
         let mut v = Vec::with_capacity(value.len());
         for i in 0..value.len() {
             v.push(value[i]);
@@ -117,25 +126,36 @@ impl From<&QList<*mut QObject>> for Vec<*mut QObject> {
         v
     }
 }
-impl From<QList<*mut QObject>> for Vec<*mut QObject> {
-    fn from(value: QList<*mut QObject>) -> Self {
+impl From<QList_ptr_mut_QObject> for Vec<*mut QObject> {
+    fn from(value: QList_ptr_mut_QObject) -> Self {
         Self::from(&value)
     }
 }
-impl std::ops::Index<usize> for QList<*mut QObject> {
+impl std::ops::Index<usize> for QList_ptr_mut_QObject {
     type Output = *mut QObject;
     fn index(&self, index: usize) -> &Self::Output {
         let cpp = ffi::inline_cpp_fn_trait_impl_std_ops_index_usize_for_qlist_ptr_mut_qobject_index;
         unsafe { cpp(self, index).as_ref() }.expect("Out of bounds access to QList")
     }
 }
-impl<const N: usize> PartialEq<[*mut QObject; N]> for QList<*mut QObject> {
+impl<const N: usize> PartialEq<[*mut QObject; N]> for QList_ptr_mut_QObject {
     fn eq(&self, other: &[*mut QObject; N]) -> bool {
         if self.len() != N {
             return false;
         }
         let cpp = ffi::inline_cpp_fn_trait_impl_partial_eq_array_of_ptr_mut_qobject_n_for_qlist_ptr_mut_qobject_eq;
         cpp(self, other)
+    }
+}
+
+impl QList_ptr_mut_QObject {
+    pub fn append(&mut self, value: *mut QObject) {
+        let cpp = ffi::inline_cpp_fn_append;
+        unsafe { cpp(self, value) };
+    }
+    pub fn len(&self) -> usize {
+        let cpp = ffi::inline_cpp_fn_size;
+        cpp(self) as usize
     }
 }
 impl QListImpl<*mut QObject> for QList_ptr_mut_QObject {
