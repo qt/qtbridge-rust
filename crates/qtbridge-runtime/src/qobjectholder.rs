@@ -16,7 +16,7 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
     /// Alias for the Rust proxy type corresponding to the user-defined type.
     /// The Rust proxy is an intermediate layer between the Rust object and the C++ proxy,
     /// forwarding calls in both directions and managing borrowing of the Rust object
-    /// during QAIM calls (and TBD for meta calls as well).
+    /// during C++ calls.
     #[doc(hidden)]
     type ProxyRust: QRustProxy<ProxyCppType = <Self as QMetaInfo>::CppProxy>;
 
