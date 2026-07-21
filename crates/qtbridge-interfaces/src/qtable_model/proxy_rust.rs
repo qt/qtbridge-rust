@@ -86,7 +86,7 @@ where
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
         unsafe { &mut *proxy }.base_begin_remove_columns(&mut *self, parent, first as i32, (last - 1) as i32);
         for index in (first..last).rev() {
-            self.remove_row_unnotified(index);
+            self.remove_column_unnotified(index);
         }
         unsafe { &mut *proxy }.base_end_remove_columns(&mut *self);
         true
