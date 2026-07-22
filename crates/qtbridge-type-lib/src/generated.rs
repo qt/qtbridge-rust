@@ -13,7 +13,6 @@ pub use core::qjsonarray::QJsonArray;
 pub use core::qjsonobject::QJsonObject;
 pub use core::qjsonvalue::QJsonValue;
 pub use core::qlist::QList;
-pub use core::qlist::QListImpl;
 pub use core::qlist::QList_bool;
 pub use core::qlist::QList_f32;
 pub use core::qlist::QList_f64;

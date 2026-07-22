@@ -20,21 +20,9 @@ bool QList_Eq(const QList_ptr_mut_QObject &lhs, const QList_ptr_mut_QObject &rhs
 
 void inlineCppFn_append(QList_ptr_mut_QObject &self, QObject *value);
 
-void inlineCppFn_clear(QList_ptr_mut_QObject &self);
-
-bool inlineCppFn_contains(QList_ptr_mut_QObject const &self, QObject *const &value);
-
-void inlineCppFn_push_back(QList_ptr_mut_QObject &self, QObject *value);
-
-void inlineCppFn_remove(QList_ptr_mut_QObject &self, ptrdiff_t i, ptrdiff_t n);
-
 void inlineCppFn_reserve(QList_ptr_mut_QObject &self, size_t size);
 
 ptrdiff_t inlineCppFn_size(QList_ptr_mut_QObject const &self);
-
-QObject *const &inlineCppFn_first(QList_ptr_mut_QObject const &self);
-
-QObject *const &inlineCppFn_last(QList_ptr_mut_QObject const &self);
 
 QObject *const *inlineCppFn_TraitImpl_std_ops_Index_usize_for_QList_ptr_mut_QObject_index(
         QList_ptr_mut_QObject const &self, size_t index);

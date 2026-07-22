@@ -22,21 +22,11 @@ bool QList_Eq(const QList_QVariant &lhs, const QList_QVariant &rhs);
 
 void inlineCppFn_append(QList_QVariant &self, QVariant value);
 
-void inlineCppFn_clear(QList_QVariant &self);
-
-bool inlineCppFn_contains(QList_QVariant const &self, QVariant const &value);
-
-void inlineCppFn_push_back(QList_QVariant &self, QVariant value);
-
-void inlineCppFn_remove(QList_QVariant &self, ptrdiff_t i, ptrdiff_t n);
-
 void inlineCppFn_reserve(QList_QVariant &self, size_t size);
 
 ptrdiff_t inlineCppFn_size(QList_QVariant const &self);
 
 QVariant const &inlineCppFn_first(QList_QVariant const &self);
-
-QVariant const &inlineCppFn_last(QList_QVariant const &self);
 
 QVariant
 inlineCppFn_TraitImpl_From_ref_QList_QVariant_for_QVariant_from(QList_QVariant const &value);

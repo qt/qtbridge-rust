@@ -30,26 +30,6 @@ void inlineCppFn_append(QList_ptr_mut_QObject &self, QObject *value)
     self.append(value);
 }
 
-void inlineCppFn_clear(QList_ptr_mut_QObject &self)
-{
-    self.clear();
-}
-
-bool inlineCppFn_contains(QList_ptr_mut_QObject const &self, QObject *const &value)
-{
-    return self.contains(value);
-}
-
-void inlineCppFn_push_back(QList_ptr_mut_QObject &self, QObject *value)
-{
-    self.push_back(value);
-}
-
-void inlineCppFn_remove(QList_ptr_mut_QObject &self, ptrdiff_t i, ptrdiff_t n)
-{
-    self.remove(i, n);
-}
-
 void inlineCppFn_reserve(QList_ptr_mut_QObject &self, size_t size)
 {
     self.reserve(static_cast<qsizetype>(size));
@@ -58,16 +38,6 @@ void inlineCppFn_reserve(QList_ptr_mut_QObject &self, size_t size)
 ptrdiff_t inlineCppFn_size(QList_ptr_mut_QObject const &self)
 {
     return self.size();
-}
-
-QObject *const &inlineCppFn_first(QList_ptr_mut_QObject const &self)
-{
-    return self.constFirst();
-}
-
-QObject *const &inlineCppFn_last(QList_ptr_mut_QObject const &self)
-{
-    return self.constLast();
 }
 
 QObject *const *inlineCppFn_TraitImpl_std_ops_Index_usize_for_QList_ptr_mut_QObject_index(

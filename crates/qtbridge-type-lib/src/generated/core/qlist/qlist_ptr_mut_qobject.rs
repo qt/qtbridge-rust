@@ -1,7 +1,7 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::{QListImpl, QObject};
+use crate::QObject;
 #[allow(non_camel_case_types)]
 /// This is a monomorphized form of type [QList] for type [*mut QObject].
 pub struct QList_ptr_mut_QObject {
@@ -34,22 +34,10 @@ mod ffi {
         fn QList_Eq(lhs: &QList_ptr_mut_QObject, rhs: &QList_ptr_mut_QObject) -> bool;
         # [rust_name = inline_cpp_fn_append]
         unsafe fn inlineCppFn_append(_obj: &mut QList_ptr_mut_QObject, value: *mut QObject);
-        # [rust_name = inline_cpp_fn_clear]
-        fn inlineCppFn_clear(_obj: &mut QList_ptr_mut_QObject);
-        # [rust_name = inline_cpp_fn_contains]
-        fn inlineCppFn_contains(_obj: &QList_ptr_mut_QObject, value: &*mut QObject) -> bool;
-        # [rust_name = inline_cpp_fn_push_back]
-        unsafe fn inlineCppFn_push_back(_obj: &mut QList_ptr_mut_QObject, value: *mut QObject);
-        # [rust_name = inline_cpp_fn_remove]
-        fn inlineCppFn_remove(_obj: &mut QList_ptr_mut_QObject, i: isize, n: isize);
         # [rust_name = inline_cpp_fn_reserve]
         fn inlineCppFn_reserve(_obj: &mut QList_ptr_mut_QObject, size: usize);
         # [rust_name = inline_cpp_fn_size]
         fn inlineCppFn_size(_obj: &QList_ptr_mut_QObject) -> isize;
-        # [rust_name = inline_cpp_fn_first]
-        fn inlineCppFn_first(_obj: &QList_ptr_mut_QObject) -> &*mut QObject;
-        # [rust_name = inline_cpp_fn_last]
-        fn inlineCppFn_last(_obj: &QList_ptr_mut_QObject) -> &*mut QObject;
         # [rust_name = inline_cpp_fn_trait_impl_std_ops_index_usize_for_qlist_ptr_mut_qobject_index]
         unsafe fn inlineCppFn_TraitImpl_std_ops_Index_usize_for_QList_ptr_mut_QObject_index(_obj: &QList_ptr_mut_QObject, index: usize) -> *const *mut QObject;
         # [rust_name = inline_cpp_fn_trait_impl_partial_eq_array_of_ptr_mut_qobject_n_for_qlist_ptr_mut_qobject_eq]
@@ -155,44 +143,8 @@ impl QList_ptr_mut_QObject {
         let cpp = ffi::inline_cpp_fn_size;
         cpp(self) as usize
     }
-}
-impl QListImpl<*mut QObject> for QList_ptr_mut_QObject {
-    fn append(&mut self, value: *mut QObject) {
-        let cpp = ffi::inline_cpp_fn_append;
-        unsafe { cpp(self, value) };
-    }
-    fn clear(&mut self) {
-        let cpp = ffi::inline_cpp_fn_clear;
-        cpp(self);
-    }
-    fn contains(&self, value: &*mut QObject) -> bool {
-        ffi::inline_cpp_fn_contains(self, value)
-    }
-    fn push_back(&mut self, value: *mut QObject) {
-        let cpp = ffi::inline_cpp_fn_push_back;
-        unsafe { cpp(self, value) };
-    }
-    fn remove(&mut self, i: isize) {
-        let cpp = ffi::inline_cpp_fn_remove;
-        cpp(self, i, 1);
-    }
     fn reserve(&mut self, size: usize) {
         let cpp = ffi::inline_cpp_fn_reserve;
         cpp(self, size);
-    }
-    fn size(&self) -> isize {
-        let cpp = ffi::inline_cpp_fn_size;
-        cpp(self)
-    }
-    fn first(&self) -> &*mut QObject {
-        let cpp = ffi::inline_cpp_fn_first;
-        cpp(self)
-    }
-    fn last(&self) -> &*mut QObject {
-        let cpp = ffi::inline_cpp_fn_last;
-        cpp(self)
-    }
-    fn do_drop(&mut self) {
-        ffi::qlist_drop(self)
     }
 }

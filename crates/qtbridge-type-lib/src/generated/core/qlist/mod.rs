@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 #![allow(non_camel_case_types)]
 
-pub mod qlist;
 pub mod qlist_ptr_mut_qobject;
 pub mod qlist_qvariant;
-pub use qlist::QListImpl;
 pub use qlist_ptr_mut_qobject::QList_ptr_mut_QObject;
 pub use qlist_ptr_mut_qobject::QObjectList;
 pub use qlist_qvariant::QList_QVariant;

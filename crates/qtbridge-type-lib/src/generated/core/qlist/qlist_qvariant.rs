@@ -1,7 +1,7 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::{QListImpl, QVariant};
+use crate::QVariant;
 #[allow(non_camel_case_types)]
 /// This is a monomorphized form of type [QList] for type [QVariant].
 pub struct QList_QVariant {
@@ -32,22 +32,12 @@ mod ffi {
         fn QList_Eq(lhs: &QList_QVariant, rhs: &QList_QVariant) -> bool;
         # [rust_name = inline_cpp_fn_append]
         fn inlineCppFn_append(_obj: &mut QList_QVariant, value: QVariant);
-        # [rust_name = inline_cpp_fn_clear]
-        fn inlineCppFn_clear(_obj: &mut QList_QVariant);
-        # [rust_name = inline_cpp_fn_contains]
-        fn inlineCppFn_contains(_obj: &QList_QVariant, value: &QVariant) -> bool;
-        # [rust_name = inline_cpp_fn_push_back]
-        fn inlineCppFn_push_back(_obj: &mut QList_QVariant, value: QVariant);
-        # [rust_name = inline_cpp_fn_remove]
-        fn inlineCppFn_remove(_obj: &mut QList_QVariant, i: isize, n: isize);
         # [rust_name = inline_cpp_fn_reserve]
         fn inlineCppFn_reserve(_obj: &mut QList_QVariant, size: usize);
         # [rust_name = inline_cpp_fn_size]
         fn inlineCppFn_size(_obj: &QList_QVariant) -> isize;
         # [rust_name = inline_cpp_fn_first]
         fn inlineCppFn_first(_obj: &QList_QVariant) -> &QVariant;
-        # [rust_name = inline_cpp_fn_last]
-        fn inlineCppFn_last(_obj: &QList_QVariant) -> &QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_from_ref_qlist_qvariant_for_qvariant_from]
         fn inlineCppFn_TraitImpl_From_ref_QList_QVariant_for_QVariant_from(value: &QList_QVariant) -> QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qlist_qvariant_try_from]
@@ -164,52 +154,20 @@ impl<const N: usize> PartialEq<[QVariant; N]> for QList_QVariant {
     }
 }
 impl QList_QVariant {
-    pub fn len(&self) -> usize {
-        let cpp = ffi::inline_cpp_fn_size;
-        cpp(self) as usize
+    fn append(&mut self, value: QVariant) {
+        let cpp = ffi::inline_cpp_fn_append;
+        cpp(self, value);
     }
     pub fn first(&self) -> &QVariant {
         let cpp = ffi::inline_cpp_fn_first;
         cpp(self)
     }
-}
-impl QListImpl<QVariant> for QList_QVariant {
-    fn append(&mut self, value: QVariant) {
-        let cpp = ffi::inline_cpp_fn_append;
-        cpp(self, value);
-    }
-    fn clear(&mut self) {
-        let cpp = ffi::inline_cpp_fn_clear;
-        cpp(self);
-    }
-    fn contains(&self, value: &QVariant) -> bool {
-        ffi::inline_cpp_fn_contains(self, value)
-    }
-    fn push_back(&mut self, value: QVariant) {
-        let cpp = ffi::inline_cpp_fn_push_back;
-        cpp(self, value);
-    }
-    fn remove(&mut self, i: isize) {
-        let cpp = ffi::inline_cpp_fn_remove;
-        cpp(self, i, 1);
+    pub fn len(&self) -> usize {
+        let cpp = ffi::inline_cpp_fn_size;
+        cpp(self) as usize
     }
     fn reserve(&mut self, size: usize) {
         let cpp = ffi::inline_cpp_fn_reserve;
         cpp(self, size);
-    }
-    fn size(&self) -> isize {
-        let cpp = ffi::inline_cpp_fn_size;
-        cpp(self)
-    }
-    fn first(&self) -> &QVariant {
-        let cpp = ffi::inline_cpp_fn_first;
-        cpp(self)
-    }
-    fn last(&self) -> &QVariant {
-        let cpp = ffi::inline_cpp_fn_last;
-        cpp(self)
-    }
-    fn do_drop(&mut self) {
-        ffi::qlist_drop(self)
     }
 }
