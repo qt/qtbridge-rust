@@ -6,7 +6,7 @@ use crate::{call_rust_trait_impl, call_cpp_impl};
 use qtbridge_runtime::{DispatchMetaCall, QObjectHolder};
 use qtbridge_runtime::QModelItem;
 use crate::genericrustproxy::GenericRustProxy;
-use qtbridge_type_lib::{QByteArray, QHash, QModelIndex, QVariant};
+use qtbridge_type_lib::{QByteArray, QHash_i32_QByteArray, QModelIndex, QVariant};
 
 #[doc(hidden)]
 pub trait QTableModelAdapter: DispatchMetaCall + 'static {
@@ -15,7 +15,7 @@ pub trait QTableModelAdapter: DispatchMetaCall + 'static {
     fn row_count(&self, parent: &QModelIndex) -> i32;
     fn column_count(&self, parent: &QModelIndex) -> i32;
     fn data(&self, index: &QModelIndex, role: i32) -> QVariant;
-    fn role_names(&self) -> QHash<i32, QByteArray>;
+    fn role_names(&self) -> QHash_i32_QByteArray;
     fn set_data(&mut self, index: &QModelIndex, value: &QVariant, role: i32) -> bool;
     fn remove_columns(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool;
     fn remove_rows(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool;
@@ -51,11 +51,11 @@ where
         item.get_role(role)
     }
 
-    fn role_names(&self) -> QHash<i32, QByteArray> {
+    fn role_names(&self) -> QHash_i32_QByteArray {
         let names = T::Item::role_names();
-        let mut result = QHash::default();
-        names.iter()
-            .for_each(|(k, v)| result.insert(k, &QByteArray::from(v)));
+        let mut result = QHash_i32_QByteArray::default();
+        names.into_iter()
+            .for_each(|(k, v)| result.insert(k, QByteArray::from(&v)));
         result
     }
 
@@ -525,7 +525,7 @@ impl QTableModelProxyRust {
     pub fn data(&self, index: &QModelIndex, role: i32) -> QVariant {
         call_rust_trait_impl!(self, data(index, role))
     }
-    pub fn role_names(&self) -> QHash<i32, QByteArray> {
+    pub fn role_names(&self) -> QHash_i32_QByteArray {
         call_rust_trait_impl!(self, role_names())
     }
     pub fn set_data(&mut self, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
@@ -541,7 +541,7 @@ impl QTableModelProxyRust {
         call_rust_trait_impl!(self, sibling(row, column, idx))
     }
 
-    pub fn base_role_names(&self, reference: &dyn QTableModelAdapter) -> QHash<i32, QByteArray> {
+    pub fn base_role_names(&self, reference: &dyn QTableModelAdapter) -> QHash_i32_QByteArray {
         call_cpp_impl!(self, reference, base_role_names())
     }
     pub fn base_set_data(&mut self, mut_ref: &mut dyn QTableModelAdapter, index: &QModelIndex, value: &QVariant, role: i32) -> bool {

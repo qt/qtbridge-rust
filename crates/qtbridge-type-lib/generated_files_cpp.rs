@@ -1,5 +1,4 @@
 pub const GENERATED_FILES_CPP: &[&'static str] = &[
-    "src/generated/core/qhash/cpp/qhash_i32_qbytearray.cpp",
     "src/generated/core/qjsonarray/cpp/qjsonarray.cpp",
     "src/generated/core/qjsonobject/cpp/qjsonobject.cpp",
     "src/generated/core/qjsonvalue/cpp/qjsonvalue.cpp",

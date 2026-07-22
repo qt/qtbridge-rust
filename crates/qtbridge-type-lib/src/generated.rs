@@ -6,8 +6,6 @@ pub mod gui;
 pub mod qml;
 pub mod testlib;
 pub use core::qbytearray::QByteArray;
-pub use core::qhash::QHash;
-pub use core::qhash::QHashImpl;
 pub use core::qhash::QHash_i32_QByteArray;
 pub use core::qjsonarray::QJsonArray;
 pub use core::qjsonobject::QJsonObject;
