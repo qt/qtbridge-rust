@@ -4,7 +4,6 @@ pub const GENERATED_FILES_CPP: &[&'static str] = &[
     "src/generated/core/qmetatypeinterface/cpp/qmetatypeinterface.cpp",
     "src/generated/core/qobject/cpp/qobject.cpp",
     "src/generated/core/qqmllistproperty/cpp/qqmllistproperty.cpp",
-    "src/generated/core/qvariant/cpp/qvariant.cpp",
     "src/generated/gui/qguiapplication/cpp/qguiapplication.cpp",
     "src/generated/qml/qqmlapplicationengine/cpp/qqmlapplicationengine.cpp",
     "src/generated/testlib/qsignalspy/cpp/qsignalspy.cpp",

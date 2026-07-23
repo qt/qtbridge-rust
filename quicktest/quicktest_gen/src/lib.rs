@@ -124,7 +124,7 @@ pub fn run_quick_test(attr: TokenStream, item: TokenStream) -> TokenStream {
 
                     let test_object = #class_ident::default_with_attached_qobject();
                     let mut properties = QVariantMap::default();
-                    properties.insert(#name_ident.into(), test_object.borrow().as_qvariant().to_cxx_qt());
+                    properties.insert(#name_ident.into(), test_object.borrow().as_qvariant());
                     let result = quick_test_main_with_properties(&args, &#fn_name.to_string(), &properties);
 
                     assert_eq!(result, 0, "quick_test failed with code {}", result);

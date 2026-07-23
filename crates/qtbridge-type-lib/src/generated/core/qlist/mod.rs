@@ -20,7 +20,7 @@ pub type QList_QString = QList<crate::QString>;
 pub type QList_QByteArray = QList<crate::QByteArray>;
 pub type QList_QObjectMutPtr = QList<cxx_qt_lib::QObjectMutPtr>;
 
-pub type QStringList = QList_QString;
+pub type QStringList = cxx_qt_lib::QStringList;
 pub type QByteArrayList = QList_QByteArray;
 pub type QObjectList = QList_QObjectMutPtr;
 pub type QVariantList = QList_QVariant;

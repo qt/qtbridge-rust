@@ -83,7 +83,7 @@ impl Backend {
             // invoke_method schedule the "update_status" slot to run on the Qt main thread,
             // which will read the latest value from the watch channel and update the properties
             // accordingly.
-            invoke_method!(invoker, "update_status", result, latency);
+            invoke_method!(invoker, "update_status".into(), result, latency);
         });
     }
 

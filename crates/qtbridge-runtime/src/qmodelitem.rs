@@ -3,6 +3,7 @@
 
 use std::collections::HashMap;
 
+use cxx_qt_lib::QString;
 use qtbridge_type_lib::QVariant;
 
 #[doc(hidden)]
@@ -20,7 +21,8 @@ macro_rules! impl_qvariant_convertible {
                     QVariant::from(self)
                 }
                 fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-                    <$t>::try_from(value)
+                    value.value()
+                        .ok_or(())
                 }
             }
         )*
@@ -29,9 +31,30 @@ macro_rules! impl_qvariant_convertible {
 
 impl_qvariant_convertible!(
     bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64,
-    String,
-    (),
 );
+
+impl QVariantConvertible for String {
+    fn to_qvariant(&self) -> QVariant {
+        let qstr: QString = self.into();
+        (&qstr).into()
+    }
+    fn from_qvariant(value: &QVariant) -> Result<Self,()>{
+        value.value::<QString>()
+            .map(String::from)
+            .ok_or(())
+    }
+}
+impl QVariantConvertible for(){
+    fn to_qvariant(&self) -> QVariant {
+        QVariant::default()
+    }
+    fn from_qvariant(value: &QVariant) -> Result<Self,()>{
+        if value.is_valid() {
+            return Err(())
+        }
+        Ok(())
+    }
+}
 
 fn option_to_qvariant<T: QVariantConvertible>(value: Option<&T>) -> QVariant
 {

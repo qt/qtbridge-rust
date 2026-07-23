@@ -74,7 +74,7 @@ impl QApp {
     /// let prop = 42;
     ///
     /// QApp::new()
-    /// .add_initial_property("answer", &prop.into())
+    /// .add_initial_property("answer", &(&prop).into())
     /// .load_qml(br#"
     ///     import QtQuick
     ///     import QtQuick.Controls
@@ -90,7 +90,7 @@ impl QApp {
     /// .run();
     /// ```
     pub fn add_initial_property(&mut self, id: &str, value: &QVariant) -> &mut Self {
-        self.initial_properties.insert(QString::from(id), value.to_cxx_qt());
+        self.initial_properties.insert(QString::from(id), value.clone());
         self
     }
 
@@ -107,7 +107,7 @@ impl QApp {
     ///
     /// QApp::new()
     ///     .with_initial_properties(&[
-    ///         ("answer", prop.into()),
+    ///         ("answer", (&prop).into()),
     ///     ])
     ///     .load_qml(br#"
     ///         import QtQuick
@@ -125,7 +125,7 @@ impl QApp {
     /// ```
     pub fn with_initial_properties(&mut self, properties: &[(&str, QVariant)]) -> &mut Self {
         let map = properties.iter()
-            .map(|(k, v)| (QString::from(*k), v.to_cxx_qt()))
+            .map(|(k, v)| (QString::from(*k), v))
             .collect();
         self.engine.pin_mut().set_initial_properties(&map);
         self

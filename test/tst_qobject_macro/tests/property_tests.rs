@@ -4,10 +4,12 @@
 mod common;
 
 use std::cell::RefCell;
+use std::fmt::Debug;
 use std::rc::Rc;
 
+use cxx_qt_lib::QVariantValue;
 use qtbridge::{QObjectHolder, qobject};
-use qtbridge::qtbridge_type_lib::QVariant;
+use qtbridge_type_lib::{QString, QVariant};
 
 use crate::common::{capitalize_first_char, get_type_name};
 
@@ -443,11 +445,12 @@ mod accessor_reference_properties {
     }
 }
 
-fn test_property_can_be_read<TestObj, T>(values: TestValues, expected: T)
+fn test_property_can_be_read<TestObj, T, VarT>(values: TestValues, expected: T)
 where
     TestObj: TestObjHelper,
-    T: std::fmt::Debug + PartialEq + TryFrom<QVariant>,
-    <T as TryFrom<QVariant>>::Error: std::fmt::Debug,
+    T: Debug + PartialEq + TryFrom<VarT>,
+    <T as TryFrom<VarT>>::Error: Debug,
+    VarT: Debug + QVariantValue,
 {
     let obj = TestObj::create_with_values(values);
 
@@ -455,17 +458,21 @@ where
     let type_name = get_type_name::<T>();
     let property_name = format!("property{}", capitalize_first_char(&type_name));
     let var = unsafe { &*obj.borrow().get_qobject_ptr() }.property(&property_name);
-    let actual: T = var.try_into().unwrap();
+    let actual: T = var.value::<VarT>()
+        .unwrap()
+        .try_into()
+        .unwrap();
     let property_type = TestObj::property_type();
     assert_eq!(actual, expected, "check failed for type {type_name} of {property_type}");
 }
 
-fn test_property_can_be_written<TestObj, T, GetValueFieldFn>(test_value: T, get_value: GetValueFieldFn)
+fn test_property_can_be_written<TestObj, T, VariantT, GetValueFieldFn>(test_value: T, get_value: GetValueFieldFn)
 where
     TestObj: TestObjHelper,
     TestValues: for<'a> From<&'a TestObj>,
-    T: std::fmt::Debug + PartialEq,
-    QVariant: for<'a> From<&'a T>,
+    T: Clone + std::fmt::Debug + PartialEq,
+    VariantT: QVariantValue + TryFrom<T>,
+    <VariantT as TryFrom<T>>::Error: std::fmt::Debug,
     GetValueFieldFn: FnOnce(&TestValues) -> T,
 {
     let obj = TestObj::create_default();
@@ -475,7 +482,10 @@ where
     let property_name = format!("property{}", capitalize_first_char(&type_name));
     let qobj_ptr = obj.borrow().get_qobject_ptr();
     let qobj = unsafe { qobj_ptr.as_mut() }.unwrap();
-    qobj.set_property(&property_name, (&test_value).into());
+    let test_value_var_t: VariantT = test_value.clone().try_into().unwrap();
+    let test_value_var = QVariant::from(&test_value_var_t);
+
+    qobj.set_property(&property_name, test_value_var);
     let values = TestValues::from(&obj.borrow());
     let property_type = TestObj::property_type();
     assert_eq!(test_value, get_value(&values), "check failed for type {type_name} of {property_type}");
@@ -486,46 +496,46 @@ where
     TestObj: TestObjHelper,
 {
     vec![
-        || test_property_can_be_read::<TestObj, bool>(
+        || test_property_can_be_read::<TestObj, bool, bool>(
                 TestValues { bool: true, ..<_>::default() },
                 true),
-        || test_property_can_be_read::<TestObj, i8>(
+        || test_property_can_be_read::<TestObj, i8, i8>(
                 TestValues { i8: 101, ..<_>::default() },
                 101),
-        || test_property_can_be_read::<TestObj, u8>(
+        || test_property_can_be_read::<TestObj, u8, u8>(
                 TestValues { u8: 102, ..<_>::default() },
                 102),
-        || test_property_can_be_read::<TestObj, i16>(
+        || test_property_can_be_read::<TestObj, i16, i16>(
                 TestValues { i16: -103, ..<_>::default() },
                 -103),
-        || test_property_can_be_read::<TestObj, u16>(
+        || test_property_can_be_read::<TestObj, u16, u16>(
                 TestValues { u16: 104, ..<_>::default() },
                 104),
-        || test_property_can_be_read::<TestObj, i32>(
+        || test_property_can_be_read::<TestObj, i32, i32>(
                 TestValues { i32: -105, ..<_>::default() },
                 -105),
-        || test_property_can_be_read::<TestObj, u32>(
+        || test_property_can_be_read::<TestObj, u32, u32>(
                 TestValues { u32: 106, ..<_>::default() },
                 106),
-        || test_property_can_be_read::<TestObj, i64>(
+        || test_property_can_be_read::<TestObj, i64, i64>(
                 TestValues { i64: -107, ..<_>::default() },
                 -107),
-        || test_property_can_be_read::<TestObj, u64>(
+        || test_property_can_be_read::<TestObj, u64, u64>(
                 TestValues { u64: 108, ..<_>::default() },
                 108),
-        || test_property_can_be_read::<TestObj, isize>(
+        || test_property_can_be_read::<TestObj, isize, i64>(
                 TestValues { isize: -109, ..<_>::default() },
-                -109),
-        || test_property_can_be_read::<TestObj, usize>(
+                -109isize),
+        || test_property_can_be_read::<TestObj, usize, u64>(
                 TestValues { usize: 110, ..<_>::default() },
-                110),
-        || test_property_can_be_read::<TestObj, f32>(
+                110usize),
+        || test_property_can_be_read::<TestObj, f32, f32>(
                 TestValues { f32: 0.5, ..<_>::default() },
                 0.5),
-        || test_property_can_be_read::<TestObj, f64>(
+        || test_property_can_be_read::<TestObj, f64, f64>(
                 TestValues { f64: 0.25, ..<_>::default() },
                 0.25),
-        || test_property_can_be_read::<TestObj, String>(
+        || test_property_can_be_read::<TestObj, String, QString>(
                 TestValues { string: "こんにちは".into(), ..<_>::default() },
                 "こんにちは".into()),
     ]
@@ -537,20 +547,20 @@ where
     TestValues: for<'a> From<&'a TestObj>
 {
     vec![
-        || test_property_can_be_written::<TestObj, _, _>(true, |values| values.bool),
-        || test_property_can_be_written::<TestObj, _, _>(i8::MIN, |values| values.i8),
-        || test_property_can_be_written::<TestObj, _, _>(u8::MAX, |values| values.u8),
-        || test_property_can_be_written::<TestObj, _, _>(i16::MIN, |values| values.i16),
-        || test_property_can_be_written::<TestObj, _, _>(u16::MAX, |values| values.u16),
-        || test_property_can_be_written::<TestObj, _, _>(i32::MIN, |values| values.i32),
-        || test_property_can_be_written::<TestObj, _, _>(u32::MAX, |values| values.u32),
-        || test_property_can_be_written::<TestObj, _, _>(i64::MIN, |values| values.i64),
-        || test_property_can_be_written::<TestObj, _, _>(u64::MIN, |values| values.u64),
-        || test_property_can_be_written::<TestObj, _, _>(isize::MIN, |values| values.isize),
-        || test_property_can_be_written::<TestObj, _, _>(usize::MIN, |values| values.usize),
-        || test_property_can_be_written::<TestObj, _, _>(0.25, |values| values.f32),
-        || test_property_can_be_written::<TestObj, _, _>(0.125, |values| values.f64),
-        || test_property_can_be_written::<TestObj, _, _>("Привіт, світе!".to_string(), |values| values.string.clone()),
+        || test_property_can_be_written::<TestObj, bool, bool, _>(true, |values| values.bool),
+        || test_property_can_be_written::<TestObj, i8, i8, _>(i8::MIN, |values| values.i8),
+        || test_property_can_be_written::<TestObj, u8, u8, _>(u8::MAX, |values| values.u8),
+        || test_property_can_be_written::<TestObj, i16, i16, _>(i16::MIN, |values| values.i16),
+        || test_property_can_be_written::<TestObj, u16, u16, _>(u16::MAX, |values| values.u16),
+        || test_property_can_be_written::<TestObj, i32, i32, _>(i32::MIN, |values| values.i32),
+        || test_property_can_be_written::<TestObj, u32, u32, _>(u32::MAX, |values| values.u32),
+        || test_property_can_be_written::<TestObj, i64, i64, _>(i64::MIN, |values| values.i64),
+        || test_property_can_be_written::<TestObj, u64, u64, _>(u64::MIN, |values| values.u64),
+        || test_property_can_be_written::<TestObj, isize, i64, _>(isize::MIN, |values| values.isize),
+        || test_property_can_be_written::<TestObj, usize, u64, _>(usize::MIN, |values| values.usize),
+        || test_property_can_be_written::<TestObj, f32, f32, _>(0.25, |values| values.f32),
+        || test_property_can_be_written::<TestObj, f64, f64, _>(0.125, |values| values.f64),
+        || test_property_can_be_written::<TestObj, String, QString, _>("Привіт, світе!".to_string(), |values| values.string.clone()),
     ]
 }
 

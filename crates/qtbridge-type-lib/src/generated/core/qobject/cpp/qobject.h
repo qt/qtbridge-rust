@@ -7,9 +7,9 @@
 #define _QOBJECT_RUST_BRIDGE_H_
 
 #include <QObject>
+#include <QVariant>
 #include <cstdint>
 #include "qtbridge-type-lib/src/generated/core/qmetaobject/cpp/qmetaobject.h"
-#include "qtbridge-type-lib/src/generated/core/qvariant/cpp/qvariant.h"
 #include "rust/cxx.h"
 
 namespace rust::bridge::qobject {

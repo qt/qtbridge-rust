@@ -7,8 +7,9 @@ use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
 
+use cxx_qt_lib::{QListElement, QVariantValue};
 use qtbridge::{QObjectHolder, qobject};
-use qtbridge::qtbridge_type_lib::QVariant;
+use qtbridge_type_lib::{QList, QString, QVariant};
 
 use crate::common::{capitalize_first_char, get_type_name};
 
@@ -510,9 +511,9 @@ fn test_property_can_be_read<TestObj, T, VarT>(values: TestValues, expected: &[T
 where
     TestObj: TestObjHelper,
     T: Debug + PartialEq + TryFrom<VarT>,
+    VarT: Clone + QListElement,
+    QList<VarT>: QVariantValue,
     <T as TryFrom<VarT>>::Error: Debug,
-    Vec<VarT>: TryFrom<QVariant>,
-    <Vec<VarT> as TryFrom<QVariant>>::Error: Debug,
 {
     let obj = TestObj::create_with_values(values);
 
@@ -520,9 +521,9 @@ where
     let type_name = get_type_name::<Vec<T>>();
     let property_name = format!("property{}", capitalize_first_char(&type_name));
     let var = unsafe { &*obj.borrow().get_qobject_ptr() }.property(&property_name);
-    let actual_var_t: Vec<VarT> = var.try_into().unwrap();
+    let actual_var_t: QList<VarT> = var.value().unwrap();
     let actual: Vec<T> = actual_var_t.into_iter()
-        .map(|arg| arg.try_into().unwrap())
+        .map(|arg| T::try_from(arg.clone()).unwrap())
         .collect();
     let property_type = TestObj::property_type();
     assert_eq!(actual, expected, "check failed for type {type_name} of {property_type}");
@@ -534,7 +535,8 @@ where
     TestValues: for<'a> From<&'a TestObj>,
     T: Clone + Debug + PartialEq + TryInto<VarT>,
     <T as TryInto<VarT>>::Error: Debug,
-    Vec<VarT>: Into<QVariant>,
+    VarT: QListElement,
+    QList<VarT>: FromIterator<VarT> + QVariantValue,
     GetValueFieldFn: FnOnce(&TestValues) -> &[T],
 {
     let obj = TestObj::create_default();
@@ -544,10 +546,11 @@ where
     let property_name = format!("property{}", capitalize_first_char(&type_name));
     let qobj_ptr = obj.borrow().get_qobject_ptr();
     let qobj = unsafe { qobj_ptr.as_mut() }.unwrap();
-    let test_values_vec: Vec<VarT> = test_value.iter()
+    let test_values_qlist: QList<VarT> = test_value.iter()
         .map(|a| a.clone().try_into().unwrap())
         .collect();
-    qobj.set_property(&property_name, test_values_vec.into());
+    let test_values_var = QVariant::from(&test_values_qlist);
+    qobj.set_property(&property_name, test_values_var);
     let values = TestValues::from(&obj.borrow());
     let property_type = TestObj::property_type();
     assert_eq!(test_value, get_value(&values), "check failed for type {type_name} of {property_type}");
@@ -559,46 +562,46 @@ where
 {
     vec![
         || test_property_can_be_read::<TestObj, bool, bool>(
-                TestValues { bool: vec![true, false, true], ..<_>::default() },
+                TestValues { bool: vec![true, false, true], ..Default::default() },
                 &[true, false, true]),
         || test_property_can_be_read::<TestObj, i8, i8>(
-                TestValues { i8: vec![101, 102, 103], ..<_>::default() },
+                TestValues { i8: vec![101, 102, 103], ..Default::default() },
                 &[101, 102, 103]),
         || test_property_can_be_read::<TestObj, u8, u8>(
-                TestValues { u8: vec![104, 105, 106], ..<_>::default() },
+                TestValues { u8: vec![104, 105, 106], ..Default::default() },
                 &[104, 105, 106]),
         || test_property_can_be_read::<TestObj, i16, i16>(
-                TestValues { i16: vec![-107, 108, -109], ..<_>::default() },
+                TestValues { i16: vec![-107, 108, -109], ..Default::default() },
                 &[-107, 108, -109]),
         || test_property_can_be_read::<TestObj, u16, u16>(
-                TestValues { u16: vec![110, 111, 112], ..<_>::default() },
+                TestValues { u16: vec![110, 111, 112], ..Default::default() },
                 &[110, 111, 112]),
         || test_property_can_be_read::<TestObj, i32, i32>(
-                TestValues { i32: vec![113, 114, -115], ..<_>::default() },
+                TestValues { i32: vec![113, 114, -115], ..Default::default() },
                 &[113, 114, -115]),
         || test_property_can_be_read::<TestObj, u32, u32>(
-                TestValues { u32: vec![116, 117, 118], ..<_>::default() },
+                TestValues { u32: vec![116, 117, 118], ..Default::default() },
                 &[116, 117, 118]),
         || test_property_can_be_read::<TestObj, i64, i64>(
-                TestValues { i64: vec![-119, 120, 121], ..<_>::default() },
+                TestValues { i64: vec![-119, 120, 121], ..Default::default() },
                 &[-119, 120, 121]),
         || test_property_can_be_read::<TestObj, u64, u64>(
-                TestValues { u64: vec![122, 123, 124], ..<_>::default() },
+                TestValues { u64: vec![122, 123, 124], ..Default::default() },
                 &[122, 123, 124]),
         || test_property_can_be_read::<TestObj, isize, i64>(
-                TestValues { isize: vec![-125, 126, 127], ..<_>::default() },
+                TestValues { isize: vec![-125, 126, 127], ..Default::default() },
                 &[-125, 126, 127]),
         || test_property_can_be_read::<TestObj, usize, u64>(
-                TestValues { usize: vec![128, 129, 130], ..<_>::default() },
+                TestValues { usize: vec![128, 129, 130], ..Default::default() },
                 &[128, 129, 130]),
         || test_property_can_be_read::<TestObj, f32, f32>(
-                TestValues { f32: vec![0.5, -0.125, 0.25], ..<_>::default() },
+                TestValues { f32: vec![0.5, -0.125, 0.25], ..Default::default() },
                 &[0.5, -0.125, 0.25]),
         || test_property_can_be_read::<TestObj, f64, f64>(
-                TestValues { f64: vec![0.125, 0.0625, 0.03125], ..<_>::default() },
+                TestValues { f64: vec![0.125, 0.0625, 0.03125], ..Default::default() },
                 &[0.125, 0.0625, 0.03125]),
-        || test_property_can_be_read::<TestObj, String, String>(
-                TestValues { string: vec!["Crème".into(), "brûlée".into()], ..<_>::default() },
+        || test_property_can_be_read::<TestObj, String, QString>(
+                TestValues { string: vec!["Crème".into(), "brûlée".into()], ..Default::default() },
                 &["Crème".into(), "brûlée".into()]),
     ]
 }
@@ -622,7 +625,7 @@ where
         || test_property_can_be_written::<TestObj, _, u64, _>(&[usize::MIN, usize::MAX], |values| &values.usize),
         || test_property_can_be_written::<TestObj, _, f32, _>(&[0.25, 0.0, 0.5], |values| &values.f32),
         || test_property_can_be_written::<TestObj, _, f64, _>(&[0.125, -0.25, 0.0625], |values| &values.f64),
-        || test_property_can_be_written::<TestObj, _, String, _>(&["Xin".into(), "chào".into(), "thế giới".into()], |values| &values.string),
+        || test_property_can_be_written::<TestObj, _, QString, _>(&["Xin".into(), "chào".into(), "thế giới".into()], |values| &values.string),
     ]
 }
 

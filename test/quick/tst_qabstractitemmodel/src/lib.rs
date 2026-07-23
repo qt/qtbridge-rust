@@ -113,7 +113,7 @@ impl Row {
 mod backend {
 
     use super::Row;
-    use qtbridge::qtbridge_type_lib::{QVariant, QModelIndex};
+    use qtbridge::qtbridge_type_lib::{QString, QVariant, QModelIndex};
     use qtbridge::{QAbstractItemModel, QAbstractItemModelBase};
 
     pub struct Backend {
@@ -134,31 +134,31 @@ mod backend {
             for col in 0..=4 {
                 if let Some(cell) = row0.columns.get_mut(col) {
                     let value = format!("Row0, Column {}", col);
-                    cell.set(0, QVariant::from(value));
+                    cell.set(0, QVariant::from(&QString::from(value)));
                 }
                 if let Some(cell) = row1.columns.get_mut(col) {
                     let value = format!("Row1, Column {}", col);
-                    cell.set(0, QVariant::from(value));
+                    cell.set(0, QVariant::from(&QString::from(value)));
                 }
                 if let Some(cell) = row10.columns.get_mut(col) {
                     let value = format!("Row1-0, Column {}", col);
-                    cell.set(0, QVariant::from(value));
+                    cell.set(0, QVariant::from(&QString::from(value)));
                 }
                 if let Some(cell) = row11.columns.get_mut(col) {
                     let value = format!("Row1-1, Column {}", col);
-                    cell.set(0, QVariant::from(value));
+                    cell.set(0, QVariant::from(&QString::from(value)));
                 }
                 if let Some(cell) = row110.columns.get_mut(col) {
                     let value = format!("Row1-1-0, Column {}", col);
-                    cell.set(0, QVariant::from(value));
+                    cell.set(0, QVariant::from(&QString::from(value)));
                 }
                 if let Some(cell) = row111.columns.get_mut(col) {
                     let value = format!("Row1-1-1, Column {}", col);
-                    cell.set(0, QVariant::from(value));
+                    cell.set(0, QVariant::from(&QString::from(value)));
                 }
                 if let Some(cell) = row2.columns.get_mut(col) {
                     let value = format!("Row2, Column {}", col);
-                    cell.set(0, QVariant::from(value));
+                    cell.set(0, QVariant::from(&QString::from(value)));
                 }
             }
 

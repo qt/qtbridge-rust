@@ -2,57 +2,60 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 #![cfg(feature = "serde_json")]
 
-use cxx_qt_lib::QVariantValue;
+use cxx_qt_lib::{QMetaTypeType, QVariantValue};
 use qtbridge_type_lib::{
-    QJsonArray, QJsonObject, QJsonValue,
-    QVariant, QVariantList, QVariantMap, QString,
+    QJsonArray, QJsonObject, QJsonValue, QString, QVariant, QVariantMap,
 };
-use crate::QMetaTypeGet;
 
 pub(crate) fn qvariant_to_serde(v: &QVariant) -> Result<serde_json::Value, ()> {
-    if is_qvariant_type::<bool>(v) {
-        return bool::try_from(v).map(serde_json::Value::Bool);
+    match v.type_id() {
+        QMetaTypeType::Bool =>
+            return Ok(serde_json::Value::from(v.value_or_default::<bool>())),
+        QMetaTypeType::SChar |
+        QMetaTypeType::Short |
+        QMetaTypeType::Int |
+        QMetaTypeType::Long |
+        QMetaTypeType::LongLong =>
+            return Ok(serde_json::Value::from(v.value_or_default::<i64>())),
+        QMetaTypeType::UChar |
+        QMetaTypeType::UShort |
+        QMetaTypeType::UInt |
+        QMetaTypeType::ULong |
+        QMetaTypeType::ULongLong =>
+            return Ok(serde_json::Value::from(v.value_or_default::<u64>())),
+        QMetaTypeType::Float =>
+            return Ok(serde_json::Value::from(v.value_or_default::<f32>())),
+        QMetaTypeType::Double =>
+            return Ok(serde_json::Value::from(v.value_or_default::<f64>())),
+        QMetaTypeType::QString => {
+            let qstr = v.value_or_default::<QString>();
+            return Ok(serde_json::Value::String(qstr.into()))
+        }
+        QMetaTypeType::QJsonValue => {
+            return try_from_qvariant(v)
+                .map(|jv| qjsonvalue_to_serde(&jv));
+        }
+        QMetaTypeType::QJsonObject => {
+            return try_from_qvariant(v)
+                .map(|jo| qjsonobject_to_serde(&jo))
+        }
+        QMetaTypeType::QJsonArray => {
+            return try_from_qvariant(v)
+                .map(|jv| qjsonarray_to_serde(&jv))
+        }
+        _ => {}
     }
-    if is_qvariant_type::<i8>(v) || is_qvariant_type::<i16>(v) || is_qvariant_type::<i32>(v) || is_qvariant_type::<i64>(v) || is_qvariant_type::<isize>(v) {
-        return i64::try_from(v).map(|n| serde_json::Value::Number(n.into()));
-    }
-    if is_qvariant_type::<u8>(v) || is_qvariant_type::<u16>(v) || is_qvariant_type::<u32>(v) || is_qvariant_type::<u64>(v) || is_qvariant_type::<usize>(v) {
-        return u64::try_from(v).map(|n| serde_json::Value::Number(n.into()));
-    }
-    if is_qvariant_type::<f32>(v) || is_qvariant_type::<f64>(v) {
-        return f64::try_from(v).map(|n| {
-            serde_json::Number::from_f64(n)
-                .map(serde_json::Value::Number)
-                .unwrap_or(serde_json::Value::Null)
-        });
-    }
-    if is_qvariant_type::<QString>(v) {
-        return String::try_from(v).map(serde_json::Value::String);
-    }
-    if is_qvariant_type::<QJsonValue>(v) {
-        return try_from_qvariant(v)
-            .map(|jv| qjsonvalue_to_serde(&jv))
-    }
-    if is_qvariant_type::<QJsonObject>(v) {
-        return try_from_qvariant(v)
-            .map(|jo| qjsonobject_to_serde(&jo))
-    }
-    if is_qvariant_type::<QJsonArray>(v) {
-        return try_from_qvariant(v)
-            .map(|ja| qjsonarray_to_serde(&ja))
-    }
-    // QML passes JS objects/arrays wrapped as QJSValue; QVariantMap/List use canConvert<T>()
-    // which handles this case, unlike the QJson types which require exact type matching.
-    if v.meta_type().name() == "QJSValue" {
-        if let Ok(map) = try_from_qvariant(v) { return qvariantmap_to_serde(&map) }
+
+    if v.type_name() == "QJSValue" {
+        if let Ok(map) = try_from_qvariant(v) { return qvariantmap_to_serde(&map); }
         if let Ok(list) = try_from_qvariant(v) { return qvariantlist_to_serde(&list) }
     }
+
     Err(())
 }
 
 fn try_from_qvariant<T: QVariantValue>(v: &QVariant) -> Result<T, ()> {
-    v.to_cxx_qt()
-        .value()
+    v.value()
         .ok_or(())
 }
 
@@ -97,10 +100,6 @@ pub(crate) fn qjsonvalue_to_serde(v: &QJsonValue) -> serde_json::Value {
     serde_json::Value::Null
 }
 
-fn is_qvariant_type<T: QMetaTypeGet>(var: &QVariant) -> bool {
-    var.meta_type() == T::get_qmetatype()
-}
-
 fn qjsonarray_to_serde(v: &QJsonArray) -> serde_json::Value {
     let array = v.iter()
         .map(|item| qjsonvalue_to_serde(&item))
@@ -120,15 +119,15 @@ fn qjsonobject_to_serde(v: &QJsonObject) -> serde_json::Value {
 fn qvariantmap_to_serde(v: &QVariantMap) -> Result<serde_json::Value, ()> {
     let mut map = serde_json::Map::new();
     for (key, value) in v.iter() {
-        let val = qvariant_to_serde(&QVariant::from_cxx_qt(value))?;
+        let val = qvariant_to_serde(value)?;
         map.insert(String::from(key), val);
     }
     Ok(serde_json::Value::Object(map))
 }
 
-fn qvariantlist_to_serde(v: &QVariantList) -> Result<serde_json::Value, ()> {
-    let array = v.iter()
-        .map(|var| qvariant_to_serde(&QVariant::from_cxx_qt(var)))
+fn qvariantlist_to_serde(v: &cxx_qt_lib::QList<QVariant>) -> Result<serde_json::Value, ()> {
+    let array = v.into_iter()
+        .map(qvariant_to_serde)
         .collect::<Result<_, _>>()?;
     Ok(serde_json::Value::Array(array))
 }

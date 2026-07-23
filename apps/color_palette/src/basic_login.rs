@@ -5,6 +5,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use qtbridge::{QObjectHolder, invoke_method};
+use qtbridge::qtbridge_type_lib::QString;
 use crate::rest_service::Service;
 use crate::utils::{is_success, send};
 
@@ -60,7 +61,7 @@ impl BasicLogin {
                 request = request.header(key, value);
             }
             let (body, status) = send(request).await;
-            invoke_method!(invoker, "on_login_finished", email, id, body, status);
+            invoke_method!(invoker, "on_login_finished", QString::from(email), id, QString::from(body), status);
         });
     }
 

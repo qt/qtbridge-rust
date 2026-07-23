@@ -5,6 +5,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use qtbridge::{QObjectHolder, invoke_method};
+use qtbridge::qtbridge_type_lib::QString;
 
 use crate::rest_service::Service;
 use crate::utils::{is_success, send};
@@ -86,7 +87,7 @@ impl PaginatedResource {
             if !is_success(status) {
                 eprintln!("[colorpalette] GET {url} -> HTTP {status}: {body}");
             }
-            invoke_method!(invoker, "on_refresh_finished", body, status);
+            invoke_method!(invoker, "on_refresh_finished", QString::from(body), status);
         });
     }
 

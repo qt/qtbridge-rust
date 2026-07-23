@@ -4,8 +4,9 @@
 mod common;
 
 use std::fmt::Debug;
+use cxx_qt_lib::QVariantValue;
 use qtbridge::{QApp, QObjectHolder, qobject};
-use qtbridge::qtbridge_type_lib::QVariant;
+use qtbridge::qtbridge_type_lib::QString;
 use common::{MAX_SAFE_INTEGER, MIN_SAFE_INTEGER, capitalize_first_char, get_type_name};
 
 #[qobject(ConvertToCamelCase)]
@@ -125,11 +126,11 @@ fn get_qml_code_for(slot_type_suffix: &str) -> String {
     "#)
 }
 
-fn test_slot_return_impl<T, VariantT>(expected: &T)
+fn test_slot_return<T, VariantT>(expected: T)
 where
-    T: Debug + PartialEq<VariantT> + ?Sized,
-    VariantT: Debug + TryFrom<QVariant>,
-    <VariantT as TryFrom<QVariant>>::Error: std::fmt::Debug,
+    T: Debug + PartialEq + Sized + TryFrom<VariantT>,
+    <T as TryFrom<VariantT>>::Error: Debug,
+    VariantT: Debug + QVariantValue,
 {
     let type_str = get_type_name::<T>();
     // Capitalize the first char of the type name.
@@ -154,35 +155,30 @@ where
 
     // Check returned value.
     assert!(result_var.is_valid());
-    let result: VariantT = result_var.try_into().unwrap();
-    assert_eq!(*expected, result);
+    let result: T = result_var.value::<VariantT>()
+        .unwrap()
+        .try_into()
+        .unwrap();
+    assert_eq!(expected, result);
 
-}
-
-fn test_slot_return<T>(expected: T)
-where
-    T: Debug + Default + Into<QVariant> + PartialEq + TryFrom<QVariant>,
-    <T as TryFrom<QVariant>>::Error: std::fmt::Debug,
-{
-    test_slot_return_impl::<T, T>(&expected)
 }
 
 fn main() {
     if cfg!(miri) {
         return;
     }
-    test_slot_return::<bool>(true);
-    test_slot_return::<i8>(i8::MIN);
-    test_slot_return::<u8>(u8::MAX);
-    test_slot_return::<i16>(i16::MIN);
-    test_slot_return::<u16>(u16::MAX);
-    test_slot_return::<i32>(i32::MIN);
-    test_slot_return::<u32>(u32::MAX);
-    test_slot_return::<i64>(MIN_SAFE_INTEGER);
-    test_slot_return::<u64>(MAX_SAFE_INTEGER as u64);
-    test_slot_return::<isize>(MIN_SAFE_INTEGER as isize);
-    test_slot_return::<usize>(MAX_SAFE_INTEGER as usize);
-    test_slot_return::<f32>(0.5);
-    test_slot_return::<f64>(0.125);
-    test_slot_return::<String>("def".into());
+    test_slot_return::<bool, bool>(true);
+    test_slot_return::<i8, i8>(i8::MIN);
+    test_slot_return::<u8, u8>(u8::MAX);
+    test_slot_return::<i16, i16>(i16::MIN);
+    test_slot_return::<u16, u16>(u16::MAX);
+    test_slot_return::<i32, i32>(i32::MIN);
+    test_slot_return::<u32, u32>(u32::MAX);
+    test_slot_return::<i64, i64>(MIN_SAFE_INTEGER);
+    test_slot_return::<u64, u64>(MAX_SAFE_INTEGER as u64);
+    test_slot_return::<isize, i64>(MIN_SAFE_INTEGER as isize);
+    test_slot_return::<usize, u64>(MAX_SAFE_INTEGER as usize);
+    test_slot_return::<f32, f32>(0.5);
+    test_slot_return::<f64, f64>(0.125);
+    test_slot_return::<String, QString>("def".into());
 }

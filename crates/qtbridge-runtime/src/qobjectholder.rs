@@ -5,6 +5,7 @@ use std::cell::RefCell;
 use std::ptr::NonNull;
 use std::rc::Rc;
 
+use cxx_qt_lib::QObjectMutPtr;
 use qtbridge_type_lib::{QObject, QVariant};
 use crate::qproxies::{QRustProxy, ConstructionMode};
 use crate::rustobjectgetter::get_rust_proxy;
@@ -218,9 +219,9 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
 
     /// Returns a [`QVariant`] containing a pointer to this object.
     fn as_qvariant(&self) -> QVariant {
-        let qobj_ptr = self.get_qobject_ptr();
+        let qobj_ptr = self.get_qobject_ptr() as *mut cxx_qt::QObject;
         assert!(!qobj_ptr.is_null(), "QObject is not attached");
-        qobj_ptr.into()
+        let qobj_ptr_wrap = unsafe { QObjectMutPtr::from_raw(qobj_ptr) };
+        (&qobj_ptr_wrap).into()
     }
-
 }

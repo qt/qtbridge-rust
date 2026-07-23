@@ -9,7 +9,6 @@
 #include <QtQml/QQmlListProperty>
 #include <cstdint>
 #include "qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h"
-#include "qtbridge-type-lib/src/generated/core/qvariant/cpp/qvariant.h"
 #include "rust/cxx.h"
 
 namespace rust::bridge::qqmllistproperty {

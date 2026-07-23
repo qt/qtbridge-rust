@@ -92,7 +92,7 @@ pub fn test_qabstractitemmodel() {
     Backend::attach_qobject(&test_object);
 
     let mut properties = QVariantMap::default();
-    properties.insert("listmodel".into(), test_object.borrow().as_qvariant().to_cxx_qt());
+    properties.insert("listmodel".into(), test_object.borrow().as_qvariant());
     let result = quick_test_main_with_properties(&args, &"test_qabstractitemmodel".into(), &properties);
 
     assert_eq!(result, 0, "quick_test failed with code {}", result);

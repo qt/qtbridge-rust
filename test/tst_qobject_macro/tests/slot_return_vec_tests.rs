@@ -1,11 +1,12 @@
 // // Copyright (C) 2026 The Qt Company Ltd.
 // // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
-#![cfg(test)]
+//#![cfg(test)]
 mod common;
 
 use std::fmt::Debug;
+use cxx_qt_lib::{QListElement, QVariantValue};
 use qtbridge::{QApp, QObjectHolder, qobject};
-use qtbridge::qtbridge_type_lib::QVariant;
+use qtbridge_type_lib::{QList, QString};
 use crate::common::{capitalize_first_char, get_type_name};
 
 #[qobject(ConvertToCamelCase)]
@@ -125,9 +126,8 @@ fn test_slot_return_impl<T, VarT>(expected: &[T])
 where
     T: Debug + PartialEq + TryFrom<VarT>,
     <T as TryFrom<VarT>>::Error: Debug,
-    Vec<T> :FromIterator<T>,
-    Vec<VarT>: TryFrom<QVariant>,
-    <Vec<VarT> as TryFrom<QVariant>>::Error: Debug,
+    VarT: Clone + QListElement,
+    QList<VarT>: QVariantValue,
 {
     let type_str = get_type_name::<T>();
     let suffix = capitalize_first_char(&type_str);
@@ -151,12 +151,12 @@ where
 
     // Check returned value.
     assert!(result_var.is_valid());
-    let result: Vec<T> = <Vec<VarT>>::try_from(result_var)
-        .unwrap()
-        .into_iter()
-        .map(|a| T::try_from(a).unwrap())
+    let result_qlist: QList<VarT> = result_var.value().unwrap();
+    let result_vec: Vec<T> = result_qlist.into_iter()
+        .map(|a| a.clone().try_into().unwrap())
         .collect();
-    assert_eq!(expected, result);
+
+    assert_eq!(expected, result_vec);
 }
 
 fn main() {
@@ -176,5 +176,5 @@ fn main() {
     test_slot_return_impl::<usize, u64>(&[29, 30, 31]);
     test_slot_return_impl::<f32, f32>(&[0.5, 0.25, 0.125]);
     test_slot_return_impl::<f64, f64>(&[0.25, 0.125, 0.0625]);
-    test_slot_return_impl::<String, String>(&["zero", "um", "dois", "três", "quatro"].map(ToOwned::to_owned));
+    test_slot_return_impl::<String, QString>(&["zero", "um", "dois", "três", "quatro"].map(String::from));
 }
