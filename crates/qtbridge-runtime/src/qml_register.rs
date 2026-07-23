@@ -80,7 +80,7 @@ pub trait QmlRegister : QObjectHolder + Default
         };
 
         if Self::IS_SINGLETON {
-            qtbridge_type_lib::qml_register_singleton(
+            crate::qmlprivate::qml_register_singleton(
                 <Self as QMetaInfo>::get_qmetatype(),
                 monomorphize_singleton_ctor::<Self>(),
                 Self::URI.as_bytes(),
@@ -93,7 +93,7 @@ pub trait QmlRegister : QObjectHolder + Default
             let list_metatype = Self::get_list_qmetatype();
             list_metatype.register_type();
 
-            qtbridge_type_lib::qml_register_element(
+            crate::qmlprivate::qml_register_element(
                 <Self as QMetaInfo>::get_qmetatype(),
                 list_metatype,
                 <<Self as QMetaInfo>::CppProxy as QCppProxy>::get_size() as u32,

@@ -1,4 +1,4 @@
-pub const GENERATED_FILES_CPP: [&'static str; 40] = [
+pub const GENERATED_FILES_CPP: [&'static str; 39] = [
     "src/generated/core/qbytearray/cpp/qbytearray.cpp",
     "src/generated/core/qhash/cpp/qhash_i32_qbytearray.cpp",
     "src/generated/core/qhash/cpp/qhash_qbytearray_qvariant.cpp",
@@ -36,7 +36,6 @@ pub const GENERATED_FILES_CPP: [&'static str; 40] = [
     "src/generated/core/qutf8stringview/cpp/qutf8stringview.cpp",
     "src/generated/core/qvariant/cpp/qvariant.cpp",
     "src/generated/gui/qguiapplication/cpp/qguiapplication.cpp",
-    "src/generated/qml/qmlprivate/cpp/qmlprivate.cpp",
     "src/generated/qml/qqmlapplicationengine/cpp/qqmlapplicationengine.cpp",
     "src/generated/testlib/qsignalspy/cpp/qsignalspy.cpp",
 ];

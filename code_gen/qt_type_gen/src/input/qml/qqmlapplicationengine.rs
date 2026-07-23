@@ -17,8 +17,6 @@ mod qqmlapplicationengine {
 
     /// Create a new QQmlApplicationEngine instance.
     pub fn new() -> UniquePtr<Self> {
-        crate::qml::qmlprivate::call_qml_register_callbacks();
-
         cpp_fn!(|| -> UniquePtr<Self> {
             return std::make_unique<QQmlApplicationEngine>();
         })()

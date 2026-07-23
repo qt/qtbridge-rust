@@ -13,7 +13,6 @@ description = "Qt Bridge: Qt type library"
 
 [dependencies]
 cxx.workspace = true
-linkme.workspace = true
 
 [build-dependencies]
 cxx-build.workspace = true

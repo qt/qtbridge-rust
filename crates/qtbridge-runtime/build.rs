@@ -17,6 +17,7 @@ fn main() {
         "dynamicmetaobjectbuilder",
         "dynamicmetaobjectdata",
         "qmetatypeget",
+        "qmlprivate",
         "qresource",
         "rustobjectgetter",
         "qml_method_invoker",

@@ -44,6 +44,7 @@ impl QApp {
     /// Must be called before any QML or GUI functionality is used.
     pub fn new() -> Self {
         let app = QGuiApplication::new();
+        crate::qmlprivate::call_qml_register_callbacks();
         let engine = QQmlApplicationEngine::new();
         Self {
             engine: engine,

@@ -40,7 +40,6 @@ impl QQmlApplicationEngine {
     #[allow(dead_code)]
     /// Create a new QQmlApplicationEngine instance.
     pub fn new() -> UniquePtr<Self> {
-        crate::qml::qmlprivate::call_qml_register_callbacks();
         ffi::inline_cpp_fn_new()
     }
     #[allow(dead_code)]
