@@ -66,7 +66,7 @@ fn main() {
     let registry_var = registry.borrow().as_qvariant();
 
     let mut props = QVariantMap::default();
-    props.insert(&QString::from("registry"), &registry_var);
+    props.insert(QString::from("registry"), registry_var.to_cxx_qt());
 
     let mut engine = QQmlApplicationEngine::new();
     engine.pin_mut().set_initial_properties(&props);

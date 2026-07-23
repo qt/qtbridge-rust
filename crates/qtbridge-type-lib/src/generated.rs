@@ -30,8 +30,6 @@ pub use core::qlist::QList_u16;
 pub use core::qlist::QList_u32;
 pub use core::qlist::QList_u64;
 pub use core::qlist::QList_u8;
-pub use core::qmap::QMap;
-pub use core::qmap::QMapImpl;
 pub use core::qmap::QMap_QString_QVariant;
 pub use core::qmap::QVariantMap;
 pub use core::qmetaobject::QMetaObject;

@@ -20,6 +20,8 @@
 
 namespace rust::bridge::qvariant {
 
+using QMap_QString_QVariant = QMap<QString, QVariant>;
+
 void QVariant_Drop(QVariant &v);
 QVariant QVariant_Default();
 QVariant QVariant_Clone(const QVariant &src);
@@ -200,6 +202,9 @@ QVariant inlineCppFn_TraitImpl_From_ref_QJsonValue_for_QVariant_from(QJsonValue 
 
 bool inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QJsonValue_try_from(QVariant const &from,
                                                                         QJsonValue &result);
+
+bool inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QMap_QString_QVariant_try_from(
+        QVariant const &from, QMap_QString_QVariant &result);
 
 } // namespace rust::bridge::qvariant
 

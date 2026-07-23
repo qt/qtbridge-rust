@@ -532,4 +532,13 @@ bool inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QJsonValue_try_from(QVariant
     return true;
 }
 
+bool inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QMap_QString_QVariant_try_from(
+    QVariant const &from, QMap_QString_QVariant &result)
+{
+    if (!from.canConvert<QVariantMap>())
+        return false;
+    result = from.value<QVariantMap>();
+    return true;
+}
+
 } // namespace rust::bridge::qvariant

@@ -1,7 +1,7 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::{QByteArray, QJsonArray, QJsonObject, QJsonValue, QList, QMetaType, QObject, QObjectList, QString};
+use crate::{QByteArray, QJsonArray, QJsonObject, QJsonValue, QList, QMap_QString_QVariant, QMetaType, QObject, QObjectList, QString};
 use std::mem::MaybeUninit;
 #[cxx::bridge]
 mod ffi {
@@ -31,6 +31,8 @@ mod ffi {
         type QList_u32 = crate::QList_u32;
         type QList_u64 = crate::QList_u64;
         type QList_u8 = crate::QList_u8;
+        include!("qtbridge-type-lib/src/generated/core/qmap/cpp/qmap_qstring_qvariant.h");
+        type QMap_QString_QVariant = crate::QMap_QString_QVariant;
         include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = crate::QMetaType;
         include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
@@ -178,6 +180,8 @@ mod ffi {
         fn inlineCppFn_TraitImpl_From_ref_QJsonValue_for_QVariant_from(value: &QJsonValue) -> QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qjson_value_try_from]
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QJsonValue_try_from(from: &QVariant, result: &mut QJsonValue) -> bool;
+        # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qmap_qstring_qvariant_try_from]
+        fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QMap_QString_QVariant_try_from(from: &QVariant, result: &mut QMap_QString_QVariant) -> bool;
     }
 }
 /// The QVariant struct acts like an enum for the most common Qt data types.
@@ -742,6 +746,17 @@ impl TryFrom<&QVariant> for QObjectList {
         }
     }
 }
+impl TryFrom<&QVariant> for QMap_QString_QVariant {
+    type Error = ();
+    fn try_from(value: &QVariant) -> Result<Self, ()> {
+        let conv_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qmap_qstring_qvariant_try_from;
+        let mut result = QMap_QString_QVariant::default();
+        match conv_fn(value, &mut result) {
+            true => Ok(result),
+            false => Err(()),
+        }
+    }
+}
 
 fn qvariant_to_vec<T, ConvertFn>(src: &QVariant, convert_fn: ConvertFn) -> Result<Vec<T>, ()>
 where
@@ -1061,5 +1076,17 @@ impl QVariant {
     pub fn meta_type(&self) -> QMetaType {
         let cpp = ffi::inline_cpp_fn_meta_type;
         cpp(self)
+    }
+
+    pub fn to_cxx_qt(&self) -> cxx_qt_lib::QVariant {
+        Self::into_cxx_qt(self.clone())
+    }
+
+    pub fn into_cxx_qt(self) -> cxx_qt_lib::QVariant {
+        unsafe { std::mem::transmute(self) }
+    }
+
+    pub fn from_cxx_qt(src: &cxx_qt_lib::QVariant) -> Self {
+        unsafe { std::mem::transmute(src.clone()) }
     }
 }

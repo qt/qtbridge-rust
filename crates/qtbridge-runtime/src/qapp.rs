@@ -90,7 +90,7 @@ impl QApp {
     /// .run();
     /// ```
     pub fn add_initial_property(&mut self, id: &str, value: &QVariant) -> &mut Self {
-        self.initial_properties.insert(&QString::from(id), value);
+        self.initial_properties.insert(QString::from(id), value.to_cxx_qt());
         self
     }
 
@@ -124,7 +124,10 @@ impl QApp {
     ///     .run();
     /// ```
     pub fn with_initial_properties(&mut self, properties: &[(&str, QVariant)]) -> &mut Self {
-        self.engine.pin_mut().set_initial_properties(&properties.into());
+        let map = properties.iter()
+            .map(|(k, v)| (QString::from(*k), v.to_cxx_qt()))
+            .collect();
+        self.engine.pin_mut().set_initial_properties(&map);
         self
     }
 

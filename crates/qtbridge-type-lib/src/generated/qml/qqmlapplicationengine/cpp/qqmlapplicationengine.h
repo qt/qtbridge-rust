@@ -7,9 +7,9 @@
 #define _QQMLAPPLICATIONENGINE_RUST_BRIDGE_H_
 
 #include <QQmlApplicationEngine>
+#include <QVariant>
 #include <cstdint>
 #include <memory>
-#include "qtbridge-type-lib/src/generated/core/qmap/cpp/qmap_qstring_qvariant.h"
 #include "rust/cxx.h"
 #include "rustconv.h"
 
