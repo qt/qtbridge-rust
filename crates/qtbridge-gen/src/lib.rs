@@ -12,7 +12,7 @@ mod qt_resource;
 #[proc_macro_attribute]
 pub fn qobject(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut builder = qt_gen_impl::QObjectModuleBuilder::new();
-    builder.build_token_stream(input.into(), args.into())
+    builder.build_token_stream_with_auto_register(input.into(), args.into())
         .unwrap_or_else(|err| err.to_compile_error())
         .into()
 }

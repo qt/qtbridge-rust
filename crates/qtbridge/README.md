@@ -138,7 +138,7 @@ but make sure to include the features the project currently have. You can
 achieve that by running:
 
 ```bash
-cargo doc --features serde_json --no-deps
+cargo doc --features linkme,serde_json --no-deps
 ```
 
 ## API overview

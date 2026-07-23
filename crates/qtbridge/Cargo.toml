@@ -18,4 +18,5 @@ qtbridge-runtime = { workspace = true }
 qtbridge-interfaces = { workspace = true }
 
 [features]
+linkme = ["qtbridge-gen/linkme", "qtbridge-runtime/linkme"]
 serde_json = ["qtbridge-runtime/serde_json"]

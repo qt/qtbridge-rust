@@ -133,11 +133,19 @@ pub mod special_traits {
 /// implementation is required. The function [`detach_qobject`](QObjectHolder::detach_qobject)
 /// has to be called manually to avoid memory leaks.
 ///
-/// **LinkMe**
+/// ## Automatic registration
 ///
-/// This option calls [`register`](QmlRegister::register) at application without any additional code.
-/// The crate [`Linkme`](https://crates.io/crates/linkme) is used for this purpose and needs to be
-/// added to Cargo.toml.
+/// When the `linkme` cargo feature is enabled, [`register`](QmlRegister::register) is called at
+/// application start for every annotated type without any additional code. The crate
+/// [`Linkme`](https://crates.io/crates/linkme) is used for this purpose:
+///
+/// ```toml
+/// qtbridge = { version = "0.2", features = ["linkme"] }
+/// ```
+///
+/// The feature applies to every type annotated with [`qobject`] in the whole application,
+/// including its dependencies. Types annotated with `NoQmlElement` are exempt, as they do
+/// not implement [`QmlRegister`].
 ///
 /// ## Example
 ///

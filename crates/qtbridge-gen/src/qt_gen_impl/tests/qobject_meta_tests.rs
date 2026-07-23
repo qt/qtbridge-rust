@@ -272,3 +272,37 @@ fn test_nested_type_slots() {
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
     assert_snapshot!(formatted);
 }
+
+#[cfg(feature = "linkme")]
+#[test]
+fn test_auto_register_code_with_linkme_feature() {
+    let input = quote! {
+        pub mod node {
+            pub struct MyStruct {
+            }
+        }
+    };
+
+    let mut builder = QObjectModuleBuilder::new();
+    let output = builder.build_token_stream_with_auto_register(input, quote!{})
+        .expect("build_token_stream() failed");
+    let formatted = format_rust_code(&strip_docs(output)).unwrap();
+    assert_snapshot!(formatted);
+}
+
+#[cfg(not(feature = "linkme"))]
+#[test]
+fn test_auto_register_code_without_linkme_feature() {
+    let input = quote! {
+        pub mod node {
+            pub struct MyStruct {
+            }
+        }
+    };
+
+    let mut builder = QObjectModuleBuilder::new();
+    let output = builder.build_token_stream_with_auto_register(input, quote!{})
+        .expect("build_token_stream() failed");
+    let formatted = format_rust_code(&strip_docs(output)).unwrap();
+    assert_snapshot!(formatted);
+}

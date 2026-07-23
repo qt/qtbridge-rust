@@ -17,7 +17,7 @@ use qt_meta_gen::{ExpandTokens, QClassInfo, QPropertyInfo, QSignalInfo, QSlotInf
 
 use crate::qt_gen_impl;
 use qt_gen_impl::qobject_macro_params::QObjectMacroParams;
-use qt_gen_impl::qml_element::generate_qml_register;
+use qt_gen_impl::qml_element::{generate_qml_auto_register, generate_qml_register};
 use qt_gen_impl::drop_impl::{adjust_drop_impl, generate_drop};
 
 
@@ -71,6 +71,7 @@ impl QObjectModuleBuilder {
         }
     }
 
+    #[allow(dead_code)]
     pub fn build_token_stream(&mut self, input: TokenStream, params: TokenStream) -> syn::Result<TokenStream> {
         self.build(input, params)
             .map(|output| match output {
@@ -78,6 +79,27 @@ impl QObjectModuleBuilder {
                 QObjectOutput::Impl(items) => quote! { #(#items)* },
             })
     }
+
+    pub fn build_token_stream_with_auto_register(&mut self, input: TokenStream, params: TokenStream) -> syn::Result<TokenStream> {
+        let mut output = self.build(input, params)?;
+        if !self.params.no_qml_element && !self.struct_is_generic()
+            && let Some(register_fn) = generate_qml_auto_register(&self.struct_ident)?
+        {
+            match &mut output {
+                QObjectOutput::Mod(module) => {
+                    if let Some((_, items)) = module.content.as_mut() {
+                        items.push(register_fn.into());
+                    }
+                }
+                QObjectOutput::Impl(items) => items.push(register_fn.into()),
+            }
+        }
+        Ok(match output {
+            QObjectOutput::Mod(module) => quote! { #module },
+            QObjectOutput::Impl(items) => quote! { #(#items)* },
+        })
+    }
+
     pub fn build(&mut self, input: TokenStream, params: TokenStream) -> syn::Result<QObjectOutput> {
         // Parse input parameters of this macro,
         self.params = syn::parse2::<QObjectMacroParams>(params)
@@ -148,11 +170,8 @@ impl QObjectModuleBuilder {
         if !self.struct_is_generic() {
             let qml_register = generate_qml_register(&self.struct_ident, &self.params)
                 .map_err(|err| syn::Error::new(err.span(), format!("Failed to generate implementation of QmlRegister trait.\nError: {}", err)))?;
-            if let Some(qml_reg) = qml_register {
-                if let Some(qml_reg_func) = qml_reg.register_fn {
-                    output_items.push(qml_reg_func.into());
-                }
-                generated_traits.push(("QmlRegister", Ok(qml_reg.register_impl)));
+            if let Some(register_impl) = qml_register {
+                generated_traits.push(("QmlRegister", Ok(register_impl)));
             }
         } else if self.params.singleton {
             return Err(syn::Error::new(self.struct_ident.span(), "Singleton is not available for generic structs.".to_string()));

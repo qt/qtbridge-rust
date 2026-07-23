@@ -1,49 +1,17 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use proc_macro2::{Span, TokenStream};
-use quote::{ToTokens, format_ident, quote};
+use proc_macro2::Span;
+use quote::{format_ident, quote};
 use syn::Ident;
 use crate::qt_gen_impl;
 use qt_gen_impl::qobject_macro_params::QObjectMacroParams;
 
-pub struct QmlElementCode {
-    pub register_fn: Option<syn::ItemFn>,
-    pub register_impl: syn::ItemImpl,
-}
-
-impl ToTokens for QmlElementCode {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let Self{ register_fn, register_impl } = self;
-        quote! {
-            #register_fn
-            #register_impl
-        }.to_tokens(tokens);
-    }
-}
-
-
-pub fn generate_qml_register(struct_ident: &Ident, params: &QObjectMacroParams) -> syn::Result<Option<QmlElementCode>> {
+pub fn generate_qml_register(struct_ident: &Ident, params: &QObjectMacroParams) -> syn::Result<Option<syn::ItemImpl>> {
 
     if params.no_qml_element {
         return Ok(None)
     }
-
-    let qml_register_fn_indent = format_ident!("qml_register_{struct_ident}");
-    let register_fn = match params.link_me {
-        true => {
-            let code = quote! {
-                // TODO: make auto registration via 'linkme' dependency an optional cargo feature?
-                #[linkme::distributed_slice(qtbridge::qtbridge_runtime::QML_REGISTER_CALLBACKS)]
-                #[allow(non_camel_case_types)]
-                fn #qml_register_fn_indent() {
-                    <#struct_ident as qtbridge::qtbridge_runtime::QmlRegister>::register();
-                }
-            };
-            Some(syn::parse2(code)?)
-        },
-        false => None
-    };
 
     let struct_name = struct_ident.to_string();
     let is_singleton = params.singleton;
@@ -73,8 +41,28 @@ pub fn generate_qml_register(struct_ident: &Ident, params: &QObjectMacroParams) 
         }
     })?;
 
-    Ok(Some(QmlElementCode {
-        register_fn,
-        register_impl,
-    }))
+    Ok(Some(register_impl))
+}
+
+/// Automatic registration is enabled by the `linkme` cargo feature of qtbridge.
+/// The re-exported linkme crate is used so that user crates do not need their
+/// own dependency on it. This relies on the #[linkme(crate = ...)] attribute,
+/// which is not documented but covered by linkme's own test suite
+/// (tests/custom_linkme_path.rs). Kept separate from [`generate_qml_register`]
+/// for feature-independent testing with insta.
+pub fn generate_qml_auto_register(struct_ident: &Ident) -> syn::Result<Option<syn::ItemFn>> {
+    if !cfg!(feature = "linkme") {
+        return Ok(None);
+    }
+
+    let qml_register_fn_indent = format_ident!("qml_register_{struct_ident}");
+    let code = quote! {
+        #[qtbridge::qtbridge_runtime::linkme::distributed_slice(qtbridge::qtbridge_runtime::QML_REGISTER_CALLBACKS)]
+        #[linkme(crate = qtbridge::qtbridge_runtime::linkme)]
+        #[allow(non_camel_case_types)]
+        fn #qml_register_fn_indent() {
+            <#struct_ident as qtbridge::qtbridge_runtime::QmlRegister>::register();
+        }
+    };
+    Ok(Some(syn::parse2(code)?))
 }

@@ -1,0 +1,16 @@
+# Copyright (C) 2026 The Qt Company Ltd.
+# SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
+
+[package]
+name = "tst_linkme"
+version.workspace = true
+edition.workspace = true
+description = "Tests for automatic QML type registration via the linkme feature"
+
+[dependencies]
+qtbridge = { path = "../../crates/qtbridge", features = ["linkme"] }
+
+[[test]]
+name = "linkme_tests"
+path = "tests/linkme_tests.rs"
+harness = false

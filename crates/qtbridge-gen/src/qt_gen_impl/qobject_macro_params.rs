@@ -9,7 +9,6 @@ pub struct QObjectMacroParams {
     pub no_drop: bool,
     pub no_qml_element: bool,
     pub singleton: bool,
-    pub link_me: bool,
     pub convert_to_camel_case: bool,
 }
 
@@ -18,7 +17,6 @@ mod keywords {
     syn::custom_keyword!(NoDrop);
     syn::custom_keyword!(NoQmlElement);
     syn::custom_keyword!(Singleton);
-    syn::custom_keyword!(LinkMe);
     syn::custom_keyword!(ConvertToCamelCase);
 }
 
@@ -44,9 +42,6 @@ impl syn::parse::Parse for QObjectMacroParams {
                 }
                 input.parse::<keywords::Singleton>()?;
                 params.singleton = true;
-            } else if input.peek(keywords::LinkMe) {
-                input.parse::<keywords::LinkMe>()?;
-                params.link_me = true;
             } else if input.peek(keywords::ConvertToCamelCase) {
                 input.parse::<keywords::ConvertToCamelCase>()?;
                 params.convert_to_camel_case = true;

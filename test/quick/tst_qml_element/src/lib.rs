@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 use qtbridge::{QmlRegister, qobject};
-use linkme;
 
 #[derive(Default)]
 pub struct Backend {
@@ -22,14 +21,6 @@ impl QmlRegister for Backend {
     const MINOR_VERSION: u8 = 1u8;
     const MAJOR_VERSION: u8 = 0u8;
     const IS_SINGLETON: bool = false;
-}
-
-#[derive(Default)]
-pub struct LinkMeBackend {
-}
-
-#[qobject(LinkMe)]
-impl LinkMeBackend {
 }
 
 #[derive(Default)]
@@ -54,6 +45,11 @@ impl QmlRegister for SingletonBackend {
 
 pub fn test_qml_element() {
 
+    <Backend as QmlRegister>::register();
+    // A repeated registration replaces the QML type module entry and is
+    // otherwise without effect (QQmlTypeModule::add). Relevant when explicit
+    // register() calls are combined with the automatic registration of the
+    // `linkme` feature.
     <Backend as QmlRegister>::register();
     <SingletonBackend as QmlRegister>::register();
     // Not registering LinkMeBackend to trigger automatic registration

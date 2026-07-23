@@ -13,7 +13,7 @@ description = "Qt Bridge: bridging code to be run in applications."
 
 [dependencies]
 cxx.workspace = true
-linkme.workspace = true
+linkme = { workspace = true, optional = true }
 qtbridge-type-lib = { workspace = true }
 serde_json = { workspace = true, optional = true }
 
@@ -25,4 +25,5 @@ qtbridge-build-utils = { workspace = true }
 qtbridge = { path = "../qtbridge" }
 
 [features]
+linkme = ["dep:linkme"]
 serde_json = ["dep:serde_json"]

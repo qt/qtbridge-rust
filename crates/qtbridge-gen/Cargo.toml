@@ -19,5 +19,9 @@ quote.workspace = true
 syn.workspace = true
 qtbridge-gen-common = { workspace = true }
 
+[features]
+# Make #[qobject] emit automatic QML registration via the linkme crate.
+linkme = []
+
 [dev-dependencies]
 insta = { version = "1", features = ["glob"] }

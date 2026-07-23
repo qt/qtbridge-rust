@@ -4,22 +4,24 @@
 //! Low-level QML type registration and the registry of automatic
 //! registration callbacks.
 
-use std::sync::Once;
-use linkme::distributed_slice;
-
 // Storage for callbacks performing QML registration of user defined types
 #[doc(hidden)]
-#[distributed_slice]
+#[cfg(feature = "linkme")]
+#[linkme::distributed_slice]
 pub static QML_REGISTER_CALLBACKS: [fn()];
 
 #[doc(hidden)]
 pub fn call_qml_register_callbacks() {
-    static INIT_ONCE: Once = Once::new();
-    INIT_ONCE.call_once(|| {
-        for reg_fn in QML_REGISTER_CALLBACKS {
-            reg_fn();
-        }
-    });
+    #[cfg(feature = "linkme")]
+    {
+        use std::sync::Once;
+        static INIT_ONCE: Once = Once::new();
+        INIT_ONCE.call_once(|| {
+            for reg_fn in QML_REGISTER_CALLBACKS {
+                reg_fn();
+            }
+        });
+    }
 }
 
 #[cxx::bridge]
