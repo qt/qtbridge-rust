@@ -131,6 +131,22 @@ QtBridge has a single crate with all public APIs:
 qtbridge = "*"
 ```
 
+## Crate features
+
+All features are disabled by default.
+
+- **`linkme`**: Registers every type annotated with [`qobject`] in the QML type
+  system automatically at application start, without manual calls to
+  `register()`. The [linkme](https://crates.io/crates/linkme) crate is used for
+  this purpose.
+- **`serde_json`**: Enables the use of `serde_json::Value` in properties,
+  signals, and slots. Values are exposed to QML as JSON.
+
+```toml
+[dependencies]
+qtbridge = { version = "*", features = ["linkme", "serde_json"] }
+```
+
 ## Building the documentation
 
 You can rely on cargo to generate the documentation of the project,
