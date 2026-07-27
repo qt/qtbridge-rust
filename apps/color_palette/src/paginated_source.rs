@@ -49,6 +49,9 @@ impl PaginatedResource {
     #[qsignal(qml_name = "pagesUpdated")]
     fn pages_updated(&mut self);
 
+    #[qsignal(qml_name = "errorOccurred")]
+    fn error_occurred(&mut self, message: String);
+
     fn page(&self) -> i32 {
         self.current_page
     }
@@ -154,10 +157,12 @@ impl PaginatedResource {
     #[qslot]
     fn on_refresh_finished(&mut self, body: String, status: i32) {
         if !is_success(status) {
+            self.error_occurred(format!("request failed with HTTP status {status}"));
             self.refresh_request_failed();
             return;
         }
         let Ok(mut json) = serde_json::from_str::<serde_json::Value>(&body) else {
+            self.error_occurred("failed to parse server response".to_string());
             self.refresh_request_failed();
             return;
         };

@@ -13,10 +13,8 @@ use crate::paginated_source::PaginatedResource;
 ///
 /// Shared via `Rc<RefCell<Service>>`; children hold a clone of that pointer.
 pub struct Service {
-    /// Base URL, e.g. `https://reqres.in/api`.
+    /// Base URL, e.g. `http://127.0.0.1:49425/api`.
     pub base_url: String,
-    /// `x-api-key` header value. reqres.in requires `reqres-free-v1`.
-    pub api_key: Option<String>,
     /// `token` header value, set by `BasicLogin` after a successful login.
     pub token: Option<String>,
     runtime: tokio::runtime::Runtime,
@@ -34,7 +32,6 @@ impl Service {
 
         Self {
             base_url: String::new(),
-            api_key: None,
             token: None,
             runtime,
             client: reqwest::Client::new(),
@@ -60,44 +57,24 @@ impl Service {
         format!("{base}/{}", path.trim_start_matches('/'))
     }
 
-    /// The common headers to attach to every request (API key + auth token).
+    /// The common headers to attach to every request (auth token).
     pub fn common_headers(&self) -> Vec<(String, String)> {
         let mut headers = Vec::new();
-        if let Some(key) = &self.api_key {
-            headers.push(("x-api-key".to_string(), key.clone()));
-        }
         if let Some(token) = &self.token {
             headers.push(("token".to_string(), token.clone()));
         }
         headers
     }
 
-    /// Update the base URL and recompute the API key header.
-    ///
-    /// reqres.in needs an API key, other servers do not.
+    /// Update the base URL.
     pub fn set_url(&mut self, url: &str) {
         self.base_url = url.to_string();
-        // Note: reqres.in now rejects the old shared "reqres-free-v1" placeholder
-        // and requires a personal free key from https://app.reqres.in/api-keys.
-        // Set REQRES_API_KEY to use yours without recompiling.
-        self.api_key = if host_starts_with(url, "reqres") {
-            Some(std::env::var("REQRES_API_KEY").unwrap_or_else(|_| "reqres-free-v1".to_string()))
-        } else {
-            None
-        };
     }
 
     /// Set or clear the authentication token (called by `BasicLogin`).
     pub fn set_token(&mut self, token: Option<String>) {
         self.token = token;
     }
-}
-
-/// Returns true if the host part of `url` starts with `prefix`.
-fn host_starts_with(url: &str, prefix: &str) -> bool {
-    let without_scheme = url.split("://").nth(1).unwrap_or(url);
-    let host = without_scheme.split(['/', ':']).next().unwrap_or("");
-    host.starts_with(prefix)
 }
 
 /// The QML `RestService` element.
