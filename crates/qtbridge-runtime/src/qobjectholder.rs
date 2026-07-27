@@ -170,8 +170,7 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
     #[doc(hidden)]
     fn unregister_instance_in_map(rust_obj_ptr: *const u8) {
         Self::try_borrow_mut_proxies_map(|proxies| proxies.remove(&rust_obj_ptr))
-            .expect("Proxy object for rust object is not registered")
-            .cast_mut();
+            .expect("Proxy object for rust object is not registered");
     }
 
     /// Creates a default-initialized instance and attaches the required
