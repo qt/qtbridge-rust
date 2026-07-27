@@ -11,19 +11,27 @@ pub trait QVariantConvertible : Sized {
     fn from_qvariant(value: &QVariant) -> Result<Self, ()>;
 }
 
-impl<T> QVariantConvertible for T
-where
-    for<'a> QVariant: From<&'a T>,
-    for<'a> T: TryFrom<&'a QVariant, Error = ()>,
-{
-    fn to_qvariant(&self) -> QVariant {
-        QVariant::from(self)
-    }
-
-    fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-        <T>::try_from(value)
-    }
+/// Implements `QVariantConvertible` for each listed type.
+macro_rules! impl_qvariant_convertible {
+    ($($t:ty),* $(,)?) => {
+        $(
+            impl QVariantConvertible for $t {
+                fn to_qvariant(&self) -> QVariant {
+                    QVariant::from(self)
+                }
+                fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
+                    <$t>::try_from(value)
+                }
+            }
+        )*
+    };
 }
+
+impl_qvariant_convertible!(
+    bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64,
+    String,
+    (),
+);
 
 fn option_to_qvariant<T: QVariantConvertible>(value: Option<&T>) -> QVariant
 {
