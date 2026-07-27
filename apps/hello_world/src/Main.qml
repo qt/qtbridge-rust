@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Fusion
 import hello_world
 
 ApplicationWindow {
