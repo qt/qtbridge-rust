@@ -1,5 +1,5 @@
-// Copyright (C) 2026 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
+// Copyright (C) 2023 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
 /// Returns true for a 2xx HTTP status.
 pub fn is_success(status: i32) -> bool {
