@@ -25,8 +25,8 @@ mod ffi {
         type QList_i32 = crate::QList_i32;
         type QList_i64 = crate::QList_i64;
         type QList_i8 = crate::QList_i8;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_ptr_mut_qobject.h");
-        type QList_ptr_mut_QObject = crate::QList_ptr_mut_QObject;
+        include!("cxx-qt-lib/core/qlist/QList_QObjectMutPtr.h");
+        type QList_QObjectMutPtr = crate::QList_QObjectMutPtr;
         type QList_u16 = crate::QList_u16;
         type QList_u32 = crate::QList_u32;
         type QList_u64 = crate::QList_u64;
@@ -89,7 +89,7 @@ mod ffi {
         # [rust_name = inline_cpp_fn_trait_impl_from_ref_ptr_mut_qobject_for_qvariant_from]
         fn inlineCppFn_TraitImpl_From_ref_ptr_mut_QObject_for_QVariant_from(value: &*mut QObject) -> QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_from_ref_qobject_list_for_qvariant_from]
-        fn inlineCppFn_TraitImpl_From_ref_QObjectList_for_QVariant_from(value: &QList_ptr_mut_QObject) -> QVariant;
+        fn inlineCppFn_TraitImpl_From_ref_QObjectList_for_QVariant_from(value: &QList_QObjectMutPtr) -> QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_from_ref_vec_bool_for_qvariant_from]
         fn inlineCppFn_TraitImpl_From_ref_Vec_bool_for_QVariant_from(value: &Vec<bool>) -> QVariant;
         # [rust_name = inline_cpp_fn_trait_impl_from_ref_vec_i8_for_qvariant_from]
@@ -145,7 +145,7 @@ mod ffi {
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_ptr_mut_qobject_try_from]
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_ptr_mut_QObject_try_from(from: &QVariant, result: &mut *mut QObject) -> bool;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qobject_list_try_from]
-        fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QObjectList_try_from(from: &QVariant, result: &mut QList_ptr_mut_QObject) -> bool;
+        fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QObjectList_try_from(from: &QVariant, result: &mut QList_QObjectMutPtr) -> bool;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_bool_try_from]
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_Vec_bool_try_from(from: &QVariant, result: &mut QList_bool) -> bool;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_i8_try_from]

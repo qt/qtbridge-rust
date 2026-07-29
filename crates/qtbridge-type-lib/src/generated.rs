@@ -18,7 +18,7 @@ pub use core::qlist::QList_i16;
 pub use core::qlist::QList_i32;
 pub use core::qlist::QList_i64;
 pub use core::qlist::QList_i8;
-pub use core::qlist::QList_ptr_mut_QObject;
+pub use core::qlist::QList_QObjectMutPtr;
 pub use core::qlist::QObjectList;
 pub use core::qlist::QByteArrayList;
 pub use core::qlist::QList_QByteArray;

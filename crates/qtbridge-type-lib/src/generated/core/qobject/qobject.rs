@@ -82,4 +82,13 @@ impl QObject {
         let cstr = std::ffi::CString::new(name).expect("CString::new() failed");
         cpp(self, cstr.as_bytes(), value)
     }
+
+    pub unsafe fn to_cxx_qt(src: *mut Self) -> cxx_qt_lib::QObjectMutPtr {
+        unsafe { cxx_qt_lib::QObjectMutPtr::from_raw(src.cast()) }
+    }
+
+    pub fn ptr_from_cxx_qt(src: &cxx_qt_lib::QObjectMutPtr) -> *mut Self {
+        let cxx_ptr: *mut cxx_qt::QObject = src.as_mut_ptr();
+        cxx_ptr.cast()
+    }
 }

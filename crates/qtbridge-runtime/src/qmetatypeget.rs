@@ -4,7 +4,7 @@
 use qtbridge_type_lib::{
     QJsonArray, QJsonObject, QJsonValue,
     QList, QList_bool, QList_QString, QList_f32, QList_f64, QList_i8, QList_i16, QList_i32, QList_i64,
-    QList_ptr_mut_QObject, QList_u8, QList_u16, QList_u32, QList_u64,
+    QList_QObjectMutPtr, QList_u8, QList_u16, QList_u32, QList_u64,
     QMetaType, QObject, QString
 };
 
@@ -19,7 +19,6 @@ mod ffi {
         include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
         include!("qtbridge-type-lib/src/generated/core/qstring/cpp/qstring.h");
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_ptr_mut_qobject.h");
 
         type QJsonArray = super::QJsonArray;
         type QJsonObject = super::QJsonObject;
@@ -41,7 +40,7 @@ mod ffi {
         type QList_f32 = super::QList_f32;
         type QList_f64 = super::QList_f64;
         type QList_QString = super::QList_QString;
-        type QList_ptr_mut_QObject = super::QList_ptr_mut_QObject;
+        type QList_QObjectMutPtr = super::QList_QObjectMutPtr;
     }
 
     #[namespace = "rust::bridge::qmetatypeget"]
@@ -122,7 +121,7 @@ mod ffi {
         unsafe fn QMetaTypeForType(_: *const QList_QString) -> QMetaType;
 
         #[rust_name = "get_qmeta_type_qlist_qobject"]
-        unsafe fn QMetaTypeForType(_: *const QList_ptr_mut_QObject) -> QMetaType;
+        unsafe fn QMetaTypeForType(_: *const QList_QObjectMutPtr) -> QMetaType;
     }
 }
 
@@ -213,7 +212,7 @@ impl QMetaTypeGet for isize {
     }
 }
 
- impl QMetaTypeGet for QList_ptr_mut_QObject {
+impl QMetaTypeGet for QList_QObjectMutPtr {
     fn get_qmetatype() -> QMetaType {
         unsafe { ffi::get_qmeta_type_qlist_qobject(std::ptr::null()) }
     }

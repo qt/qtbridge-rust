@@ -169,16 +169,14 @@ impl<T: QmlRegister> QMetaCallArg for Vec<Rc<RefCell<T>>> {
     type WireType = QObjectList;
 
     fn to_wire(&self) -> QObjectList {
-        let mut list = QObjectList::default();
-        for rc in self {
-            list.append(T::rc_ref_cell_to_qobject(rc).cast_mut());
-        }
-        list
+        self.iter()
+            .map(|rc| unsafe { QObject::to_cxx_qt(T::rc_ref_cell_to_qobject(rc).cast_mut()) })
+            .collect()
     }
 
     fn from_wire(wire: &QObjectList) -> Self {
-        (0..wire.len())
-            .map(|i| unsafe { T::qobject_to_rc_ref_cell(wire[i]) })
+        wire.iter()
+            .map(|ptr| unsafe { T::qobject_to_rc_ref_cell(QObject::ptr_from_cxx_qt(ptr)) })
             .collect()
     }
 

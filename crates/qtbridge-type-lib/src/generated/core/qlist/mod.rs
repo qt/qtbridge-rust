@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 #![allow(non_camel_case_types)]
 
-pub mod qlist_ptr_mut_qobject;
 pub mod qlist_qvariant;
-pub use qlist_ptr_mut_qobject::QList_ptr_mut_QObject;
-pub use qlist_ptr_mut_qobject::QObjectList;
 pub use qlist_qvariant::QList_QVariant;
 pub use qlist_qvariant::QVariantList;
 
@@ -24,6 +21,8 @@ pub type QList_f32 = QList<f32>;
 pub type QList_f64 = QList<f64>;
 pub type QList_QString = QList<crate::QString>;
 pub type QList_QByteArray = QList<crate::QByteArray>;
+pub type QList_QObjectMutPtr = QList<cxx_qt_lib::QObjectMutPtr>;
 
 pub type QStringList = QList_QString;
 pub type QByteArrayList = QList_QByteArray;
+pub type QObjectList = QList_QObjectMutPtr;
