@@ -3,7 +3,8 @@
 
 #![cfg(test)]
 use insta::assert_snapshot;
-use crate::qt_gen_impl::QObjectModuleBuilder;
+use crate::qt_gen_impl::qobject_module_builder;
+use qobject_module_builder::{LinkmeSupport, QObjectModuleBuilder};
 use quote::quote;
 use qtbridge_gen_common::format_code::{format_rust_code, strip_docs};
 
@@ -35,7 +36,7 @@ pub fn test() {
         Base = QAbstractListModel
     };
 
-    let mut builder = QObjectModuleBuilder::new();
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
     let output = builder.build_token_stream(input, input_params).unwrap();
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
     assert_snapshot!(formatted);
@@ -60,7 +61,7 @@ pub fn test_no_drop() {
         Base = QAbstractListModel, NoDrop
     };
 
-    let mut builder = QObjectModuleBuilder::new();
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
     let output = builder.build_token_stream(input, input_params).unwrap();
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
     assert_snapshot!(formatted);

@@ -1,18 +1,31 @@
 // Copyright (C) 2026 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use proc_macro::TokenStream;
-
 mod function_with_attributes;
 mod meta_call_check;
 mod qt_derive;
 mod qt_gen_impl;
 mod qt_resource;
 
+use proc_macro::TokenStream;
+use crate::qt_gen_impl::qobject_module_builder;
+use qobject_module_builder::{LinkmeSupport, QObjectModuleBuilder};
+
+
 #[proc_macro_attribute]
 pub fn qobject(args: TokenStream, input: TokenStream) -> TokenStream {
-    let mut builder = qt_gen_impl::QObjectModuleBuilder::new();
-    builder.build_token_stream_with_auto_register(input.into(), args.into())
+    // Automatic registration is enabled by the `linkme` cargo feature of qtbridge.
+    // The re-exported linkme crate is used so that user crates do not need their
+    // own dependency on it. This relies on the #[linkme(crate = ...)] attribute,
+    // which is not documented but covered by linkme's own test suite
+    // (tests/custom_linkme_path.rs). Kept separate from [`generate_qml_register`]
+    // for feature-independent testing with insta.
+    let linkme_support = match cfg!(feature = "linkme") {
+        true => LinkmeSupport::Enabled,
+        false => LinkmeSupport::Disabled,
+    };
+    let mut builder = QObjectModuleBuilder::new(linkme_support);
+    builder.build_token_stream(input.into(), args.into())
         .unwrap_or_else(|err| err.to_compile_error())
         .into()
 }

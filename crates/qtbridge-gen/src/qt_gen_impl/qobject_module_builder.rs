@@ -37,8 +37,13 @@ pub enum QObjectOutput {
     Impl(Vec<syn::Item>),
 }
 
+pub enum LinkmeSupport {
+    Enabled,
+    Disabled,
+}
 
 pub struct QObjectModuleBuilder {
+    linkme_support: LinkmeSupport,
     params: QObjectMacroParams,
     struct_ident: syn::Ident,
     struct_generics: syn::Generics,
@@ -56,8 +61,9 @@ impl QObjectModuleBuilder {
         !self.struct_generics.params.is_empty()
     }
 
-    pub fn new() -> Self {
+    pub fn new(linkme_support: LinkmeSupport) -> Self {
         Self {
+            linkme_support,
             params: QObjectMacroParams::default(),
             struct_ident: format_ident!("dummy"),
             struct_generics: syn::Generics::default(),
@@ -71,33 +77,12 @@ impl QObjectModuleBuilder {
         }
     }
 
-    #[allow(dead_code)]
     pub fn build_token_stream(&mut self, input: TokenStream, params: TokenStream) -> syn::Result<TokenStream> {
         self.build(input, params)
             .map(|output| match output {
                 QObjectOutput::Mod(module) => quote! { #module },
                 QObjectOutput::Impl(items) => quote! { #(#items)* },
             })
-    }
-
-    pub fn build_token_stream_with_auto_register(&mut self, input: TokenStream, params: TokenStream) -> syn::Result<TokenStream> {
-        let mut output = self.build(input, params)?;
-        if !self.params.no_qml_element && !self.struct_is_generic()
-            && let Some(register_fn) = generate_qml_auto_register(&self.struct_ident)?
-        {
-            match &mut output {
-                QObjectOutput::Mod(module) => {
-                    if let Some((_, items)) = module.content.as_mut() {
-                        items.push(register_fn.into());
-                    }
-                }
-                QObjectOutput::Impl(items) => items.push(register_fn.into()),
-            }
-        }
-        Ok(match output {
-            QObjectOutput::Mod(module) => quote! { #module },
-            QObjectOutput::Impl(items) => quote! { #(#items)* },
-        })
     }
 
     pub fn build(&mut self, input: TokenStream, params: TokenStream) -> syn::Result<QObjectOutput> {
@@ -182,6 +167,14 @@ impl QObjectModuleBuilder {
                 err.span(),
                 format!("Failed to generate implementation of '{trait_name}' trait.\nError:{err}")))?;
             output_items.push(trait_impl.into());
+        }
+
+        if matches!(self.linkme_support, LinkmeSupport::Enabled) &&
+            !self.params.no_qml_element &&
+            !self.struct_is_generic()
+        {
+            let register_fn =  generate_qml_auto_register(&self.struct_ident)?;
+            output_items.push(register_fn.into());
         }
 
         match src_module {

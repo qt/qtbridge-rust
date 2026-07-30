@@ -4,7 +4,8 @@
 #![cfg(test)]
 use insta::assert_snapshot;
 use quote::{ToTokens, quote};
-use crate::qt_gen_impl::{QObjectModuleBuilder, qobject_module_builder::QObjectOutput};
+use crate::qt_gen_impl::qobject_module_builder;
+use qobject_module_builder::{LinkmeSupport, QObjectModuleBuilder, QObjectOutput};
 use qtbridge_gen_common::format_code::{format_rust_code, strip_docs};
 use qtbridge_gen_common::type_utils::get_ident_of_last_path_segment;
 
@@ -67,7 +68,7 @@ fn test() {
         }
     };
 
-    let mut builder = QObjectModuleBuilder::new();
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
     let output_items = match builder.build(input, quote! {}) {
         Ok(QObjectOutput::Impl(items)) => items,
         Err(err) => panic!("#[qobject] failed: {err}"),
@@ -122,7 +123,7 @@ fn test_case_casting() {
         }
     };
 
-    let mut builder = QObjectModuleBuilder::new();
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
     let output_items = match builder.build(input, quote! {ConvertToCamelCase}) {
         Ok(QObjectOutput::Impl(items)) => items,
         Err(err) => panic!("#[qobject] failed: {err}"),
@@ -163,7 +164,7 @@ fn test_dispatch_meta_call() {
         }
     };
 
-    let mut builder = QObjectModuleBuilder::new();
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
     let output_items = match builder.build(input, quote! {}) {
         Ok(QObjectOutput::Impl(items)) => items,
         Err(err) => panic!("#[qobject] failed: {err}"),
@@ -217,7 +218,7 @@ fn test_nested_type_in_properties() {
         }
     };
 
-    let mut builder = QObjectModuleBuilder::new();
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
     let output = builder.build_token_stream(input, quote!{})
         .expect("build_token_stream() failed");
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
@@ -239,7 +240,7 @@ fn test_nested_type_in_signals() {
         }
     };
 
-    let mut builder = QObjectModuleBuilder::new();
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
     let output = builder.build_token_stream(input, quote!{})
         .expect("build_token_stream() failed");
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
@@ -266,14 +267,13 @@ fn test_nested_type_slots() {
         }
     };
 
-    let mut builder = QObjectModuleBuilder::new();
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
     let output = builder.build_token_stream(input, quote!{})
         .expect("build_token_stream() failed");
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
     assert_snapshot!(formatted);
 }
 
-#[cfg(feature = "linkme")]
 #[test]
 fn test_auto_register_code_with_linkme_feature() {
     let input = quote! {
@@ -283,14 +283,13 @@ fn test_auto_register_code_with_linkme_feature() {
         }
     };
 
-    let mut builder = QObjectModuleBuilder::new();
-    let output = builder.build_token_stream_with_auto_register(input, quote!{})
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Enabled);
+    let output = builder.build_token_stream(input, quote!{})
         .expect("build_token_stream() failed");
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
     assert_snapshot!(formatted);
 }
 
-#[cfg(not(feature = "linkme"))]
 #[test]
 fn test_auto_register_code_without_linkme_feature() {
     let input = quote! {
@@ -300,8 +299,8 @@ fn test_auto_register_code_without_linkme_feature() {
         }
     };
 
-    let mut builder = QObjectModuleBuilder::new();
-    let output = builder.build_token_stream_with_auto_register(input, quote!{})
+    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
+    let output = builder.build_token_stream(input, quote!{})
         .expect("build_token_stream() failed");
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
     assert_snapshot!(formatted);

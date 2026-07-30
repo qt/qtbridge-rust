@@ -44,17 +44,7 @@ pub fn generate_qml_register(struct_ident: &Ident, params: &QObjectMacroParams) 
     Ok(Some(register_impl))
 }
 
-/// Automatic registration is enabled by the `linkme` cargo feature of qtbridge.
-/// The re-exported linkme crate is used so that user crates do not need their
-/// own dependency on it. This relies on the #[linkme(crate = ...)] attribute,
-/// which is not documented but covered by linkme's own test suite
-/// (tests/custom_linkme_path.rs). Kept separate from [`generate_qml_register`]
-/// for feature-independent testing with insta.
-pub fn generate_qml_auto_register(struct_ident: &Ident) -> syn::Result<Option<syn::ItemFn>> {
-    if !cfg!(feature = "linkme") {
-        return Ok(None);
-    }
-
+pub fn generate_qml_auto_register(struct_ident: &Ident) -> syn::Result<syn::ItemFn> {
     let qml_register_fn_indent = format_ident!("qml_register_{struct_ident}");
     let code = quote! {
         #[qtbridge::qtbridge_runtime::linkme::distributed_slice(qtbridge::qtbridge_runtime::QML_REGISTER_CALLBACKS)]
@@ -64,5 +54,5 @@ pub fn generate_qml_auto_register(struct_ident: &Ident) -> syn::Result<Option<sy
             <#struct_ident as qtbridge::qtbridge_runtime::QmlRegister>::register();
         }
     };
-    Ok(Some(syn::parse2(code)?))
+    syn::parse2(code)
 }

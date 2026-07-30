@@ -8,6 +8,4 @@ pub mod qobject_macro_params;
 pub mod drop_impl;
 pub mod qt_meta_gen;
 
-pub use qobject_module_builder::QObjectModuleBuilder;
-
 mod tests;
