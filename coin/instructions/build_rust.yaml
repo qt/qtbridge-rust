@@ -98,13 +98,6 @@ instructions:
       property: host.os
       equals_value: MacOS
 
-  - type: ExecuteCommand
-    command: "cargo build --workspace"
-    maxTimeInSeconds: 6000
-    maxTimeBetweenOutput: 1200
-    userMessageOnFailure: >
-      Failed to build rust.
-
   - type: PrependToEnvironmentVariable
     variableName: LD_LIBRARY_PATH
     variableValue: "{{.AgentWorkingDir}}/install/lib:"
@@ -114,11 +107,32 @@ instructions:
       equals_value: Linux
 
   - type: ExecuteCommand
+    command: "cargo build"
+    maxTimeInSeconds: 6000
+    maxTimeBetweenOutput: 1200
+    userMessageOnFailure: >
+      Failed to build default qtbridge-rust.
+
+  - type: ExecuteCommand
+    command: "cargo test"
+    maxTimeInSeconds: 6000
+    maxTimeBetweenOutput: 1200
+    userMessageOnFailure: >
+      Failed to run default test.
+
+  - type: ExecuteCommand
+    command: "cargo build --workspace"
+    maxTimeInSeconds: 6000
+    maxTimeBetweenOutput: 1200
+    userMessageOnFailure: >
+      Failed to build extended qtbridge-rust.
+
+  - type: ExecuteCommand
     command: "cargo test --workspace"
     maxTimeInSeconds: 6000
     maxTimeBetweenOutput: 1200
     userMessageOnFailure: >
-      Failed to run test.
+      Failed to run extended test.
 
   - type: UploadArtifact
     archiveDirectory: "{{.AgentWorkingDir}}/qt/qtbridge-rust/"
