@@ -9,6 +9,7 @@ pub use qtbridge_runtime::QModelItem;
 pub use qtbridge_runtime::invoke_method;
 pub use qtbridge_runtime::QMetaCallArg;
 pub use qtbridge_runtime::QPropertyMember;
+pub use qtbridge_runtime::registry::collect_garbage;
 #[doc(hidden)]
 pub use qtbridge_gen;
 #[doc(hidden)]
@@ -94,10 +95,6 @@ pub mod special_traits {
 /// A `struct` using [`qobject`] must implement the [`Default`] trait.
 /// The static function [`register`](QmlRegister::register) has to be called at the start of the
 /// main function to make this `struct` instantiable from QML.
-/// The macro implements [`Drop`] to call [`detach_qobject`](QObjectHolder::detach_qobject),
-/// cleaning up the QML parts of the object. You can implement [`Drop`] yourself when using the
-/// `NoDrop` option (see below). In that case, [`detach_qobject`](QObjectHolder::detach_qobject)
-/// has to be called manually.
 ///
 /// ## Parameters
 ///
@@ -126,12 +123,6 @@ pub mod special_traits {
 /// Implement [`QmlRegister`] as a [singleton](https://doc.qt.io/qt-6/qml-singleton.html). A singleton
 /// is accessed from QML as a single shared instance of the type, using the type name as identifier.
 /// This is useful for application-wide data, global settings, or service objects.
-///
-/// **NoDrop**
-///
-/// Do not implement [`Drop`] in the macro. This option has to be set when a custom [`Drop`]
-/// implementation is required. The function [`detach_qobject`](QObjectHolder::detach_qobject)
-/// has to be called manually to avoid memory leaks.
 ///
 /// ## Automatic registration
 ///

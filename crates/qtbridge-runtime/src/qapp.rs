@@ -38,6 +38,16 @@ pub struct QApp {
     initial_properties: QVariantMap,
 }
 
+impl Drop for QApp {
+    fn drop(&mut self) {
+        // Drop the engine first, releasing every JS wrapper: the final
+        // collect then frees all objects Rust no longer holds, so their
+        // Drop runs here instead of leaking at thread exit.
+        self.engine = UniquePtr::null();
+        crate::registry::collect_garbage();
+    }
+}
+
 impl QApp {
     /// Creates the Qt application and QML engine.
     ///
@@ -45,7 +55,10 @@ impl QApp {
     pub fn new() -> Self {
         let app = QGuiApplication::new();
         crate::qmlprivate::call_qml_register_callbacks();
-        let engine = QQmlApplicationEngine::new();
+        let mut engine = QQmlApplicationEngine::new();
+        // Clean up the registry in sync with the QML
+        // garbage collection (see `registry::install_gc_sentinel`).
+        crate::registry::install_gc_sentinel(engine.pin_mut());
         Self {
             engine: engine,
             app: app,

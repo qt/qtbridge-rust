@@ -13,7 +13,7 @@ use crate::{DispatchMetaCall, QMetaInfo, QmlMethodInvoker};
 use std::collections::HashMap;
 
 
-pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
+pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default + 'static {
     /// Alias for the Rust proxy type corresponding to the user-defined type.
     /// The Rust proxy is an intermediate layer between the Rust object and the C++ proxy,
     /// forwarding calls in both directions and managing borrowing of the Rust object
@@ -105,6 +105,10 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
         let rc_adapter = proxy.get_rust_object_rc()
             .expect("Rust object associated with given QObject was already dropped");
 
+        // Rust interest exists again: take ownership back if it was handed
+        // to the engine.
+        crate::registry::repin(rc_adapter.as_ptr() as *const u8);
+
         // SAFETY: the inherits check above proves the `QObject` is a `Self` (or
         // a QML-derived subclass of it) - and therefore the allocation behind
         // `rc_adapter` - was created as `RefCell<Self>`.
@@ -113,7 +117,7 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
         // and alignment; reinterpreting it back is sound. `into_raw` parks the
         // `+1` produced by `get_rust_object_rc` and `from_raw` reclaims it, so
         // the reference count stays balanced.
-        let raw_ref_cell = Rc::into_raw(rc_adapter) as *const u8 as *const RefCell<Self>;
+        let raw_ref_cell = Rc::into_raw(rc_adapter).cast();
         unsafe { Rc::from_raw(raw_ref_cell) }
     }
 
@@ -159,12 +163,27 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
     #[doc(hidden)]
     fn register_instance_in_map(rust_obj_rc: Rc<RefCell<Self>>, construction: ConstructionMode) {
         let key = (*rust_obj_rc).as_ptr() as *const u8;
+        // Rust-created objects are owned by `crate::registry`,
+        // which holds a strong reference and deletion is
+        // centralized in `crate::registry::collect_garbage`.
+        // QML-created objects are owned by the engine,
+        // the proxy holds a strong reference and deletion is
+        // triggered by the QML-engine.
+        let keep: Rc<RefCell<Self>> = rust_obj_rc.clone();
         let dyn_rc = Self::as_adaptor_trait(rust_obj_rc);
         let dynamic_meta = <Self as QMetaInfo>::get_shared_dynamic_meta_object_data();
-        let proxy = Self::ProxyRust::new(&dyn_rc, dynamic_meta, construction, Box::new(move || Self::unregister_instance_in_map(key)));
+        let proxy = Self::ProxyRust::new(&dyn_rc, dynamic_meta, &construction, Box::new(move || {
+            Self::unregister_instance_in_map(key);
+            crate::registry::unregister(key);
+        }));
         Self::try_borrow_mut_proxies_map(|proxies| {
             proxies.insert(key, proxy as *const u8);
-        })
+        });
+        if matches!(construction, ConstructionMode::Weak) {
+            // SAFETY: We constructed proxy just above.
+            let qobject = unsafe { &*proxy }.get_cpp_proxy() as *mut QObject;
+            crate::registry::register(keep, key, qobject);
+        }
     }
 
     /// Removes the entry associated with the specified Rust object from the multiton map.
@@ -177,20 +196,9 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
     /// Creates a default-initialized instance and attaches the required
     /// [`QObject`], enabling its use in QML.
     ///
-    /// The returned `Rc<RefCell<Self>>` owns the object. The QML side can access it only through
-    /// a weak pointer.
-    ///
-    /// The `drop` implementation of `Self` calls `detach_qobject` and thus destroys the associated
-    /// `QObject`, which removes it from the QML side as well. If `Self` has a custom [`Drop`]
-    /// implementation, you need to call [`Self::detach_qobject`] manually.
-    ///
-    /// The attached `QObject` is bound to this specific allocation, so the object's identity and
-    /// lifetime must both be preserved.
-    ///
-    /// **Do not move or replace the `Self` inside the `Rc<RefCell<Self>>`.**
-    /// Operations such as `Rc::try_unwrap`, `into_inner`, or `get_mut`-then-move will break the
-    /// connection between `self` and the associated `QObject`. Once the `Self` lives
-    /// elsewhere, the next call in either direction can no longer reach it.
+    /// The returned `Rc<RefCell<Self>>` is an ordinary handle, shared with
+    /// QML. Dropping the handle does not drop the instance if it is in use by
+    /// QML or until the garbage collection deletes the QML instance.
     fn default_with_attached_qobject() -> std::rc::Rc<std::cell::RefCell<Self>> {
         let instance = Default::default();
         Self::attach_qobject(&instance);
@@ -206,10 +214,7 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default {
         );
     }
 
-    /// Detaches and removes the dedicated [`QObject`] from this instance.
-    ///
-    /// Called automatically by the [`Drop`] implementation generated by the
-    /// `qobject` macro.
+    /// Detaches and deletes the dedicated [`QObject`] of this instance.
     fn detach_qobject(&self) {
         let qobj_ptr = self.get_qobject_ptr();
         if !qobj_ptr.is_null() {

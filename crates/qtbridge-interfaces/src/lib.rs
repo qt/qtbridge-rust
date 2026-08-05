@@ -87,7 +87,8 @@
 //!
 //! #### QML-created objects
 //!
-//! `RustProxy` holds a strong `Rc<RefCell<UserStruct>>` (`SharedReferenceWithQml::OwnedByQml`).
+//! `RustProxy` holds a strong `Rc<RefCell<UserStruct>>` (`SharedReferenceWithQml::OwnedByQml`);
+//! the engine (or a parent) owns the `QObject`.
 //!
 //! ```text
 //! JS GC deletes QObject
@@ -101,16 +102,31 @@
 //! #### Rust-created objects
 //!
 //! `RustProxy` holds only a `Weak<RefCell<UserStruct>>`
-//! (`SharedReferenceWithQml::OwnedByRust`). The Rust `Rc` controls the struct's lifetime.
-//! When the last strong `Rc` is dropped, `QObjectHolder::detach_qobject` deletes `CppProxy`.
+//! (`SharedReferenceWithQml::OwnedByRust`); the owner of record is the per-thread
+//! registry (`qtbridge_runtime::registry`), which holds one strong `Rc` for each
+//! object. `QObject`s are explicitly set `CppOwnership` and only set to `JavaScriptOwnership`
+//! when there is no interest from Rust in the object. The QML engine's garbage collector then
+//! reclaims their JS wrappers which in turn is the sign for the registry to delete the `Rc`
+//! that keeps the user struct alive.
 //!
 //! ```text
-//! Last strong Rc<RefCell<UserStruct>> dropped on the Rust side
-//!   → UserStruct::drop()
-//!     → QObjectHolder::detach_qobject()
-//!       → virtual ~CppProxy()
+//! registry::collect_garbage() runs & object has no user Rc
+//!
+//! -- never wrapped by any engine: deleted immediately
+//!   → QObject::delete
+//!     → virtual ~CppProxy()
 //!       → GenericRustProxy::drop_self
-//!         → on_drop()
+//!         → on_drop() (removes proxy-map and registry entries)
+//!   → registry drops its Rc
+//!     → UserStruct::drop()
+//!
+//! -- live JS wrapper: ownership handed to the engine --
+//!   → setJavaScriptOwnership (entry and Rc stay in the registry)
+//!   if a later engine gc() finds the wrapper unreachable
+//!     → engine deletes the QObject
+//!       → same teardown chain as above; removing the registry entry
+//!         drops its Rc
+//!           → UserStruct::drop()
 //! ```
 
 pub mod genericrustproxy;

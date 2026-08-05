@@ -6,7 +6,6 @@ use quote::{ToTokens, format_ident, quote};
 use syn::spanned::Spanned;
 
 use crate::function_with_attributes::FunctionWithAttributes;
-use qtbridge_gen_common::parse_utils::is_path_with_segments_str;
 use qtbridge_gen_common::type_utils::{get_ident_of_last_path_segment_or_err, path_from_type};
 use crate::qt_gen_impl::generate_qobject_holder::generate_qobject_holder;
 use crate::qt_gen_impl::qt_meta_gen;
@@ -18,7 +17,6 @@ use qt_meta_gen::{ExpandTokens, QClassInfo, QPropertyInfo, QSignalInfo, QSlotInf
 use crate::qt_gen_impl;
 use qt_gen_impl::qobject_macro_params::QObjectMacroParams;
 use qt_gen_impl::qml_element::{generate_qml_auto_register, generate_qml_register};
-use qt_gen_impl::drop_impl::{adjust_drop_impl, generate_drop};
 
 
 /// Output of the `#[qobject]` macro expansion.
@@ -53,7 +51,6 @@ pub struct QObjectModuleBuilder {
     properties: Vec<QPropertyInfo>,
     class_infos: Vec<QClassInfo>,
     other_methods: Vec<syn::Signature>,
-    is_drop_found: bool,
 }
 
 impl QObjectModuleBuilder {
@@ -73,7 +70,6 @@ impl QObjectModuleBuilder {
             properties: Vec::new(),
             class_infos: Vec::new(),
             other_methods: Vec::new(),
-            is_drop_found: false,
         }
     }
 
@@ -146,12 +142,6 @@ impl QObjectModuleBuilder {
             ("QObjectHolder",    generate_qobject_holder(&self.struct_ident, &iface_ident, &self.struct_generics)),
         ];
 
-        if !self.params.no_drop &&
-           let Some(drop) = self.generate_drop_trait_if_missing().transpose()
-        {
-            generated_traits.push(("Drop", drop));
-        }
-
         if !self.struct_is_generic() {
             let qml_register = generate_qml_register(&self.struct_ident, &self.params)
                 .map_err(|err| syn::Error::new(err.span(), format!("Failed to generate implementation of QmlRegister trait.\nError: {}", err)))?;
@@ -213,7 +203,10 @@ impl QObjectModuleBuilder {
         // Process the items within a `mod` or `impl` block and expand them.
         let mut output_items = Vec::new();
         for item in mod_items.iter() {
-            output_items.push(self.handle_item(item)?);
+            output_items.push(match item {
+                syn::Item::Impl(item_impl) => self.handle_item_impl_struct(item_impl)?.into(),
+                _ => item.clone(),
+            });
         }
 
         Ok(output_items)
@@ -230,43 +223,14 @@ impl QObjectModuleBuilder {
         Ok(new_impl.into())
     }
 
-    fn handle_item(&mut self, input: &syn::Item) -> syn::Result<syn::Item> {
-        match input {
-            syn::Item::Impl(item_impl) => {
-                let result = match &item_impl.trait_ {
-                    Some(_) => self.handle_item_impl_trait(item_impl),
-                    None => self.handle_item_impl_struct(item_impl),
-                }?;
-                Ok(result.into())
-            }
-            _ => Ok(input.clone()),
-        }
-    }
-
-    /// Handle block
-    /// impl SomeTrait for SomeStruct
-    fn handle_item_impl_trait(&mut self, input: &syn::ItemImpl) -> syn::Result<syn::ItemImpl> {
-
-        let path = &input.trait_.as_ref().unwrap().1;
-        let last_seg_ident = get_ident_of_last_path_segment_or_err(path)?;
-
-        if last_seg_ident.to_string().as_str() == "Drop"
-            && !self.params.no_drop
-            && (path.is_ident("Drop") ||
-            is_path_with_segments_str(path, "std::ops::Drop") ||
-            is_path_with_segments_str(path, "core::ops::Drop"))
-        {
-            self.is_drop_found = true;
-            return adjust_drop_impl(input)
-        }
-
-        // Will be handled later
-        Ok(input.clone())
-    }
-
     /// Handle block
     /// impl SomeStruct
+    /// Trait impls pass through unchanged.
     fn handle_item_impl_struct(&mut self, input: &syn::ItemImpl) -> syn::Result<syn::ItemImpl> {
+        if input.trait_.is_some() {
+            return Ok(input.clone());
+        }
+
         let mut output_items = Vec::new();
 
         for input_item in &input.items {
@@ -373,15 +337,6 @@ impl QObjectModuleBuilder {
         }
 
         Ok(Some(input.clone()))
-    }
-
-    /// Generate impl Drop for given struct in which we delete attached qobject.
-    fn generate_drop_trait_if_missing(&self) -> syn::Result<Option<syn::ItemImpl>> {
-        if self.is_drop_found {
-            return Ok(None)
-        }
-
-        Ok(Some(generate_drop(&self.struct_ident, &self.struct_generics)?))
     }
 
     fn get_meta_attribute(input: &[syn::Attribute]) -> syn::Result<Option<&syn::Attribute>> {

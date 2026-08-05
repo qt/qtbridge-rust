@@ -18,6 +18,7 @@ pub mod qmetatypeforqobject;
 pub mod qmodelitem;
 pub mod qmetacallarg;
 pub mod qpropertymember;
+pub mod registry;
 pub mod rustobjectgetter;
 pub(crate) mod serde_tools;
 
@@ -29,8 +30,6 @@ pub use qmetainfo::QMetaInfo;
 pub use qmetatypeget::QMetaTypeGet;
 pub use qml_register::QmlRegister;
 pub use qobjectholder::QObjectHolder;
-
-
 pub use qml_method_invoker::QmlMethodInvoker;
 pub use qmodelitem::QModelItem;
 pub use qmetacallarg::QMetaCallArg;

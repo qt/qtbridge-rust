@@ -41,28 +41,3 @@ pub fn test() {
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
     assert_snapshot!(formatted);
 }
-
-
-#[test]
-pub fn test_no_drop() {
-    let input = quote! {
-        mod some_module {
-            #[derive(Default)]
-            struct SomeStruct {
-            }
-
-            impl SomeStruct {
-
-            }
-        }
-    };
-
-    let input_params = quote!{
-        Base = QAbstractListModel, NoDrop
-    };
-
-    let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
-    let output = builder.build_token_stream(input, input_params).unwrap();
-    let formatted = format_rust_code(&strip_docs(output)).unwrap();
-    assert_snapshot!(formatted);
-}

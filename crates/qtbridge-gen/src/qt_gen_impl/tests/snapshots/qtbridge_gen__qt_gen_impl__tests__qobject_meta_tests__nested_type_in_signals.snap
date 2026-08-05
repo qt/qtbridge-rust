@@ -129,11 +129,6 @@ pub mod node {
             rust_obj_rc
         }
     }
-    impl Drop for Node {
-        fn drop(&mut self) {
-            <Self as qtbridge::qtbridge_runtime::QObjectHolder>::detach_qobject(self);
-        }
-    }
     impl qtbridge::qtbridge_runtime::QmlRegister for Node {
         const URI: &str = "qtbridge_gen";
         const ELEMENT_NAME: &str = "Node";

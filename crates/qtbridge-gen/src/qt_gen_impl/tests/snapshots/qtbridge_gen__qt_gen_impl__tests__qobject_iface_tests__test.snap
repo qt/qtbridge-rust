@@ -97,11 +97,6 @@ mod some_module {
             rust_obj_rc
         }
     }
-    impl Drop for SomeStruct {
-        fn drop(&mut self) {
-            <Self as qtbridge::qtbridge_runtime::QObjectHolder>::detach_qobject(self);
-        }
-    }
     impl qtbridge::qtbridge_runtime::QmlRegister for SomeStruct {
         const URI: &str = "qtbridge_gen";
         const ELEMENT_NAME: &str = "SomeStruct";

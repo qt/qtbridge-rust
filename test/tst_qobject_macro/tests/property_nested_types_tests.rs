@@ -173,6 +173,9 @@ fn qml_binary_tree_tests() {
 
     let result = quick_test_main(&args, &"binary_tree".into());
     assert_eq!(result, 0, "quick test failed");
+    // The registry owns the nodes; the engine is gone, so nothing
+    // references them anymore and collect_garbage() reclaims every one.
+    qtbridge::collect_garbage();
     assert_eq!(INSTANCE_COUNTER.load(Ordering::Relaxed), 0, "Node objects are dangling");
 }
 

@@ -6,7 +6,6 @@ use qtbridge_gen_common::parse_utils::parse_name_value;
 #[derive(Default, Debug, Clone)]
 pub struct QObjectMacroParams {
     pub base: Option<syn::Ident>,
-    pub no_drop: bool,
     pub no_qml_element: bool,
     pub singleton: bool,
     pub convert_to_camel_case: bool,
@@ -14,7 +13,6 @@ pub struct QObjectMacroParams {
 
 mod keywords {
     syn::custom_keyword!(Base);
-    syn::custom_keyword!(NoDrop);
     syn::custom_keyword!(NoQmlElement);
     syn::custom_keyword!(Singleton);
     syn::custom_keyword!(ConvertToCamelCase);
@@ -27,9 +25,6 @@ impl syn::parse::Parse for QObjectMacroParams {
         while !input.is_empty() {
             if input.peek(keywords::Base) {
                 params.base = Some(parse_name_value::<keywords::Base, _>(input)?.1)
-            } else if input.peek(keywords::NoDrop) {
-                input.parse::<keywords::NoDrop>()?;
-                params.no_drop = true;
             } else if input.peek(keywords::NoQmlElement) {
                 if params.singleton {
                     return Err(input.error("NoQmlElement is not compatible with Singleton"))
@@ -73,13 +68,13 @@ fn parse_base() {
 
 #[test]
 fn comma_separated_values() {
-    let result = syn::parse_str::<QObjectMacroParams>("NoDrop Singleton");
-    assert!(result.is_err());
+    let params = syn::parse_str::<QObjectMacroParams>("ConvertToCamelCase, Singleton").unwrap();
+    assert_eq!(params.convert_to_camel_case, true);
+    assert_eq!(params.singleton, true);
 }
 
 #[test]
 fn missing_comma_fails() {
-    let params = syn::parse_str::<QObjectMacroParams>("NoDrop, Singleton").unwrap();
-    assert_eq!(params.no_drop, true);
-    assert_eq!(params.singleton, true);
+    let result = syn::parse_str::<QObjectMacroParams>("ConvertToCamelCase Singleton");
+    assert!(result.is_err());
 }

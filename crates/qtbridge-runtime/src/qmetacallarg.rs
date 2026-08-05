@@ -99,6 +99,10 @@ impl QMetaCallArg for String {
     fn wire_metatype() -> QMetaType { <QString as QMetaTypeGet>::get_qmetatype() }
 }
 
+// The wire pointer is safe single-threaded: arguments outlive delivery on
+// the emitting stack frame, and no collection point runs between a return
+// value leaving Rust and the engine taking ownership. Revisit when signals
+// can cross threads.
 impl QMetaCallArg for Vec<usize> {
     #[cfg(target_pointer_width = "64")]
     type WireType = QList_u64;
@@ -165,6 +169,7 @@ impl<T: QObjectHolder> QMetaCallArg for Rc<RefCell<T>> {
     }
 }
 
+// The wire pointers share the in-flight guarantee of Rc<RefCell<T>> above.
 impl<T: QmlRegister> QMetaCallArg for Vec<Rc<RefCell<T>>> {
     type WireType = QObjectList;
 

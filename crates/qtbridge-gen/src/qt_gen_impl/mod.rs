@@ -5,7 +5,6 @@ pub mod generate_qobject_holder;
 pub mod qml_element;
 pub mod qobject_module_builder;
 pub mod qobject_macro_params;
-pub mod drop_impl;
 pub mod qt_meta_gen;
 
 mod tests;

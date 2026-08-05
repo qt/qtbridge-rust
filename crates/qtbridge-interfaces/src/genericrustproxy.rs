@@ -25,7 +25,7 @@ where
     fn new(
         rust_obj: &Rc<RefCell<Adapter>>,
         metatype: &'static DynamicMetaObjectData,
-        construct: ConstructionMode,
+        construct: &ConstructionMode,
         on_drop: Box<dyn FnOnce() + 'static>,
     ) -> *mut Self {
         let boxed_self = Box::new(Self {
@@ -42,7 +42,7 @@ where
         unsafe {
             (*raw_self).cpp_proxy = match construct {
                 ConstructionMode::AtAddress(addr) =>
-                    CppProxy::create_at(raw_self, metatype, addr),
+                    CppProxy::create_at(raw_self, metatype, *addr),
                 ConstructionMode::Strong | ConstructionMode::Weak =>
                     CppProxy::create(raw_self, metatype),
             }

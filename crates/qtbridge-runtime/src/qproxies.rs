@@ -9,6 +9,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::pin::Pin;
 
+
 pub enum ConstructionMode {
     Strong,
     Weak,
@@ -106,7 +107,7 @@ pub trait QRustProxy {
     ///   reference depending on `construction` (see [`ConstructionMode`]).
     /// - Constructing the paired C++ proxy and binding it to this Rust-side proxy.
     /// - Storing `on_drop` for invocation when the C++ proxy is eventually destroyed.
-    fn new(rust_obj: &Rc<RefCell<Self::AdapterType>>, metaobject: &'static DynamicMetaObjectData, construction: ConstructionMode, on_drop: Box<dyn FnOnce() + 'static>) -> *mut Self;
+    fn new(rust_obj: &Rc<RefCell<Self::AdapterType>>, metaobject: &'static DynamicMetaObjectData, construction: &ConstructionMode, on_drop: Box<dyn FnOnce() + 'static>) -> *mut Self;
     fn get_cpp_proxy(&self) -> *const Self::ProxyCppType;
     fn get_cpp_proxy_mut(&self) -> *mut Self::ProxyCppType;
     fn emit_signal(&self, mut_ref: &mut Self::AdapterType, signal_name: &str, argv: &[*const u8]);

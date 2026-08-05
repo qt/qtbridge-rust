@@ -19,6 +19,7 @@ fn main() {
         "qmetatypeget",
         "qmlprivate",
         "qresource",
+        "registry",
         "rustobjectgetter",
         "qml_method_invoker",
     ];
