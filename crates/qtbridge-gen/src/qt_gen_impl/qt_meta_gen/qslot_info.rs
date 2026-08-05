@@ -92,7 +92,7 @@ impl QSlotInfo {
         let id = &self.id;
         let sig = &self.func.sig;
 
-        let bridge_generator = MetaCallBridgeGenerator::new(sig)?;
+        let bridge_generator = MetaCallBridgeGenerator::new(sig);
         let input_meta_types = bridge_generator.get_input_metatypes()
             .collect::<Vec<_>>();
         let output_meta_types = bridge_generator.get_output_metatype();
@@ -123,7 +123,7 @@ impl QSlotInfo {
         let sig = &self.func.sig;
         let method_ident = &sig.ident;
 
-        let bridge_generator = MetaCallBridgeGenerator::new(sig)?;
+        let bridge_generator = MetaCallBridgeGenerator::new(sig);
 
         let fn_call = syn::parse_quote! {
             self.#method_ident()

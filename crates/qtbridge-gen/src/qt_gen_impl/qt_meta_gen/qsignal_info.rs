@@ -151,9 +151,9 @@ impl QmlName for QSignalInfo {
 impl ExpandTokens for QSignalInfo {
     fn expand_tokens(&self) -> syn::Result<TokenStream> {
         let Self { attrs, vis, sig, .. } = self;
-        let bridge_generator = MetaCallBridgeGenerator::new(sig)?;
+        let bridge_generator = MetaCallBridgeGenerator::new(sig);
         let qml_name = self.get_qml_name_span().0;
-        let argv_setup = bridge_generator.generate_argv_setup_for_signals();
+        let argv_setup = bridge_generator.generate_argv_setup_for_signals()?;
         if !self.is_mut() {
             let err_span = sig.receiver()
                 .map_or_else(|| sig.ident.span(), |r| r.self_token.span());

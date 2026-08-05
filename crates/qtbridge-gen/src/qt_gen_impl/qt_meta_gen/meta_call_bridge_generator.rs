@@ -3,38 +3,35 @@ use quote::{ToTokens, format_ident, quote};
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-use qtbridge_gen_common::signature_utils::{get_typed_arg_ident, get_typed_args};
+use qtbridge_gen_common::signature_utils::{get_return_type, get_typed_arg_ident, get_typed_args, get_typed_args_types};
 use qtbridge_gen_common::type_utils::{ValuePass, get_type_pass, is_ref, remove_ref, remove_refs};
 
 /// Generates code to connect a Rust function to a metacall (e.g. signal or slot).
 pub struct MetaCallBridgeGenerator<'a> {
-    inputs: Vec<MetaCallArg<'a>>,
-    output: Option<&'a syn::Type>,
+    sig: &'a syn::Signature,
 }
 
 impl<'a> MetaCallBridgeGenerator<'a> {
-    pub fn new(sign: &'a syn::Signature) -> syn::Result<Self> {
-        let inputs = get_typed_args(sign)
-            .map(|arg| Ok(MetaCallArg {
-                ident: get_typed_arg_ident(arg)?,
-                user_type: arg.ty.as_ref(),
-            }))
-            .collect::<syn::Result<_>>()?;
-        let output = match &sign.output {
-            syn::ReturnType::Default => None,
-            syn::ReturnType::Type(_, ty) => Some(ty.as_ref()),
-        };
-        Ok(Self { inputs, output })
+    pub fn new(sig: &'a syn::Signature) -> Self {
+        Self { sig }
+    }
+
+    fn input_types(&self) -> impl Iterator<Item = &'a syn::Type> {
+        get_typed_args_types(self.sig)
+    }
+
+    fn output_type(&self) -> Option<&'a syn::Type> {
+        get_return_type(&self.sig.output)
     }
 
     /// Return an iterator over the user argument types (refs stripped) for meta-type registration.
-    pub fn get_input_metatypes(&self) -> impl Iterator<Item = &syn::Type> {
-        self.inputs.iter().map(|arg| remove_refs(arg.user_type))
+    pub fn get_input_metatypes(&self) -> impl Iterator<Item = &'a syn::Type> {
+        self.input_types().map(remove_refs)
     }
 
     /// Return the user return type (refs stripped) for meta-type registration.
-    pub fn get_output_metatype(&self) -> Option<&syn::Type> {
-        self.output.map(remove_refs)
+    pub fn get_output_metatype(&self) -> Option<&'a syn::Type> {
+        self.output_type().map(remove_refs)
     }
 
     /// Generates bridge code for invoking a user-defined function from a metacall (e.g., slot invocation).
@@ -48,23 +45,23 @@ impl<'a> MetaCallBridgeGenerator<'a> {
     /// - Stores the result in the metacall parameter array if needed.
     pub fn generate_bridge_metacall_to_user_fn(&self, mut fn_call: syn::ExprMethodCall) -> syn::Result<TokenStream> {
         // Generate code: Cast arguments to the proper wire type
-        let input_refs: Vec<_> = self.inputs.iter().enumerate()
-            .map(|(idx, arg)| gen_input_ref(arg.user_type, idx))
+        let input_refs: Vec<_> = self.input_types().enumerate()
+            .map(|(idx, ty)| gen_input_ref(ty, idx))
             .collect();
         // Generate code: Convert the wire type to the proper type
-        let input_vars: Vec<_> = self.inputs.iter().enumerate()
-            .map(|(idx, arg)| gen_input_var(arg.user_type, idx))
+        let input_vars: Vec<_> = self.input_types().enumerate()
+            .map(|(idx, ty)| gen_input_var(ty, idx))
             .collect();
         // Generate code: Make a reference if required
-        let input_pass: Vec<_> = self.inputs.iter().enumerate()
-            .map(|(idx, arg)| gen_pass_expr(arg.user_type, idx))
+        let input_pass: Vec<_> = self.input_types().enumerate()
+            .map(|(idx, ty)| gen_pass_expr(ty, idx))
             .collect::<syn::Result<_>>()?;
 
         // Append user provided arguments (if any) with arguments taken from the input signature.
         fn_call.args.extend(input_pass);
 
         // Invoke the Rust function. Store its result in argv[0] if the function returns a value.
-        let invoke_and_maybe_write_result = match self.output {
+        let invoke_and_maybe_write_result = match self.output_type() {
             Some(output) => {
                 let result_var = format_ident!("result");
                 let result_conv_var = format_ident!("result_conv");
@@ -89,16 +86,19 @@ impl<'a> MetaCallBridgeGenerator<'a> {
     }
 
     /// Generates the argv array for signal emission, converting args to their wire types.
-    pub fn generate_argv_setup_for_signals(&self) -> TokenStream {
-        let argv_size = self.inputs.len() + 1;
+    /// The generated code lives inside the user's own signature, so the arguments must be
+    /// referenced by the parameter names the user wrote.
+    pub fn generate_argv_setup_for_signals(&self) -> syn::Result<TokenStream> {
+        let args: Vec<_> = get_typed_args(self.sig).collect();
+        let argv_size = args.len() + 1;
         let mut arg_vars = Vec::new();
         let mut argv_arr_init = Vec::with_capacity(argv_size);
 
-        for (idx, arg) in self.inputs.iter().enumerate() {
+        for (idx, arg) in args.iter().enumerate() {
             let var_ident = arg_var_ident(idx);
-            let arg_ident = &arg.ident;
-            let user_type_no_ref = remove_refs(arg.user_type);
-            let arg_ref = match get_type_pass(arg.user_type) {
+            let arg_ident = get_typed_arg_ident(arg)?;
+            let user_type_no_ref = remove_refs(&arg.ty);
+            let arg_ref = match get_type_pass(&arg.ty) {
                 ValuePass::ByValue => quote! { &#arg_ident },
                 _ => quote! { #arg_ident },
             };
@@ -108,19 +108,14 @@ impl<'a> MetaCallBridgeGenerator<'a> {
             argv_arr_init.push(quote! { std::ptr::from_ref(&#var_ident).cast() });
         }
 
-        quote! {
+        Ok(quote! {
             #(#arg_vars)*
             let argv: [*const u8; #argv_size] = [
                 std::ptr::null(),   // No value return.
                 #(#argv_arr_init),*
             ];
-        }
+        })
     }
-}
-
-struct MetaCallArg<'a> {
-    ident: syn::Ident,
-    user_type: &'a syn::Type,
 }
 
 fn gen_input_ref(user_type: &syn::Type, idx: usize) -> syn::Stmt {
