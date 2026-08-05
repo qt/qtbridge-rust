@@ -18,13 +18,14 @@
 //! with the proxy. An object that re-enters Rust and clones the
 //! [`Rc<RefCell<T>>`] from the proxy is changed back to `CppOwnership`.
 //!
-//! [`collect_garbage`] is triggered by the garbage collection of the QmlEngine.
-//! Since this cannot be observed with e.g. connecting to a signal, we use
-//! a sentinel that is injected into the QML engine and that should be deleted
-//! on the next garbage collector cycle.
+//! [`collect_garbage`] is triggered by the garbage collection of the
+//! QmlEngine and under allocation pressure (see `register`).
+//! A garbage collection cannot be observed with e.g. connecting to a
+//! signal, so we use a sentinel that is injected into the QML engine and
+//! that should be deleted on the next garbage collector cycle.
 
 use std::any::Any;
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
 
@@ -125,11 +126,25 @@ thread_local! {
     static REGISTRY: RefCell<Entries> = RefCell::new(Entries(HashMap::new()));
 }
 
+thread_local! {
+    static COLLECT_THRESHOLD: Cell<usize> = const { Cell::new(64) };
+}
+
+fn owned_count() -> usize {
+    REGISTRY.with_borrow(|entries| entries.len())
+}
+
+/// Registers a Rust-created object; called when its `QObject` is attached.
 pub(crate) fn register(keep: Rc<dyn Any>, key: *const u8, qobject: *mut QObject) {
     unsafe { ffi::set_cpp_ownership(qobject) };
     REGISTRY.with_borrow_mut(|entries| {
         entries.insert(key, Entry { shared_owner: keep, qobject })
     });
+    // If we reach a certain amount of QObjects, we will trigger a collect to
+    // clean up stale objects.
+    if owned_count() >= COLLECT_THRESHOLD.get() {
+        collect_garbage();
+    }
 }
 
 /// Takes ownership back when a handed-over object re-enters Rust.
@@ -150,11 +165,14 @@ pub(crate) fn unregister(key: *const u8) {
 /// The number of objects the registry currently owns. Useful for leak
 /// checks.
 pub fn live_count() -> usize {
-    REGISTRY.with_borrow(|entries| entries.len())
+    owned_count()
 }
 
 /// Frees every object that is neither referenced from Rust nor reachable from
 /// QML.
+/// Runs automatically after every garbage collection if using [crate::QApp]
+/// and under allocation pressure; call it explicitly for deterministic
+/// reclamation points.
 pub fn collect_garbage() {
     // Rust interest is the strong count above the registry's own reference.
     // Objects the engine never wrapped are freed directly; wrapped ones are
@@ -187,7 +205,7 @@ pub fn collect_garbage() {
                 .collect()
         });
         if doomed.is_empty() {
-            return;
+            break;
         }
         for (shared_reference, qobject) in doomed {
             // Tears down the proxy pair; its on_drop removes the registry
@@ -198,4 +216,10 @@ pub fn collect_garbage() {
             drop(shared_reference);
         }
     }
+    // Update the threshold on when we automatically collect QObjects.
+    // Twice the amount after a fresh sweep seems to be a good spot.
+    // The minimum value of 64 avoids collection on every few allocations.
+    // TODO: We might have to re-evaluate the values or this simplistic
+    // algorithm.
+    COLLECT_THRESHOLD.set((owned_count() * 2).max(64));
 }
