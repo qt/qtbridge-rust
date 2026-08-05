@@ -18,11 +18,11 @@ pub mod ffi {
         # [cxx_name = invokeSlot]
         fn invoke_slot(&self, slot_id: u32, args: &[*const u8], outputs: &[*mut u8]);
         # [cxx_name = invokeSlotMut]
-        fn invoke_slot_mut(&mut self, slot_id: u32, args: &[*const u8], outputs: &[*mut u8]);
+        fn invoke_slot_mut(&self, slot_id: u32, args: &[*const u8], outputs: &[*mut u8]);
         # [cxx_name = readProperty]
         fn read_property(&self, prop_id: u32) -> QVariant;
         # [cxx_name = writeProperty]
-        fn write_property(&mut self, prop_id: u32, value: &QVariant);
+        fn write_property(&self, prop_id: u32, value: &QVariant);
 
         fn class_begin(&mut self);
         fn component_complete(&mut self);

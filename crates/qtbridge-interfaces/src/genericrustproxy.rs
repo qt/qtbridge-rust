@@ -99,7 +99,8 @@ where
         call_rust_trait_impl!(self, invoke_slot(slot_id, inputs, outputs))
     }
 
-    pub fn invoke_slot_mut(&mut self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
+    // `&self` deliberately: mutability of the user object is interior (`RustObjAccess`)
+    pub fn invoke_slot_mut(&self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
         call_rust_trait_impl!(mut self, invoke_slot_mut(slot_id, inputs, outputs))
     }
 
@@ -107,7 +108,8 @@ where
         call_rust_trait_impl!(self, read_property(prop_id))
     }
 
-    pub fn write_property(&mut self, prop_id: u32, value: &QVariant) {
+    // `&self` deliberately: mutability of the user object is interior (`RustObjAccess`)
+    pub fn write_property(&self, prop_id: u32, value: &QVariant) {
         call_rust_trait_impl!(mut self, write_property(prop_id, value))
     }
 
