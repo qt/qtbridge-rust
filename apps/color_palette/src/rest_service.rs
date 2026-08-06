@@ -4,7 +4,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use qtbridge::{QObjectHolder, QParserStatus};
+use qtbridge::QParserStatus;
 
 use crate::basic_login::BasicLogin;
 use crate::paginated_source::PaginatedResource;
@@ -95,7 +95,7 @@ impl Default for RestService {
         Self {
             resources: Vec::new(),
             // A placeholder; QML replaces it through the `login` property.
-            login: BasicLogin::default_with_attached_qobject(),
+            login: Default::default(),
             service: Rc::new(RefCell::new(Service::new())),
         }
     }

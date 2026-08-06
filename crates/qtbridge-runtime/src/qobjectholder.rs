@@ -60,15 +60,19 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default + 'static {
         cpp_proxy as *mut QObject
     }
 
-    /// Return `QObject` attached to the specified Rust object.
+    /// Return the `QObject` attached to the given object, attaching one
+    /// first if none exists.
     #[doc(hidden)]
     fn rc_ref_cell_to_qobject(self_obj: &Rc<RefCell<Self>>) -> *const QObject {
-        let Some(proxy_ptr) = Self::try_get_rust_proxy_ptr_from_ptr(self_obj.as_ptr()) else {
-            return std::ptr::null_mut()
-        };
+        let proxy_ptr = Self::try_get_rust_proxy_ptr_from_ptr(self_obj.as_ptr())
+            .unwrap_or_else( || {
+                Self::attach_qobject(self_obj);
+                Self::try_get_rust_proxy_ptr_from_ptr(self_obj.as_ptr())
+                    .expect("Failed to attach and register a proxy")
+            }
+        );
         let rust_proxy = unsafe { &*proxy_ptr };
-        let cpp_proxy = rust_proxy.get_cpp_proxy();
-        cpp_proxy as *mut QObject
+        rust_proxy.get_cpp_proxy() as *mut QObject
     }
 
     /// Return the Rust object attached to the specified `QObject`.
@@ -193,8 +197,8 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default + 'static {
             .expect("Proxy object for rust object is not registered");
     }
 
-    /// Creates a default-initialized instance and attaches the required
-    /// [`QObject`], enabling its use in QML.
+    /// Creates a default-initialized instance and attaches its [`QObject`]
+    /// eagerly.
     ///
     /// The returned `Rc<RefCell<Self>>` is an ordinary handle, shared with
     /// QML. Dropping the handle does not drop the instance if it is in use by
