@@ -19,8 +19,8 @@ Rectangle {
 
     function iconPath(baseImagePath) {
         return Application.styleHints.colorScheme === Qt.ColorScheme.Dark
-            ? `qrc:/qt/qml/ColorPalette/icons/${baseImagePath}_dark.svg`
-            : `qrc:/qt/qml/ColorPalette/icons/${baseImagePath}.svg`
+            ? `qrc:/qt/qml/color_palette/icons/${baseImagePath}_dark.svg`
+            : `qrc:/qt/qml/color_palette/icons/${baseImagePath}.svg`
     }
 
     ColorDialogEditor {
@@ -113,7 +113,7 @@ Rectangle {
                     Layout.minimumHeight: 25
                     Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
 
-                    source: "qrc:/qt/qml/ColorPalette/icons/qt.png"
+                    source: "qrc:/qt/qml/color_palette/icons/qt.png"
                     fillMode: Image.PreserveAspectFit
                 }
 
@@ -165,7 +165,7 @@ Rectangle {
 
                         Image {
                             id: userMask
-                            source: "qrc:/qt/qml/ColorPalette/icons/userMask.svg"
+                            source: "qrc:/qt/qml/color_palette/icons/userMask.svg"
                             anchors.fill: userImage
                             anchors.margins: 4
                             visible: false

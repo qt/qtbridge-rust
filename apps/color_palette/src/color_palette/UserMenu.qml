@@ -21,8 +21,8 @@ Popup {
 
     function iconPath(baseImagePath) {
         return Application.styleHints.colorScheme === Qt.ColorScheme.Dark
-            ? `qrc:/qt/qml/ColorPalette/icons/${baseImagePath}_dark.svg`
-            : `qrc:/qt/qml/ColorPalette/icons/${baseImagePath}.svg`
+            ? `qrc:/qt/qml/color_palette/icons/${baseImagePath}_dark.svg`
+            : `qrc:/qt/qml/color_palette/icons/${baseImagePath}.svg`
     }
 
     Rectangle {
@@ -73,7 +73,7 @@ Popup {
 
                     Image {
                         id: userMask
-                        source: "qrc:/qt/qml/ColorPalette/icons/userMask.svg"
+                        source: "qrc:/qt/qml/color_palette/icons/userMask.svg"
                         anchors.fill: userImage
                         anchors.margins: 4
                         visible: false

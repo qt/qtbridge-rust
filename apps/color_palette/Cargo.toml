@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
 [package]
-name = "ColorPalette"
+name = "color_palette"
 version = "0.1.0"
 edition = "2024"
 description = "Rust port of the famous colorpalette example"

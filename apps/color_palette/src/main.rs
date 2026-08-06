@@ -53,40 +53,40 @@ fn main() {
     }
 
     // Qt QML modules live under the `:/qt/qml/<Module>/` resource prefix, and the
-    // QML hard-codes icon paths like `qrc:/qt/qml/ColorPalette/icons/qt.png`, so
+    // QML hard-codes icon paths like `qrc:/qt/qml/color_palette/icons/qt.png`, so
     // everything is registered under `qt/qml/...` to match.
-    include_bytes_qml!("icons/close.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/close_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/delete.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/delete_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/dots.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/dots_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/edit.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/edit_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/login.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/login_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/logout.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/logout_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/ok.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/ok_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/plus.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/plus_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/qt.png", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/update.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/update_dark.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/user.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/userMask.svg", "qt/qml/ColorPalette");
-    include_bytes_qml!("icons/user_dark.svg", "qt/qml/ColorPalette");
+    include_bytes_qml!("icons/close.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/close_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/delete.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/delete_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/dots.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/dots_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/edit.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/edit_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/login.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/login_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/logout.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/logout_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/ok.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/ok_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/plus.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/plus_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/qt.png", "qt/qml/color_palette");
+    include_bytes_qml!("icons/update.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/update_dark.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/user.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/userMask.svg", "qt/qml/color_palette");
+    include_bytes_qml!("icons/user_dark.svg", "qt/qml/color_palette");
 
-    include_bytes_qml!("ColorPalette/ColorDialogDelete.qml", "qt/qml");
-    include_bytes_qml!("ColorPalette/ColorDialogEditor.qml", "qt/qml");
-    include_bytes_qml!("ColorPalette/ColorView.qml", "qt/qml");
-    include_bytes_qml!("ColorPalette/Main.qml", "qt/qml");
-    include_bytes_qml!("ColorPalette/qmldir", "qt/qml");
-    include_bytes_qml!("ColorPalette/UserMenu.qml", "qt/qml");
+    include_bytes_qml!("color_palette/ColorDialogDelete.qml", "qt/qml");
+    include_bytes_qml!("color_palette/ColorDialogEditor.qml", "qt/qml");
+    include_bytes_qml!("color_palette/ColorView.qml", "qt/qml");
+    include_bytes_qml!("color_palette/Main.qml", "qt/qml");
+    include_bytes_qml!("color_palette/qmldir", "qt/qml");
+    include_bytes_qml!("color_palette/UserMenu.qml", "qt/qml");
 
     QApp::new()
-        // Register the Rust back-end types into the "ColorPalette" QML module so
+        // Register the Rust back-end types into the "color_palette" QML module so
         // the .qml files can use RestService / PaginatedResource / BasicLogin
         // without an explicit import (they are part of the same module).
         .register::<RestService>()
@@ -94,6 +94,6 @@ fn main() {
         .register::<BasicLogin>()
         .add_initial_property("serverUrl", &QVariant::from(&url))
         .add_import_path("qrc:/qt/qml")
-        .load_qml_from_file("qrc:/qt/qml/ColorPalette/Main.qml")
+        .load_qml_from_file("qrc:/qt/qml/color_palette/Main.qml")
         .run();
 }
