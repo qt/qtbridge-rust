@@ -41,8 +41,7 @@ Window {
         buttons: MessageDialog.Cancel | MessageDialog.Retry
         onButtonClicked: function(button) {
             if (button === MessageDialog.Retry) {
-                colorPalette.refreshCurrentPage()
-                users.refreshCurrentPage()
+                retryTimer.restart()
             } else if (button === MessageDialog.Cancel) {
                 Qt.quit()
             }
@@ -52,6 +51,15 @@ Window {
     Connections {
         target: colorPalette
         function onErrorOccurred(message) { connectionErrorDialog.open() }
+    }
+    Timer {
+        id: retryTimer
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            colorPalette.refreshCurrentPage()
+            users.refreshCurrentPage()
+        }
     }
 
     //! [RestService QML element]
