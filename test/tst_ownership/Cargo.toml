@@ -14,3 +14,28 @@ qtbridge = { path = "../../crates/qtbridge" }
 name = "rust_owned_tests"
 path = "tests/rust_owned_tests.rs"
 harness = false
+
+[[test]]
+name = "shared_ownership_tests"
+path = "tests/shared_ownership_tests.rs"
+harness = false
+
+[[test]]
+name = "inflight_handover_tests"
+path = "tests/inflight_handover_tests.rs"
+harness = false
+
+[[test]]
+name = "no_engine_tests"
+path = "tests/no_engine_tests.rs"
+harness = false
+
+[[test]]
+name = "automatic_collection_tests"
+path = "tests/automatic_collection_tests.rs"
+harness = false
+
+[[test]]
+name = "cpp_ownership_tests"
+path = "tests/cpp_ownership_tests.rs"
+harness = false
