@@ -130,6 +130,7 @@
 //! ```
 
 pub mod genericrustproxy;
+pub use genericrustproxy::live_proxy_count;
 
 pub mod qobject;
 

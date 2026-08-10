@@ -147,6 +147,12 @@ pub(crate) fn unregister(key: *const u8) {
     REGISTRY.with_borrow_mut(|entries| entries.remove(&key));
 }
 
+/// The number of objects the registry currently owns. Useful for leak
+/// checks.
+pub fn live_count() -> usize {
+    REGISTRY.with_borrow(|entries| entries.len())
+}
+
 /// Frees every object that is neither referenced from Rust nor reachable from
 /// QML.
 pub fn collect_garbage() {
