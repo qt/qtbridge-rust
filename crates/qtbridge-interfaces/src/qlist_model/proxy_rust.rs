@@ -289,9 +289,10 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
     /// was out of bounds or validation failed).
     fn set(&mut self, index: usize, value: <Self as QListModel>::Item) -> bool {
         if self.set_unnotified(index, value) {
-            let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-            let model_index = unsafe { &*proxy }.base_index(&*self, index as i32, 0, &QModelIndex::default());
-            unsafe { &mut *proxy }.base_data_changed(&mut *self, &model_index, &model_index);
+            if let Some(proxy) = self.try_get_rust_proxy_ptr() {
+                let model_index = unsafe { &*proxy }.base_index(&*self, index as i32, 0, &QModelIndex::default());
+                unsafe { &mut *proxy }.base_data_changed(&mut *self, &model_index, &model_index);
+            }
             true
         } else {
             false
@@ -303,7 +304,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
     ///
     /// This method calls [`QListModel::push_unnotified`].
     fn push(&mut self, value: Self::Item) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.push_unnotified(value);
+        };
         let len = self.len() as i32;
         unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), len, len);
         self.push_unnotified(value);
@@ -315,7 +318,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
     ///
     /// This method calls [`QListModel::insert_unnotified`].
     fn insert(&mut self, index: usize, value: Self::Item) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.insert_unnotified(index, value);
+        };
         unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         self.insert_unnotified(index, value);
         unsafe { &mut *proxy }.base_end_insert_rows(&mut *self);
@@ -332,7 +337,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
         if self.len() == 0 {
             return None;
         }
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.pop_unnotified();
+        };
         let len = self.len() as i32;
         unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), len - 1, len - 1);
         let value = self.pop_unnotified();
@@ -345,7 +352,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
     ///
     /// This method calls [`QListModel::remove_unnotified`].
     fn remove(&mut self, index: usize) -> Self::Item {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.remove_unnotified(index);
+        };
         unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         let value = self.remove_unnotified(index);
         unsafe { &mut *proxy }.base_end_remove_rows(&mut *self);
@@ -356,7 +365,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
     ///
     /// This method calls [`QListModel::reset_unnotified`].
     fn reset(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.reset_unnotified();
+        };
         unsafe { &mut *proxy }.base_begin_reset_model(&mut *self);
         self.reset_unnotified();
         unsafe { &mut *proxy }.base_end_reset_model(&mut *self);

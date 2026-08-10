@@ -112,7 +112,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         top_left: &QModelIndex,
         bottom_right: &QModelIndex,
     ) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_data_changed(&mut *self, top_left, bottom_right)
     }
     fn begin_insert_columns(
@@ -121,11 +121,11 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         first: i32,
         last: i32,
     ) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_begin_insert_columns(&mut *self, parent, first, last)
     }
     fn end_insert_columns(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_end_insert_columns(&mut *self)
     }
     fn begin_insert_rows(
@@ -134,11 +134,11 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         first: i32,
         last: i32,
     ) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, parent, first, last)
     }
     fn end_insert_rows(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_end_insert_rows(&mut *self)
     }
     fn begin_move_columns(
@@ -149,7 +149,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         destination_parent: &QModelIndex,
         destination_child: i32,
     ) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_begin_move_columns(
             &mut *self,
             source_parent,
@@ -160,7 +160,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         )
     }
     fn end_move_columns(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_end_move_columns(&mut *self)
     }
     fn begin_move_rows(
@@ -171,7 +171,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         destination_parent: &QModelIndex,
         destination_child: i32,
     ) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_begin_move_rows(
             &mut *self,
             source_parent,
@@ -182,7 +182,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         )
     }
     fn end_move_rows(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_end_move_rows(&mut *self)
     }
     fn begin_remove_columns(
@@ -191,11 +191,11 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         first: i32,
         last: i32,
     ) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_begin_remove_columns(&mut *self, parent, first, last)
     }
     fn end_remove_columns(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_end_remove_columns(&mut *self)
     }
     fn begin_remove_rows(
@@ -204,19 +204,19 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         first: i32,
         last: i32,
     ) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, parent, first, last)
     }
     fn end_remove_rows(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_end_remove_rows(&mut *self)
     }
     fn begin_reset_model(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_begin_reset_model(&mut *self)
     }
     fn end_reset_model(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
         unsafe { &mut *proxy }.base_end_reset_model(&mut *self)
     }
     fn create_index(

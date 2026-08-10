@@ -376,9 +376,10 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
     /// was out of bounds or validation failed).
     fn set(&mut self, index: (usize, usize), value: <Self as QTableModel>::Item) -> bool {
         if self.set_unnotified(index, value) {
-            let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-            let model_index = unsafe { &*proxy }.base_create_index(self, index.0 as i32, index.1 as i32, 0);
-            unsafe { &mut *proxy }.base_data_changed(&mut *self, &model_index, &model_index);
+            if let Some(proxy) = self.try_get_rust_proxy_ptr() {
+                let model_index = unsafe { &*proxy }.base_create_index(self, index.0 as i32, index.1 as i32, 0);
+                unsafe { &mut *proxy }.base_data_changed(&mut *self, &model_index, &model_index);
+            }
             true
         } else {
             false
@@ -390,7 +391,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
     ///
     /// This method calls [`QTableModel::push_row_unnotified`].
     fn push_row(&mut self, values: &[Self::Item]) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.push_row_unnotified(values);
+        };
         let row_count = self.row_count() as i32;
         unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), row_count, row_count);
         self.push_row_unnotified(values);
@@ -402,7 +405,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
     ///
     /// This method calls [`QTableModel::push_column_unnotified`].
     fn push_column(&mut self, values: &[Self::Item]) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.push_column_unnotified(values);
+        };
         let col_count = self.column_count() as i32;
         unsafe { &mut *proxy }.base_begin_insert_columns(&mut *self, &QModelIndex::default(), col_count, col_count);
         self.push_column_unnotified(values);
@@ -414,7 +419,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
     ///
     /// This method calls [`QTableModel::insert_row_unnotified`].
     fn insert_row(&mut self, index: usize, values: &[Self::Item]) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.insert_row_unnotified(index, values);
+        };
         unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         self.insert_row_unnotified(index, values);
         unsafe { &mut *proxy }.base_end_insert_rows(&mut *self);
@@ -425,7 +432,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
     ///
     /// This method calls [`QTableModel::insert_column_unnotified`].
     fn insert_column(&mut self, index: usize, values: &[Self::Item]) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.insert_column_unnotified(index, values);
+        };
         unsafe { &mut *proxy }.base_begin_insert_columns(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         self.insert_column_unnotified(index, values);
         unsafe { &mut *proxy }.base_end_insert_columns(&mut *self);
@@ -442,7 +451,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
         if self.row_count() == 0 {
             return None;
         }
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.pop_row_unnotified();
+        };
         let row_count = self.row_count() as i32;
         unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), row_count - 1, row_count - 1);
         let values = self.pop_row_unnotified();
@@ -461,7 +472,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
         if self.column_count() == 0 {
             return None;
         }
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.pop_column_unnotified();
+        };
         let col_count = self.column_count() as i32;
         unsafe { &mut *proxy }.base_begin_remove_columns(&mut *self, &QModelIndex::default(), col_count - 1, col_count - 1);
         let values = self.pop_column_unnotified();
@@ -474,7 +487,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
     ///
     /// This method calls [`QTableModel::remove_row_unnotified`].
     fn remove_row(&mut self, index: usize) -> Vec<Self::Item> {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.remove_row_unnotified(index);
+        };
         unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         let values = self.remove_row_unnotified(index);
         unsafe { &mut *proxy }.base_end_remove_rows(&mut *self);
@@ -486,7 +501,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
     ///
     /// This method calls [`QTableModel::remove_column_unnotified`].
     fn remove_column(&mut self, index: usize) -> Vec<Self::Item> {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.remove_column_unnotified(index);
+        };
         unsafe { &mut *proxy }.base_begin_remove_columns(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         let values = self.remove_column_unnotified(index);
         unsafe { &mut *proxy }.base_end_remove_columns(&mut *self);
@@ -497,7 +514,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
     ///
     /// This method calls [`QTableModel::reset_unnotified`].
     fn reset(&mut self) {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
+        let Some(proxy) = self.try_get_rust_proxy_ptr() else {
+            return self.reset_unnotified();
+        };
         unsafe { &mut *proxy }.base_begin_reset_model(&mut *self);
         self.reset_unnotified();
         unsafe { &mut *proxy }.base_end_reset_model(&mut *self);
