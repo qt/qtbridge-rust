@@ -137,8 +137,10 @@ void DynamicMetaObjectBuilder::registerSlot(rust::Str name, uint32_t slotId, rus
 
     QByteArray signature = generateFuncSignature(nameBa, argMetaTypes);
     QMetaMethodBuilder builder = m_mob->addSlot(signature);
-    if (returnMetaType.isValid())
+    if (returnMetaType.isValid()) {
+        returnMetaType.registerType();
         builder.setReturnType(returnMetaType.name());
+    }
     m_data->addSlot(slotId, mutability);
 }
 
