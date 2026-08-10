@@ -1,13 +1,17 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use qtbridge::QApp;
 use qtbridge::QObjectHolder;
 
 use tst_qlistmodel::Backend;
 
 fn main() {
-    let backend = Backend::default_with_attached_qobject();
+    let backend = Rc::new(RefCell::new(Backend::default()));
+
 
     let properties = [("rustmodel", backend.borrow().as_qvariant())];
     QApp::new()

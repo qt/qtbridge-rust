@@ -49,3 +49,8 @@ harness = false
 name = "unattached_qaim_tests"
 path = "tests/unattached_qaim_tests.rs"
 harness = false
+
+[[test]]
+name = "lazy_attachment_tests"
+path = "tests/lazy_attachment_tests.rs"
+harness = false

@@ -25,20 +25,10 @@ impl Child {
     }
 }
 
+#[derive(Default)]
 pub struct Factory {
     pub child_pings: i32,
     pub child: Rc<RefCell<Child>>,
-}
-
-impl Default for Factory {
-    fn default() -> Self {
-        Self {
-            child_pings: 0,
-            // A bare `Rc::default()` would have no attached QObject and
-            // could not be read as a property.
-            child: Child::default_with_attached_qobject(),
-        }
-    }
 }
 
 #[qobject]
@@ -59,28 +49,28 @@ impl Factory {
     /// returned pointer, the in-flight case of QTBRIDGES-294.
     #[qslot(qml_name = "makeChild")]
     fn make_child(&mut self) -> Rc<RefCell<Child>> {
-        Child::default_with_attached_qobject()
+        Default::default()
     }
 
     /// Returns fresh objects whose only user handles are the vector
     /// elements, all dropped when the dispatch returns.
     #[qslot(qml_name = "makeChildren")]
     fn make_children(&mut self) -> Vec<Rc<RefCell<Child>>> {
-        (0..3).map(|_| Child::default_with_attached_qobject()).collect()
+        (0..3).map(|_| Default::default()).collect()
     }
 
     /// Emits a fresh object as a signal argument; the only user handle
     /// is the by-value parameter, dropped when the emit returns.
     #[qslot(qml_name = "emitChild")]
     fn emit_child(&mut self) {
-        self.child_born(Child::default_with_attached_qobject());
+        self.child_born(Default::default());
     }
 
     /// Replaces the `child` property, dropping the last user handle to
     /// the previous object.
     #[qslot(qml_name = "replaceChild")]
     fn replace_child(&mut self) {
-        self.child = Child::default_with_attached_qobject();
+        self.child = Default::default();
         self.child_changed();
     }
 
@@ -94,7 +84,7 @@ impl Factory {
     /// the returned object is still in flight.
     #[qslot(qml_name = "makeChildAndCollect")]
     fn make_child_and_collect(&mut self) -> Rc<RefCell<Child>> {
-        let child = Child::default_with_attached_qobject();
+        let child: Rc<RefCell<Child>> = Default::default();
         // Must spare `child` (the local handle is Rust interest) and
         // must spare `self` (the running dispatch holds a handle).
         qtbridge::collect_garbage();
@@ -217,9 +207,11 @@ fn slot_argument_reacquired_by_rust_stays_owned() {
 }
 
 fn unconnected_signal_argument_is_reclaimed_by_collect_garbage() {
+    // Testing the situation of an attached QObject but with no connection.
+    // Need to explicitly attach the QObject.
     let factory = Factory::default_with_attached_qobject();
 
-    let child = Child::default_with_attached_qobject();
+    let child = Rc::new(RefCell::new(Child::default()));
     let weak = Rc::downgrade(&child);
 
     // No handler is connected: the argument crosses towards QML but is
@@ -238,7 +230,7 @@ fn unconnected_vec_signal_arguments_are_reclaimed_by_collect_garbage() {
     let factory = Factory::default_with_attached_qobject();
 
     let children: Vec<_> = (0..3)
-        .map(|_| Child::default_with_attached_qobject())
+        .map(|_| Rc::new(RefCell::new(Child::default())))
         .collect();
     let weaks: Vec<_> = children.iter().map(Rc::downgrade).collect();
 

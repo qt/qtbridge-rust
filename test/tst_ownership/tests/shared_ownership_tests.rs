@@ -34,22 +34,11 @@ impl Child {
     }
 }
 
+#[derive(Default)]
 pub struct Backend {
     pub child_pings: i32,
     pub child: Rc<RefCell<Child>>,
     pub last_made: Weak<RefCell<Child>>,
-}
-
-impl Default for Backend {
-    fn default() -> Self {
-        Self {
-            child_pings: 0,
-            // A bare `Rc::default()` would have no attached QObject and
-            // could not be read as a property.
-            child: Child::default_with_attached_qobject(),
-            last_made: Weak::new(),
-        }
-    }
 }
 
 #[qobject]
@@ -61,7 +50,7 @@ impl Backend {
 
     #[qslot(qml_name = "makeChild")]
     fn make_child(&mut self) -> Rc<RefCell<Child>> {
-        let child = Child::default_with_attached_qobject();
+        let child: Rc<RefCell<Child>> = Default::default();
         self.last_made = Rc::downgrade(&child);
         child
     }
