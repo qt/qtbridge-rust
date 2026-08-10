@@ -36,6 +36,11 @@ path = "tests/automatic_collection_tests.rs"
 harness = false
 
 [[test]]
+name = "unattached_tests"
+path = "tests/unattached_tests.rs"
+harness = false
+
+[[test]]
 name = "cpp_ownership_tests"
 path = "tests/cpp_ownership_tests.rs"
 harness = false

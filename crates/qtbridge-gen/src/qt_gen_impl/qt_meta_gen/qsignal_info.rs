@@ -166,7 +166,11 @@ impl ExpandTokens for QSignalInfo {
             #sig
             {
                 use qtbridge::qtbridge_runtime::QMetaCallArg;
-                let proxy = <Self as qtbridge::QObjectHolder>::try_get_rust_proxy_ptr(self).expect("No proxy");
+                // Never exposed to QML: no QObject, hence no connections
+                // and no receivers - emitting is a no-op.
+                let Some(proxy) = <Self as qtbridge::QObjectHolder>::try_get_rust_proxy_ptr(self) else {
+                    return;
+                };
                 #argv_setup
                 qtbridge::qtbridge_runtime::qproxies::QRustProxy::emit_signal(unsafe { &*proxy }, self, #qml_name, argv.as_slice())
             }

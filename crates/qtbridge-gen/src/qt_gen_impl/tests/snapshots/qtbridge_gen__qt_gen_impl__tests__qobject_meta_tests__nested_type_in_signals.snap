@@ -10,8 +10,10 @@ pub mod node {
             value: Rc<RefCell<SomeNestedType>>,
         ) {
             use qtbridge::qtbridge_runtime::QMetaCallArg;
-            let proxy =
-                <Self as qtbridge::QObjectHolder>::try_get_rust_proxy_ptr(self).expect("No proxy");
+            let Some(proxy) = <Self as qtbridge::QObjectHolder>::try_get_rust_proxy_ptr(self)
+            else {
+                return;
+            };
             let arg_0_var = <Rc<RefCell<SomeNestedType>> as QMetaCallArg>::to_wire(&value);
             let argv: [*const u8; 2usize] =
                 [std::ptr::null(), std::ptr::from_ref(&arg_0_var).cast()];
@@ -27,8 +29,10 @@ pub mod node {
             value: &Rc<RefCell<SomeNestedType>>,
         ) {
             use qtbridge::qtbridge_runtime::QMetaCallArg;
-            let proxy =
-                <Self as qtbridge::QObjectHolder>::try_get_rust_proxy_ptr(self).expect("No proxy");
+            let Some(proxy) = <Self as qtbridge::QObjectHolder>::try_get_rust_proxy_ptr(self)
+            else {
+                return;
+            };
             let arg_0_var = <Rc<RefCell<SomeNestedType>> as QMetaCallArg>::to_wire(value);
             let argv: [*const u8; 2usize] =
                 [std::ptr::null(), std::ptr::from_ref(&arg_0_var).cast()];
