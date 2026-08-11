@@ -34,7 +34,7 @@ pub use qml_method_invoker::QmlMethodInvoker;
 pub use qmodelitem::QModelItem;
 pub use qmetacallarg::QMetaCallArg;
 pub use qpropertymember::{QPropertyMember, get_meta_type_of_fn_return_value};
-pub use registry::live_count as live_object_count;
+pub use registry::{live_count as live_object_count, live_proxy_count};
 
 #[cfg(feature = "linkme")]
 pub use qmlprivate::QML_REGISTER_CALLBACKS;

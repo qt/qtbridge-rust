@@ -1,7 +1,8 @@
 // Copyright (C) 2026 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-//! The owner of record for every Rust-created `#[qobject]` instance.
+//! The owner of record for every Rust-created `#[qobject]` instance, and
+//! the proxy table for every attached object, Rust- or QML-created.
 //!
 //! The registry holds one strong reference per attached object, so user
 //! handles are plain [`Rc<RefCell<T>>`]s whose drops never tear anything
@@ -82,48 +83,39 @@ pub fn install_gc_sentinel(engine: core::pin::Pin<&mut qtbridge_type_lib::QQmlAp
 }
 
 struct Entry {
-    /// Shared reference counter to observe Rust usage and guarantee
-    /// liveness.
-    shared_owner: Rc<dyn Any>,
+    /// Type-erased pointer to the object's `RustProxy`.
+    proxy: *const u8,
     /// The attached [`QObject`]. Valid for as long as the entry exists: its
     /// deletion tears down the proxy, whose `on_drop` unregisters the entry.
     qobject: *mut QObject,
+    /// Shared reference counter to observe Rust usage and guarantee
+    /// liveness. `None` for QML-created objects, which the engine owns.
+    shared_owner: Option<Rc<dyn Any>>,
 }
 
-/// Entries keyed by the address of the user value (same as
-/// proxy multiton map)
-struct Entries(HashMap<*const u8, Entry>);
-
-impl std::ops::Deref for Entries {
-    type Target = HashMap<*const u8, Entry>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl std::ops::DerefMut for Entries {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
+/// Entries keyed by the address of the user value.
+struct Entries {
+    map: HashMap<*const u8, Entry>,
+    /// Number of entries with a `shared_owner` for debugging and
+    /// collecting under pressure
+    owned: usize,
 }
 
 impl Drop for Entries {
     fn drop(&mut self) {
-        // Thread-local destruction order is unspecified: freeing objects
-        // here would run QObject destructors while the Proxy map might
-        // already be deleted. Therefore leak it here to be safe.
-        //
-        // TODO: This can lead to situations where the users drop is not
-        // called. If they use drop to e.g. close a file, they have a
-        // problem. Maybe we can improve?
-        for (_, entry) in self.drain() {
-            std::mem::forget(entry.shared_owner);
+        // Thread teardown: free the objects we own; QObjects without a
+        // `shared_owner` are the engine's (or a parent's) to delete.
+        for (_, entry) in self.map.drain() {
+            if let Some(owner) = entry.shared_owner {
+                QObject::delete(entry.qobject); // Deletes both proxies
+                drop(owner);
+            }
         }
     }
 }
 
 thread_local! {
-    static REGISTRY: RefCell<Entries> = RefCell::new(Entries(HashMap::new()));
+    static REGISTRY: RefCell<Entries> = RefCell::new(Entries { map: HashMap::new(), owned: 0 });
 }
 
 thread_local! {
@@ -131,35 +123,60 @@ thread_local! {
 }
 
 fn owned_count() -> usize {
-    REGISTRY.with_borrow(|entries| entries.len())
+    REGISTRY.with_borrow(|entries| entries.owned)
 }
 
-/// Registers a Rust-created object; called when its `QObject` is attached.
-pub(crate) fn register(keep: Rc<dyn Any>, key: *const u8, qobject: *mut QObject) {
-    unsafe { ffi::set_cpp_ownership(qobject) };
+/// Registers an attached object; `shared_owner` is set for Rust-created
+/// objects, which the registry owns.
+pub(crate) fn register(
+    key: *const u8, proxy: *const u8, qobject: *mut QObject, shared_owner: Option<Rc<dyn Any>>,
+) {
+    let owned = shared_owner.is_some();
+    if owned {
+        unsafe { ffi::set_cpp_ownership(qobject) };
+    }
     REGISTRY.with_borrow_mut(|entries| {
-        entries.insert(key, Entry { shared_owner: keep, qobject })
+        let old = entries.map.insert(key, Entry { proxy, qobject, shared_owner });
+        debug_assert!(old.is_none(), "Object is already registered");
+        entries.owned += owned as usize;
     });
     // If we reach a certain amount of QObjects, we will trigger a collect to
     // clean up stale objects.
-    if owned_count() >= COLLECT_THRESHOLD.get() {
+    if owned && owned_count() >= COLLECT_THRESHOLD.get() {
         collect_garbage();
     }
 }
 
 /// Takes ownership back when a handed-over object re-enters Rust.
 pub(crate) fn repin(key: *const u8) {
-    REGISTRY.with_borrow_mut(|entries| {
-        if let Some(entry) = entries.get_mut(&key) {
-            unsafe { ffi::set_cpp_ownership(entry.qobject) };
+    REGISTRY.with_borrow(|entries| {
+        if let Some(entry) = entries.map.get(&key) {
+            if entry.shared_owner.is_some() {
+                unsafe { ffi::set_cpp_ownership(entry.qobject) };
+            }
         }
     });
 }
 
-/// Drops the registry's reference for `key`; called from the proxy teardown
-/// when the `QObject` is deleted (by [`collect_garbage`] or by the engine).
+/// Drops the entry for `key`; called from the proxy teardown when the
+/// `QObject` is deleted (by [`collect_garbage`] or by the engine). Entries
+/// of objects freed by [`collect_garbage`] are already extracted by then,
+/// and during registry teardown the map is being drained.
 pub(crate) fn unregister(key: *const u8) {
-    REGISTRY.with_borrow_mut(|entries| entries.remove(&key));
+    let _ = REGISTRY.try_with(|entries: &RefCell<Entries>| {
+        let mut entries = entries.borrow_mut();
+        if let Some(entry) = entries.map.remove(&key) {
+            entries.owned -= entry.shared_owner.is_some() as usize;
+        }
+    });
+}
+
+/// Returns the type-erased `RustProxy` pointer for `key`, or null when the
+/// object has no attached `QObject`.
+pub(crate) fn proxy_ptr(key: *const u8) -> *const u8 {
+    REGISTRY.with_borrow(|entries| {
+        entries.map.get(&key).map_or(std::ptr::null(), |entry| entry.proxy)
+    })
 }
 
 /// The number of objects the registry currently owns. Useful for leak
@@ -167,6 +184,13 @@ pub(crate) fn unregister(key: *const u8) {
 pub fn live_count() -> usize {
     owned_count()
 }
+
+/// The number of objects the registry currently owns. Useful for leak
+/// checks.
+pub fn live_proxy_count() -> usize {
+    REGISTRY.with_borrow(|entries| entries.map.len())
+}
+
 
 /// Frees every object that is neither referenced from Rust nor reachable from
 /// QML.
@@ -183,11 +207,13 @@ pub fn collect_garbage() {
     // objects (e.g. children stored in fields), so iterate to a fixpoint.
     loop {
         // Extract first, act outside the borrow: deleting a QObject
-        // re-enters the registry through the proxy teardown's call to
-        // `register`.
+        // re-enters the registry through the proxy teardown's unregister.
         let doomed: Vec<(Rc<dyn Any>, *mut QObject)> = REGISTRY.with_borrow_mut(|entries| {
-            entries.extract_if(|_key, entry| {
-                    if Rc::strong_count(&entry.shared_owner) > 1
+            let extracted: Vec<_> = entries.map.extract_if(|_key, entry| {
+                    let Some(owner) = &entry.shared_owner else {
+                        return false;
+                    };
+                    if Rc::strong_count(owner) > 1
                         || unsafe { ffi::is_javascript_ownership(entry.qobject) } {
                         return false;
                     }
@@ -201,8 +227,14 @@ pub fn collect_garbage() {
                     }
                     true
                 })
-                .map(|(_key, entry)| (entry.shared_owner, entry.qobject))
-                .collect()
+                .map(|(_key, entry)| {
+                    let owner = entry.shared_owner
+                        .expect("Only owned entries are extracted");
+                    (owner, entry.qobject)
+                })
+                .collect();
+            entries.owned -= extracted.len();
+            extracted
         });
         if doomed.is_empty() {
             break;

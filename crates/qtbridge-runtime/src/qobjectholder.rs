@@ -10,7 +10,6 @@ use qtbridge_type_lib::{QObject, QVariant};
 use crate::qproxies::{QRustProxy, ConstructionMode};
 use crate::rustobjectgetter::get_rust_proxy;
 use crate::{DispatchMetaCall, QMetaInfo, QmlMethodInvoker};
-use std::collections::HashMap;
 
 
 pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default + 'static {
@@ -21,24 +20,11 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default + 'static {
     #[doc(hidden)]
     type ProxyRust: QRustProxy<ProxyCppType = <Self as QMetaInfo>::CppProxy>;
 
-    #[doc(hidden)]
-    fn try_borrow_mut_proxies_map<F, R>(f: F) -> R
-    where
-        F: FnOnce( &mut HashMap<*const u8, *const u8>) -> R
-    {
-        thread_local! { static INSTANCES: RefCell<HashMap<*const u8, *const u8>> =
-                RefCell::new(HashMap::new());
-        }
-        INSTANCES.with_borrow_mut(f)
-    }
-
     /// Return a pointer to the Rust proxy associated with the specified object,
     /// or `None` if no proxy is registered.
     #[doc(hidden)]
     fn try_get_rust_proxy_ptr_from_ptr(rust_obj_ptr: *const Self) -> Option<*mut Self::ProxyRust> {
-        let proxy_ptr = Self::try_borrow_mut_proxies_map(|map| {
-            map.get(&rust_obj_ptr.cast::<u8>()).copied().unwrap_or_default()
-        });
+        let proxy_ptr = crate::registry::proxy_ptr(rust_obj_ptr.cast::<u8>());
         NonNull::new(proxy_ptr as *mut Self::ProxyRust).map(|nn| nn.as_ptr())
     }
 
@@ -177,24 +163,13 @@ pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Default + 'static {
         let dyn_rc = Self::as_adaptor_trait(rust_obj_rc);
         let dynamic_meta = <Self as QMetaInfo>::get_shared_dynamic_meta_object_data();
         let proxy = Self::ProxyRust::new(&dyn_rc, dynamic_meta, &construction, Box::new(move || {
-            Self::unregister_instance_in_map(key);
             crate::registry::unregister(key);
         }));
-        Self::try_borrow_mut_proxies_map(|proxies| {
-            proxies.insert(key, proxy as *const u8);
-        });
-        if matches!(construction, ConstructionMode::Weak) {
-            // SAFETY: We constructed proxy just above.
-            let qobject = unsafe { &*proxy }.get_cpp_proxy() as *mut QObject;
-            crate::registry::register(keep, key, qobject);
-        }
-    }
-
-    /// Removes the entry associated with the specified Rust object from the multiton map.
-    #[doc(hidden)]
-    fn unregister_instance_in_map(rust_obj_ptr: *const u8) {
-        Self::try_borrow_mut_proxies_map(|proxies| proxies.remove(&rust_obj_ptr))
-            .expect("Proxy object for rust object is not registered");
+        // SAFETY: We constructed proxy just above.
+        let qobject = unsafe { &*proxy }.get_cpp_proxy() as *mut QObject;
+        let shared_owner = matches!(construction, ConstructionMode::Weak)
+            .then_some(keep as std::rc::Rc<dyn std::any::Any>);
+        crate::registry::register(key, proxy as *const u8, qobject, shared_owner);
     }
 
     /// Creates a default-initialized instance and attaches its [`QObject`]

@@ -8,17 +8,6 @@ use qtbridge_type_lib::QVariant;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-thread_local! {
-    /// Live proxy pairs on this thread; one per attached QObject, whether
-    /// Rust- or QML-created. A diagnostic for leak checks in tests.
-    static LIVE_PROXIES: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
-}
-
-/// The number of live proxy pairs (attached QObjects) on this thread.
-pub fn live_proxy_count() -> usize {
-    LIVE_PROXIES.get()
-}
-
 pub struct GenericRustProxy<CppProxy: QCppProxy, Adapter: ?Sized> {
     pub(crate) cpp_proxy: *mut CppProxy,
     pub(crate) rust_obj: RustObjAccess<Adapter>,
@@ -49,7 +38,6 @@ where
             },
             on_drop,
         });
-        LIVE_PROXIES.set(LIVE_PROXIES.get() + 1);
         let raw_self = Box::into_raw(boxed_self);
         unsafe {
             (*raw_self).cpp_proxy = match construct {
@@ -103,7 +91,6 @@ where
     /// `self_ptr` must be a pointer previously returned by [`QRustProxy::new`].
     /// It must not have been dropped already.
     pub fn drop_self(self_ptr: *mut Self) {
-        LIVE_PROXIES.set(LIVE_PROXIES.get() - 1);
         let boxed_self = unsafe { Box::from_raw(self_ptr) };
         (boxed_self.on_drop)();
     }

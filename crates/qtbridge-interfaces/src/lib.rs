@@ -116,7 +116,7 @@
 //!   → QObject::delete
 //!     → virtual ~CppProxy()
 //!       → GenericRustProxy::drop_self
-//!         → on_drop() (removes proxy-map and registry entries)
+//!         → on_drop() (removes the registry entry)
 //!   → registry drops its Rc
 //!     → UserStruct::drop()
 //!
@@ -130,7 +130,7 @@
 //! ```
 
 pub mod genericrustproxy;
-pub use genericrustproxy::live_proxy_count;
+pub use qtbridge_runtime::live_proxy_count;
 
 pub mod qobject;
 
