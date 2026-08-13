@@ -1,7 +1,7 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use crate::{QByteArray, QJsonArray, QJsonObject, QJsonValue, QList, QMap_QString_QVariant, QMetaType, QObject, QObjectList, QString};
+use crate::{QByteArray, QList, QMap_QString_QVariant, QMetaType, QObject, QObjectList, QString};
 use std::mem::MaybeUninit;
 #[cxx::bridge]
 mod ffi {
@@ -9,12 +9,6 @@ mod ffi {
         include!("qtbridge-type-lib/src/generated/core/qvariant/cpp/qvariant.h");
         #[allow(dead_code)]
         type QVariant = super::QVariant;
-        include!("qtbridge-type-lib/src/generated/core/qjsonarray/cpp/qjsonarray.h");
-        type QJsonArray = crate::QJsonArray;
-        include!("qtbridge-type-lib/src/generated/core/qjsonobject/cpp/qjsonobject.h");
-        type QJsonObject = crate::QJsonObject;
-        include!("qtbridge-type-lib/src/generated/core/qjsonvalue/cpp/qjsonvalue.h");
-        type QJsonValue = crate::QJsonValue;
         include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist.h");
         type QList_QByteArray = crate::QList_QByteArray;
         type QList_QString = crate::QList_QString;
@@ -168,18 +162,6 @@ mod ffi {
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_Vec_f32_try_from(from: &QVariant, result: &mut QList_f32) -> bool;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_vec_f64_try_from]
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_Vec_f64_try_from(from: &QVariant, result: &mut QList_f64) -> bool;
-        # [rust_name = inline_cpp_fn_trait_impl_from_ref_qjson_array_for_qvariant_from]
-        fn inlineCppFn_TraitImpl_From_ref_QJsonArray_for_QVariant_from(value: &QJsonArray) -> QVariant;
-        # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qjson_array_try_from]
-        fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QJsonArray_try_from(from: &QVariant, result: &mut QJsonArray) -> bool;
-        # [rust_name = inline_cpp_fn_trait_impl_from_ref_qjson_object_for_qvariant_from]
-        fn inlineCppFn_TraitImpl_From_ref_QJsonObject_for_QVariant_from(value: &QJsonObject) -> QVariant;
-        # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qjson_object_try_from]
-        fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QJsonObject_try_from(from: &QVariant, result: &mut QJsonObject) -> bool;
-        # [rust_name = inline_cpp_fn_trait_impl_from_ref_qjson_value_for_qvariant_from]
-        fn inlineCppFn_TraitImpl_From_ref_QJsonValue_for_QVariant_from(value: &QJsonValue) -> QVariant;
-        # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qjson_value_try_from]
-        fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QJsonValue_try_from(from: &QVariant, result: &mut QJsonValue) -> bool;
         # [rust_name = inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qmap_qstring_qvariant_try_from]
         fn inlineCppFn_TraitImpl_TryFrom_ref_QVariant_for_QMap_QString_QVariant_try_from(from: &QVariant, result: &mut QMap_QString_QVariant) -> bool;
     }
@@ -1006,54 +988,6 @@ impl TryFrom<QVariant> for Vec<String> {
     type Error = ();
     fn try_from(value: QVariant) -> Result<Self, ()> {
         Self::try_from(&value)
-    }
-}
-impl From<&QJsonArray> for QVariant {
-    fn from(value: &QJsonArray) -> QVariant {
-        ffi::inline_cpp_fn_trait_impl_from_ref_qjson_array_for_qvariant_from(value)
-    }
-}
-impl TryFrom<&QVariant> for QJsonArray {
-    type Error = ();
-    fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let conv_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qjson_array_try_from;
-        let mut result = QJsonArray::default();
-        match conv_fn(value, &mut result) {
-            true => Ok(result),
-            false => Err(()),
-        }
-    }
-}
-impl From<&QJsonObject> for QVariant {
-    fn from(value: &QJsonObject) -> QVariant {
-        ffi::inline_cpp_fn_trait_impl_from_ref_qjson_object_for_qvariant_from(value)
-    }
-}
-impl TryFrom<&QVariant> for QJsonObject {
-    type Error = ();
-    fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let conv_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qjson_object_try_from;
-        let mut result = QJsonObject::default();
-        match conv_fn(value, &mut result) {
-            true => Ok(result),
-            false => Err(()),
-        }
-    }
-}
-impl From<&QJsonValue> for QVariant {
-    fn from(value: &QJsonValue) -> QVariant {
-        ffi::inline_cpp_fn_trait_impl_from_ref_qjson_value_for_qvariant_from(value)
-    }
-}
-impl TryFrom<&QVariant> for QJsonValue {
-    type Error = ();
-    fn try_from(value: &QVariant) -> Result<Self, ()> {
-        let conv_fn = ffi::inline_cpp_fn_trait_impl_try_from_ref_qvariant_for_qjson_value_try_from;
-        let mut result = QJsonValue::default();
-        match conv_fn(value, &mut result) {
-            true => Ok(result),
-            false => Err(()),
-        }
     }
 }
 impl QVariant {

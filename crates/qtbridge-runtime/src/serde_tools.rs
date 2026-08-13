@@ -30,23 +30,30 @@ pub(crate) fn qvariant_to_serde(v: &QVariant) -> Result<serde_json::Value, ()> {
         return String::try_from(v).map(serde_json::Value::String);
     }
     if is_qvariant_type::<QJsonValue>(v) {
-        return v.try_into().map(|jv: QJsonValue| qjsonvalue_to_serde(&jv));
+        return try_from_qvariant(v)
+            .map(|jv| qjsonvalue_to_serde(&jv))
     }
     if is_qvariant_type::<QJsonObject>(v) {
-        return v.try_into().map(|obj: QJsonObject| qjsonobject_to_serde(&obj));
+        return try_from_qvariant(v)
+            .map(|jo| qjsonobject_to_serde(&jo))
     }
     if is_qvariant_type::<QJsonArray>(v) {
-        return v.try_into().map(|arr: QJsonArray| qjsonarray_to_serde(&arr));
+        return try_from_qvariant(v)
+            .map(|ja| qjsonarray_to_serde(&ja))
     }
     // QML passes JS objects/arrays wrapped as QJSValue; QVariantMap/List use canConvert<T>()
     // which handles this case, unlike the QJson types which require exact type matching.
     if v.meta_type().name() == "QJSValue" {
-        if let Ok(map) = TryInto::<QVariantMap>::try_into(v) { return qvariantmap_to_serde(&map); }
-        if <QVariantList as QVariantValue>::can_convert(&v.to_cxx_qt()) {
-            return qvariantlist_to_serde(&QVariantValue::value_or_default(&v.to_cxx_qt()))
-        }
+        if let Ok(map) = try_from_qvariant(v) { return qvariantmap_to_serde(&map) }
+        if let Ok(list) = try_from_qvariant(v) { return qvariantlist_to_serde(&list) }
     }
     Err(())
+}
+
+fn try_from_qvariant<T: QVariantValue>(v: &QVariant) -> Result<T, ()> {
+    v.to_cxx_qt()
+        .value()
+        .ok_or(())
 }
 
 pub(crate) fn serde_to_qjsonvalue(v: &serde_json::Value) -> QJsonValue {
@@ -95,19 +102,17 @@ fn is_qvariant_type<T: QMetaTypeGet>(var: &QVariant) -> bool {
 }
 
 fn qjsonarray_to_serde(v: &QJsonArray) -> serde_json::Value {
-    let mut array = Vec::new();
-    for i in 0..v.size() {
-        array.push(qjsonvalue_to_serde(&v.at(i)));
-    }
+    let array = v.iter()
+        .map(|item| qjsonvalue_to_serde(&item))
+        .collect();
     serde_json::Value::Array(array)
 }
 
 fn qjsonobject_to_serde(v: &QJsonObject) -> serde_json::Value {
     let mut map = serde_json::Map::new();
-    for key in v.keys() {
-        let qkey = QString::from(&key);
-        let val = qjsonvalue_to_serde(&v.value(&qkey));
-        map.insert(key, val);
+    for key in v.keys().iter() {
+        let val = qjsonvalue_to_serde(&v.value(key));
+        map.insert(key.to_string(), val);
     }
     serde_json::Value::Object(map)
 }

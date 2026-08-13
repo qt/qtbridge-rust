@@ -1,7 +1,4 @@
 pub const GENERATED_FILES_BRIDGE: &[&'static str] = &[
-    "src/generated/core/qjsonarray/qjsonarray.rs",
-    "src/generated/core/qjsonobject/qjsonobject.rs",
-    "src/generated/core/qjsonvalue/qjsonvalue.rs",
     "src/generated/core/qmetaobject/qmetaobject.rs",
     "src/generated/core/qmetatype/qmetatype.rs",
     "src/generated/core/qmetatypeinterface/qmetatypeinterface.rs",

@@ -211,7 +211,9 @@ impl<T: QmlRegister> QPropertyMember for Vec<Rc<RefCell<T>>> {
 impl QPropertyMember for serde_json::Value {
     fn qmetatype() -> QMetaType { <QJsonValue as QMetaTypeGet>::get_qmetatype() }
     fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
-        QVariant::from(&crate::serde_tools::serde_to_qjsonvalue(self))
+        let jv = crate::serde_tools::serde_to_qjsonvalue(self);
+        let qvar_cxx = <QJsonValue as cxx_qt_lib::QVariantValue>::construct(&jv);
+        QVariant::from_cxx_qt(&qvar_cxx)
     }
     fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
         crate::serde_tools::qvariant_to_serde(value)
@@ -223,7 +225,9 @@ impl QPropertyMember for serde_json::Value {
 impl QPropertyMember for Vec<serde_json::Value> {
     fn qmetatype() -> QMetaType { <QJsonArray as QMetaTypeGet>::get_qmetatype() }
     fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
-        QVariant::from(&crate::serde_tools::serde_to_qjsonarray(self))
+        let ja = crate::serde_tools::serde_to_qjsonarray(self);
+        let qvar_cxx = <QJsonArray as cxx_qt_lib::QVariantValue>::construct(&ja);
+        QVariant::from_cxx_qt(&qvar_cxx)
     }
     fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
         match crate::serde_tools::qvariant_to_serde(value)? {

@@ -198,7 +198,9 @@ impl QMetaCallArg for Vec<serde_json::Value> {
     type WireType = QJsonArray;
     fn to_wire(&self) -> QJsonArray { crate::serde_tools::serde_to_qjsonarray(self) }
     fn from_wire(wire: &QJsonArray) -> Vec<serde_json::Value> {
-        (0..wire.size()).map(|i| crate::serde_tools::qjsonvalue_to_serde(&wire.at(i))).collect()
+        wire.iter()
+            .map(|jv| crate::serde_tools::qjsonvalue_to_serde(&jv))
+            .collect()
     }
     fn wire_metatype() -> QMetaType { <QJsonArray as QMetaTypeGet>::get_qmetatype() }
 }

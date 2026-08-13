@@ -1,7 +1,4 @@
 pub const GENERATED_FILES_CPP: &[&'static str] = &[
-    "src/generated/core/qjsonarray/cpp/qjsonarray.cpp",
-    "src/generated/core/qjsonobject/cpp/qjsonobject.cpp",
-    "src/generated/core/qjsonvalue/cpp/qjsonvalue.cpp",
     "src/generated/core/qmetaobject/cpp/qmetaobject.cpp",
     "src/generated/core/qmetatype/cpp/qmetatype.cpp",
     "src/generated/core/qmetatypeinterface/cpp/qmetatypeinterface.cpp",
