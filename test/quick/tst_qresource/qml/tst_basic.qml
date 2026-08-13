@@ -59,4 +59,36 @@ TestCase {
         text.textDocument.source = "qrc:/subfolder/addedfolder/text/example.txt"
         compare(text.text, "Hello Rust!\n")
     }
+
+    function test_dir_noprefix() {
+        text.clear()
+        compare(text.text, "")
+        text.textDocument.modified = false
+        text.textDocument.source = "qrc:/dir/example.txt"
+        compare(text.text, "Hello Rust from dir!\n")
+    }
+
+    function test_dir_noprefix_nested() {
+        text.clear()
+        compare(text.text, "")
+        text.textDocument.modified = false
+        text.textDocument.source = "qrc:/dir/sub_dir/example.txt"
+        compare(text.text, "Hello Rust from sub_dir!\n")
+    }
+
+    function test_dir_prefix() {
+        text.clear()
+        compare(text.text, "")
+        text.textDocument.modified = false
+        text.textDocument.source = "qrc:/dirprefix/dir/example.txt"
+        compare(text.text, "Hello Rust from dir!\n")
+    }
+
+    function test_dir_prefix_nested() {
+        text.clear()
+        compare(text.text, "")
+        text.textDocument.modified = false
+        text.textDocument.source = "qrc:/dirprefix/dir/sub_dir/example.txt"
+        compare(text.text, "Hello Rust from sub_dir!\n")
+    }
 }

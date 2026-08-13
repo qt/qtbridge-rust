@@ -1,7 +1,7 @@
 // Copyright (C) 2026 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use qtbridge::include_bytes_qml;
+use qtbridge::{include_bytes_qml};
 
 pub fn test_qresource() {
     use std::env;
@@ -13,6 +13,9 @@ pub fn test_qresource() {
     include_bytes_qml!("text/example.txt", "subfolder");
     include_bytes_qml!("example.txt", "samefolder/addedfolder");
     include_bytes_qml!("text/example.txt", "subfolder/addedfolder");
+
+    include_bytes_qml!("dir");
+    include_bytes_qml!("dir", "dirprefix");
 
     let mut input_path: PathBuf = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     input_path.push("qml");

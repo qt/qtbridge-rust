@@ -18,6 +18,7 @@ proc-macro2 = { workspace = true, features = ["span-locations"] }
 quote.workspace = true
 syn.workspace = true
 qtbridge-gen-common = { workspace = true }
+qtbridge-build-utils = { workspace = true }
 
 [features]
 # Make #[qobject] emit automatic QML registration via the linkme crate.

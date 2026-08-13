@@ -84,31 +84,44 @@ pub fn derive_qmodelitem(input: TokenStream) -> TokenStream {
     }
 }
 
-/// Includes a file and makes it accessible under the Qt resource system.
+/// Includes a file or a directory and makes it accessible under the Qt resource system.
 ///
-/// The macro uses the include_bytes! macro internally so the file path has to be
-/// given relative to the current file.
+/// The path is resolved relative to the source file in which the macro is invoked,
+/// similarly to Rust's [include_bytes!] macro.
+///
+/// If the path refers to a directory, all files in that directory and its
+/// subdirectories are included recursively while preserving their relative paths.
 ///
 /// An optional prefix can be added as a second macro parameter.
 ///
 /// # Examples
 ///
+/// Including a single file:
+///
 /// ```ignore
 /// fn main() {
-///     include_bytes_qml!("icon.png", "images");
+///     include_bytes_qml!("images/icon.png", "resources");
 /// }
 /// ```
 ///
-/// This makes the file 'icon.png' that has to be in the same folder as
-/// the file with the macro accessible in QML as 'qrc:/images/icon.png'
-/// or ':/images.icon.png'
+/// Including a directory:
+///
+/// ```ignore
+/// fn main() {
+///     include_bytes_qml!("images", "resources");
+/// }
+/// ```
+///
+/// This makes the file `images/icon.png`, relative to the source file containing
+/// the macro invocation, accessible in QML as `qrc:/resources/images/icon.png`
+/// or `:/resources/images/icon.png`.
 ///
 /// ```qml
 /// Image {
-///     source: "qrc:/images/icon.png"
+///     source: "qrc:/resources/images/icon.png"
 /// }
 /// ```
 #[proc_macro]
 pub fn include_bytes_qml(input: TokenStream) -> TokenStream {
-    qt_resource::include_bytes_qml(input)
+    qt_resource::include_bytes_qml(input.into()).into()
 }
