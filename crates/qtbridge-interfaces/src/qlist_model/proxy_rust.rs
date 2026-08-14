@@ -87,7 +87,7 @@ where
     }
 }
 
-/// A trait representing a list-based Qt model.
+/// A trait representing a list-based model.
 ///
 /// [`QListModel`] provides an interface for list-like data structures
 /// that are exposed to Qt through the Model-View concept.

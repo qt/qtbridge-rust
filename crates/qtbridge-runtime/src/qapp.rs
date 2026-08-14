@@ -5,7 +5,7 @@ use cxx::UniquePtr;
 use qtbridge_type_lib::{QGuiApplication, QQmlApplicationEngine, QString, QVariant, QVariantMap};
 use crate::qml_register::QmlRegister;
 
-/// Entry point for a Qt QML application.
+/// Entry point for a QML application.
 ///
 /// Wraps the Qt application and QML engine. Configure it with the builder
 /// methods and call [`run`](QApp::run) to start the event loop.

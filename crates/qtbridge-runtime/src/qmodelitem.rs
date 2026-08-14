@@ -34,7 +34,7 @@ fn option_to_qvariant<T: QVariantConvertible>(value: Option<&T>) -> QVariant
 
 
 
-/// Trait representing a single item in a Qt item model.
+/// Trait representing a single item in an item model.
 ///
 /// This trait is implemented automatically by `#[derive(QModelItem)]`
 /// for structs and tuple structs and an implementation for primitive types

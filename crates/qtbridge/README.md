@@ -2,6 +2,13 @@ This library enables building modern Qt Quick user interfaces with a Rust backen
 without writing any C++ code. It allows you to run [QML](https://doc.qt.io/qt-6/qmlreference.html)
 code and expose Rust types to QML using simple attribute macros.
 
+There are multiple great sources to learn QML:
+- [Official Documentation](https://doc.qt.io/qt-6/qmlreference.html)
+- [Qt Academy Courses](https://www.qt.io/academy/course-catalog)
+- [QML Book](https://www.qt.io/product/qt6/qml-book)
+
+You can also experiment with QML in your browser using [QML Preview](https://try.qt.io/).
+
 ## At a glance
 
 Main.rs

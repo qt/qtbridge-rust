@@ -114,7 +114,7 @@ where
 }
 
 
-/// A trait representing a table-based Qt model.
+/// A trait representing a table-based model.
 ///
 /// [`QTableModel`] provides an interface for table-like data structures
 /// that are exposed to Qt through the Model-View concept.
