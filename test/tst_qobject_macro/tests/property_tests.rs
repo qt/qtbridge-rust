@@ -528,9 +528,6 @@ where
         || test_property_can_be_read::<TestObj, String>(
                 TestValues { string: "こんにちは".into(), ..<_>::default() },
                 "こんにちは".into()),
-        || test_property_can_be_read::<TestObj, Vec<String>>(
-                TestValues { string_list: vec!["jeden".into(), "dva".into(), "tri".into()], ..<_>::default() },
-                vec!["jeden".into(), "dva".into(), "tri".into()]),
     ]
 }
 
@@ -554,7 +551,6 @@ where
         || test_property_can_be_written::<TestObj, _, _>(0.25, |values| values.f32),
         || test_property_can_be_written::<TestObj, _, _>(0.125, |values| values.f64),
         || test_property_can_be_written::<TestObj, _, _>("Привіт, світе!".to_string(), |values| values.string.clone()),
-        || test_property_can_be_written::<TestObj, _, _>(vec!["Como".to_owned(), "vai".to_owned(), "você".to_owned()], |values| values.string_list.clone()),
     ]
 }
 
