@@ -4,7 +4,6 @@
 use qtbridge::qobject;
 use qtbridge::QModelItem;
 use quicktest::run_quick_test;
-use std::collections::HashMap;
 
 #[derive(Clone, Debug, QModelItem)]
 pub struct MyClass {

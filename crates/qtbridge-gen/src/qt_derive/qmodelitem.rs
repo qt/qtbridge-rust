@@ -1,7 +1,6 @@
 use proc_macro::TokenStream;
 use quote::{quote, format_ident};
 use syn::DeriveInput;
-use std::collections::HashMap;
 
 pub fn try_derive_qmodelitem(input: TokenStream) -> syn::Result<TokenStream> {
     let input: DeriveInput = syn::parse(input)?;
@@ -35,7 +34,7 @@ pub fn try_derive_qmodelitem(input: TokenStream) -> syn::Result<TokenStream> {
     let field_types = fields.iter().map(|f| &f.ty).collect::<Vec<_>>();
 
     // see  Qt::ItemDataRole
-    let default_roles: HashMap<&str, i32> = HashMap::from([
+    let default_roles: std::collections::HashMap<&str, i32> = std::collections::HashMap::from([
         ("display", 0x0),
         ("decoration", 0x1),
         ("edit", 0x2),
@@ -105,7 +104,7 @@ pub fn try_derive_qmodelitem(input: TokenStream) -> syn::Result<TokenStream> {
 
             #(#setters)*
 
-            fn role_names() -> HashMap<i32, String> {
+            fn role_names() -> std::collections::HashMap<i32, String> {
                 let roles = [
                 #(#role_tokens)*
                 ];

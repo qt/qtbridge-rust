@@ -5,7 +5,6 @@
 //! the data changes are applied and the view notifications are skipped.
 
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::rc::Rc;
 
 use qtbridge::{QModelItem, qobject};

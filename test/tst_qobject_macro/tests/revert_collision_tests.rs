@@ -7,7 +7,6 @@
 // slot)? The duplicate-name check only looks at Rust-declared members, not
 // inherited base-class methods, so these compile and register.
 
-use std::collections::HashMap;
 use qtbridge_type_lib::QGuiApplication;
 use qtbridge::{qobject, QObjectHolder, QModelItem};
 use qtbridge::invoke_method;
