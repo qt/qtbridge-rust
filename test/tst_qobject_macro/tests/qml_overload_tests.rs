@@ -70,7 +70,7 @@ fn main() {
 
     let mut engine = QQmlApplicationEngine::new();
     engine.pin_mut().set_initial_properties(&props);
-    engine.pin_mut().load_data(QML.as_bytes());
+    engine.pin_mut().load_data(&QML.into(), &Default::default());
 
     // A QML-extended instance carries a derived QML meta-object; passing it
     // back into Rust must succeed

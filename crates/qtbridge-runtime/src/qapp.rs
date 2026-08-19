@@ -139,7 +139,7 @@ impl QApp {
         if !self.initial_properties.is_empty() {
             self.engine.pin_mut().set_initial_properties(&self.initial_properties);
         }
-        self.engine.pin_mut().load_data(code);
+        self.engine.pin_mut().load_data(&code.into(), &Default::default());
         self
     }
 
@@ -156,7 +156,7 @@ impl QApp {
         if !self.initial_properties.is_empty() {
             self.engine.pin_mut().set_initial_properties(&self.initial_properties);
         }
-        self.engine.pin_mut().load(url);
+        self.engine.pin_mut().load(&url.into());
         self
     }
 
@@ -166,7 +166,7 @@ impl QApp {
     /// loaded QML imports modules from a directory the engine would not
     /// otherwise find. Accepts both URLs and file-system paths.
     pub fn add_import_path(&mut self, path: &str) -> &mut Self {
-        self.engine.pin_mut().add_import_path(path);
+        self.engine.pin_mut().add_import_path(&path.into());
         self
     }
 
