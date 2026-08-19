@@ -58,7 +58,7 @@ impl QApp {
     /// Blocks until the application exits and returns the exit code.
     /// Usually the last call in `main`.
     pub fn run(&mut self) -> i32 {
-        QGuiApplication::exec()
+        self.app.pin_mut().exec()
     }
 
     /// Queues an initial property to be set on the root QML object.
@@ -205,7 +205,7 @@ impl QApp {
 
     /// Sets the application name reported to the OS.
     pub fn application_name(&mut self, name: &str) -> &mut Self {
-        QGuiApplication::set_application_name(name);
+        self.app.pin_mut().set_application_name(&name.into());
         self
     }
 }
