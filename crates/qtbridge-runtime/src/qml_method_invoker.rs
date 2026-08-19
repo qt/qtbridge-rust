@@ -67,9 +67,11 @@ macro_rules! invoke_method {
     }};
 
     ($invoker:expr, $name:expr, $($arg:expr),+ $(,)?) => {{
-        let args = qtbridge::qtbridge_type_lib::QVariantList::from([
-            $(qtbridge::qtbridge_type_lib::QVariant::from($arg)),+
-        ]);
+        let args: qtbridge::qtbridge_type_lib::QVariantList = [
+            $(qtbridge::qtbridge_type_lib::QVariant::from($arg).to_cxx_qt()),+
+        ]
+        .iter()
+        .collect();
         $invoker.invoke_method_with_args($name, &args)
     }};
 }

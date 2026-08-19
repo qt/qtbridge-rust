@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 #![cfg(feature = "serde_json")]
 
+use cxx_qt_lib::QVariantValue;
 use qtbridge_type_lib::{
     QJsonArray, QJsonObject, QJsonValue,
     QVariant, QVariantList, QVariantMap, QString,
@@ -41,7 +42,9 @@ pub(crate) fn qvariant_to_serde(v: &QVariant) -> Result<serde_json::Value, ()> {
     // which handles this case, unlike the QJson types which require exact type matching.
     if v.meta_type().name() == "QJSValue" {
         if let Ok(map) = TryInto::<QVariantMap>::try_into(v) { return qvariantmap_to_serde(&map); }
-        if let Ok(vec) = TryInto::<QVariantList>::try_into(v) { return qvariantlist_to_serde(&vec); }
+        if <QVariantList as QVariantValue>::can_convert(&v.to_cxx_qt()) {
+            return qvariantlist_to_serde(&QVariantValue::value_or_default(&v.to_cxx_qt()))
+        }
     }
     Err(())
 }
@@ -119,9 +122,8 @@ fn qvariantmap_to_serde(v: &QVariantMap) -> Result<serde_json::Value, ()> {
 }
 
 fn qvariantlist_to_serde(v: &QVariantList) -> Result<serde_json::Value, ()> {
-    let mut array = Vec::new();
-    for i in 0..v.len() {
-        array.push(qvariant_to_serde(&v[i])?);
-    }
+    let array = v.iter()
+        .map(|var| qvariant_to_serde(&QVariant::from_cxx_qt(var)))
+        .collect::<Result<_, _>>()?;
     Ok(serde_json::Value::Array(array))
 }

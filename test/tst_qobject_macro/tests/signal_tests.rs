@@ -3,7 +3,7 @@
 #![cfg(test)]
 mod common;
 
-use qtbridge::qtbridge_type_lib::{QSignalSpy, QVariant};
+use qtbridge::qtbridge_type_lib::{QSignalSpy, QString, QVariant};
 use qtbridge::{qobject, QObjectHolder};
 use common::{MAX_SAFE_INTEGER, MIN_SAFE_INTEGER};
 
@@ -117,7 +117,7 @@ where
     emit_fn(&mut obj.borrow_mut());
     assert_eq!(spy.count(), 1);
     let args = spy.pin_mut().take_first();
-    assert!(check_fn(args.first()));
+    assert!(check_fn(&QVariant::from_cxx_qt(args.get(0).unwrap())));
 }
 
 #[test]
@@ -284,8 +284,11 @@ fn signal_is_emitted_when_called_with_string_ref_arg() {
     obj.borrow_mut().signal_string_ref(&String::from("DEF"));
     assert_eq!(spy.count(), 1);
     let args = spy.pin_mut().take_first();
-    let arg: String = args.first().try_into().unwrap();
-    assert_eq!(arg, "DEF");
+    let arg: QString = args.get(0)
+        .map(cxx_qt_lib::QVariant::value)
+        .flatten()
+        .unwrap_or_default();
+    assert_eq!(arg, "DEF".into());
 }
 
 #[test]
@@ -440,14 +443,17 @@ fn signal_is_emitted_when_called_with_a_few_arguments_ref_arg() {
     assert_eq!(spy.count(), 1);
     let arg_list = spy.pin_mut().take_first();
     assert_eq!(arg_list.len(), 10);
-    assert_eq!(Ok("123".into()), TryInto::<String>::try_into(&arg_list[0]));
-    assert_eq!(Ok(700), TryInto::<i32>::try_into(&arg_list[1]));
-    assert_eq!(Ok(0.75), TryInto::<f32>::try_into(&arg_list[2]));
-    assert_eq!(Ok(0.125), TryInto::<f64>::try_into(&arg_list[3]));
-    assert_eq!(Ok("Café".into()), TryInto::<String>::try_into(&arg_list[4]));
-    assert_eq!(Ok(65535), TryInto::<u16>::try_into(&arg_list[5]));
-    assert_eq!(Ok(false), TryInto::<bool>::try_into(&arg_list[6]));
-    assert_eq!(Ok(true), TryInto::<bool>::try_into(&arg_list[7]));
-    assert_eq!(Ok(-100000), TryInto::<i32>::try_into(&arg_list[8]));
-    assert_eq!(Ok(-10000000000), TryInto::<i64>::try_into(&arg_list[9]));
+    let args: [QVariant; 10] = std::array::from_fn(
+        |i| QVariant::from_cxx_qt(arg_list.get(i as isize).unwrap()));
+
+    assert_eq!(Ok("123".into()), TryInto::<String>::try_into(&args[0]));
+    assert_eq!(Ok(700), TryInto::<i32>::try_into(&args[1]));
+    assert_eq!(Ok(0.75), TryInto::<f32>::try_into(&args[2]));
+    assert_eq!(Ok(0.125), TryInto::<f64>::try_into(&args[3]));
+    assert_eq!(Ok("Café".into()), TryInto::<String>::try_into(&args[4]));
+    assert_eq!(Ok(65535), TryInto::<u16>::try_into(&args[5]));
+    assert_eq!(Ok(false), TryInto::<bool>::try_into(&args[6]));
+    assert_eq!(Ok(true), TryInto::<bool>::try_into(&args[7]));
+    assert_eq!(Ok(-100000), TryInto::<i32>::try_into(&args[8]));
+    assert_eq!(Ok(-10000000000), TryInto::<i64>::try_into(&args[9]));
 }

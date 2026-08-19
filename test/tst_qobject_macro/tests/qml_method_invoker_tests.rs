@@ -88,7 +88,7 @@ fn test_immutable_slot(app: &QGuiApplication) {
 fn test_slot_with_parameters(app: &QGuiApplication) {
     let qobject_holder = TestObject::default_with_attached_qobject();
     let invoker = qobject_holder.borrow().get_qml_method_invoker();
-    assert!(invoker.invoke_method_with_args("add_ints", &QVariantList::from([15.into(), 17.into()])));
+    assert!(invoker.invoke_method_with_args("add_ints", &QVariantList::from_iter(&[(&15).into(), (&17).into()])));
     app.process_events();
     app.process_events();
     assert_eq!(qobject_holder.borrow().int_value, 32);

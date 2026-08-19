@@ -8,6 +8,7 @@ edition.workspace = true
 description = "Tests for objects annotated with the `#[qobject]` macro."
 
 [dependencies]
+cxx-qt-lib.workspace = true
 qtbridge = { path = "../../crates/qtbridge" }
 qtbridge-type-lib = { path = "../../crates/qtbridge-type-lib" }
 quicktest = { path = "../../quicktest" }
