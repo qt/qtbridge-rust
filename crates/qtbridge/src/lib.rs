@@ -11,8 +11,6 @@ pub use qtbridge_runtime::QMetaTypeCompatible;
 pub use qtbridge_runtime::QPropertyMember;
 pub use qtbridge_runtime::registry::collect_garbage;
 #[doc(hidden)]
-pub use qtbridge_gen;
-#[doc(hidden)]
 pub use qtbridge_interfaces;
 #[doc(hidden)]
 pub use qtbridge_type_lib;
