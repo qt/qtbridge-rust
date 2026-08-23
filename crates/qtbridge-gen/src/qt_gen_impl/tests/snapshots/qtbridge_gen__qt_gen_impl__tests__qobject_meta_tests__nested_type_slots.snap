@@ -16,32 +16,34 @@ pub mod node {
     }
     impl qtbridge::qtbridge_runtime::DispatchMetaCall for Node {
         fn invoke_slot(&self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
-            use qtbridge::qtbridge_runtime::QMetaCallArg;
+            use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
             match slot_id {
                 _ => panic!("Unhandled slot id {slot_id}"),
             }
         }
         fn invoke_slot_mut(&mut self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
-            use qtbridge::qtbridge_runtime::QMetaCallArg;
+            use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
             match slot_id {
                 1u32 => {
                     let arg_0_ref = unsafe {
                         inputs[0usize]
-                            .cast::<<Rc<RefCell<Node>> as QMetaCallArg>::WireType>()
+                            .cast::<<Rc<RefCell<Node>> as QMetaTypeCompatible>::CompatibleType>()
                             .as_ref()
                     }
                     .expect("Argument reference is null");
-                    let arg_0_var = <Rc<RefCell<Node>> as QMetaCallArg>::from_wire(arg_0_ref);
+                    let arg_0_var =
+                        <Rc<RefCell<Node>> as QMetaTypeCompatible>::from_compatible(arg_0_ref);
                     self.slot_with_nested_type_argument_by_value(arg_0_var)
                 }
                 2u32 => {
                     let arg_0_ref = unsafe {
                         inputs[0usize]
-                            .cast::<<Rc<RefCell<Node>> as QMetaCallArg>::WireType>()
+                            .cast::<<Rc<RefCell<Node>> as QMetaTypeCompatible>::CompatibleType>()
                             .as_ref()
                     }
                     .expect("Argument reference is null");
-                    let arg_0_var = <Rc<RefCell<Node>> as QMetaCallArg>::from_wire(arg_0_ref);
+                    let arg_0_var =
+                        <Rc<RefCell<Node>> as QMetaTypeCompatible>::from_compatible(arg_0_ref);
                     self.slot_with_nested_type_argument_by_reference(&arg_0_var)
                 }
                 _ => panic!("Unhandled slot id {slot_id}"),
@@ -67,20 +69,20 @@ pub mod node {
         fn build_dynamic_meta_type(
             mut meta_obj: std::pin::Pin<&mut qtbridge::qtbridge_runtime::DynamicMetaObjectBuilder>,
         ) {
-            use qtbridge::qtbridge_runtime::{QMetaCallArg, QMetaTypeGet, QPropertyMember};
+            use qtbridge::qtbridge_runtime::{QMetaTypeCompatible, QMetaTypeGet, QPropertyMember};
             use qtbridge::qtbridge_type_lib;
             use qtbridge_type_lib::QMetaType;
             meta_obj.as_mut().register_slot(
                 "slot_with_nested_type_argument_by_value",
                 1u32,
-                &[<Rc<RefCell<Node>> as QMetaCallArg>::wire_metatype()],
+                &[<Rc<RefCell<Node>> as QMetaTypeCompatible>::compatible_qmetatype()],
                 &qtbridge::qtbridge_type_lib::QMetaType::default(),
                 qtbridge::qtbridge_runtime::dynamicmetaobjectbuilder::Mutability::Mutable,
             );
             meta_obj.as_mut().register_slot(
                 "slot_with_nested_type_argument_by_reference",
                 2u32,
-                &[<Rc<RefCell<Node>> as QMetaCallArg>::wire_metatype()],
+                &[<Rc<RefCell<Node>> as QMetaTypeCompatible>::compatible_qmetatype()],
                 &qtbridge::qtbridge_type_lib::QMetaType::default(),
                 qtbridge::qtbridge_runtime::dynamicmetaobjectbuilder::Mutability::Mutable,
             );

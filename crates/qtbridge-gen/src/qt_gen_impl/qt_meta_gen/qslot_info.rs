@@ -84,8 +84,8 @@ impl QSlotInfo {
     /// ```ignore
     /// meta_obj.as_mut().register_slot(
     ///     "doSomething",
-    ///     &[<i32 as QMetaCallArg>::wire_metatype(), <String as QMetaCallArg>::wire_metatype()],
-    ///     &<String as QMetaCallArg>::wire_metatype());
+    ///     &[<i32 as QMetaTypeCompatible>::compatible_qmetatype(), <String as QMetaTypeCompatible>::compatible_qmetatype()],
+    ///     &<String as QMetaTypeCompatible>::compatible_qmetatype());
     /// ```
     pub fn get_meta_registration_code(&self) -> syn::Result<TokenStream> {
         let name = self.get_qml_name_span().0;
@@ -98,7 +98,7 @@ impl QSlotInfo {
         let output_meta_types = bridge_generator.get_output_metatype();
 
         let result_meta_type = output_meta_types
-            .map(|ty| quote!{ &<#ty as QMetaCallArg>::wire_metatype() })
+            .map(|ty| quote!{ &<#ty as QMetaTypeCompatible>::compatible_qmetatype() })
             .unwrap_or_else(|| quote! { &qtbridge::qtbridge_type_lib::QMetaType::default() });
 
         let mutability = match self.is_mut() {
@@ -110,7 +110,7 @@ impl QSlotInfo {
             meta_obj.as_mut().register_slot(
                 #name,
                 #id,
-                 &[#(<#input_meta_types as QMetaCallArg>::wire_metatype()),*],
+                 &[#(<#input_meta_types as QMetaTypeCompatible>::compatible_qmetatype()),*],
                 #result_meta_type,
                 qtbridge::qtbridge_runtime::dynamicmetaobjectbuilder::Mutability::#mutability);
         };

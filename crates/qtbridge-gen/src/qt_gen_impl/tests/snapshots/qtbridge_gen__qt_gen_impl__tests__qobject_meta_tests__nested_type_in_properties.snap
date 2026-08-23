@@ -30,13 +30,13 @@ pub mod node {
     }
     impl qtbridge::qtbridge_runtime::DispatchMetaCall for Node {
         fn invoke_slot(&self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
-            use qtbridge::qtbridge_runtime::QMetaCallArg;
+            use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
             match slot_id {
                 _ => panic!("Unhandled slot id {slot_id}"),
             }
         }
         fn invoke_slot_mut(&mut self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
-            use qtbridge::qtbridge_runtime::QMetaCallArg;
+            use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
             match slot_id {
                 _ => panic!("Unhandled slot id {slot_id}"),
             }
@@ -82,7 +82,7 @@ pub mod node {
         fn build_dynamic_meta_type(
             mut meta_obj: std::pin::Pin<&mut qtbridge::qtbridge_runtime::DynamicMetaObjectBuilder>,
         ) {
-            use qtbridge::qtbridge_runtime::{QMetaCallArg, QMetaTypeGet, QPropertyMember};
+            use qtbridge::qtbridge_runtime::{QMetaTypeCompatible, QMetaTypeGet, QPropertyMember};
             use qtbridge::qtbridge_type_lib;
             use qtbridge_type_lib::QMetaType;
             meta_obj.as_mut().register_property(

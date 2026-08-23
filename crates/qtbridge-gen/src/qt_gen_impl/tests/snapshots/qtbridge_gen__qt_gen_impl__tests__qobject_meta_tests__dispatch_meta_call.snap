@@ -4,24 +4,24 @@ expression: formatted
 ---
 impl qtbridge::qtbridge_runtime::DispatchMetaCall for SomeStruct {
     fn invoke_slot(&self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
-        use qtbridge::qtbridge_runtime::QMetaCallArg;
+        use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
         match slot_id {
             1u32 => self.slot_one(),
             2u32 => {
                 let arg_0_ref = unsafe {
                     inputs[0usize]
-                        .cast::<<String as QMetaCallArg>::WireType>()
+                        .cast::<<String as QMetaTypeCompatible>::CompatibleType>()
                         .as_ref()
                 }
                 .expect("Argument reference is null");
-                let arg_0_var = <String as QMetaCallArg>::from_wire(arg_0_ref);
+                let arg_0_var = <String as QMetaTypeCompatible>::from_compatible(arg_0_ref);
                 self.slot_two(arg_0_var)
             }
             _ => panic!("Unhandled slot id {slot_id}"),
         }
     }
     fn invoke_slot_mut(&mut self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
-        use qtbridge::qtbridge_runtime::QMetaCallArg;
+        use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
         match slot_id {
             3u32 => self.slot_mut_three(),
             4u32 => self.slot_mut_four(),

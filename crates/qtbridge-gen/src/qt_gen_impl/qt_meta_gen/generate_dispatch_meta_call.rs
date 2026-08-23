@@ -63,14 +63,14 @@ pub fn generate_dispatch_meta_call(struct_ident: &syn::Ident, generics: &syn::Ge
         #where_clause
         {
             fn invoke_slot(&self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
-                use qtbridge::qtbridge_runtime::QMetaCallArg;
+                use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
                 match slot_id {
                     #(#slot_const_handlers),*
                     _ => panic!("Unhandled slot id {slot_id}")
                 }
             }
             fn invoke_slot_mut(&mut self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]) {
-                use qtbridge::qtbridge_runtime::QMetaCallArg;
+                use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
                 match slot_id {
                     #(#slot_mut_handlers),*
                     _ => panic!("Unhandled slot id {slot_id}")

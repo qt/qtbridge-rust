@@ -7,7 +7,7 @@ use qtbridge_gen_common::type_utils::{is_mut_ref, remove_ref};
 /// Checks whether the given signature can participate in meta-calls
 /// (as slot callbacks or property getters/setters).
 ///
-/// Validates structural constraints only. Whether a concrete `QMetaCallArg`
+/// Validates structural constraints only. Whether a concrete `QMetaTypeCompatible`
 /// impl exists for each type is deferred to the Rust compiler.
 pub fn check_meta_call_signature(src: &syn::Signature) -> syn::Result<()> {
     if !src.inputs.first().is_some_and(|arg| is_arg_self_ref(arg, None)) {

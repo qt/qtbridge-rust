@@ -88,7 +88,7 @@ impl QSignalInfo {
         let register_signal = quote!{
             meta_obj.as_mut().register_signal(
                 #name,
-                &[#(<#arg_types_no_ref as QMetaCallArg>::wire_metatype()),*]);
+                &[#(<#arg_types_no_ref as QMetaTypeCompatible>::compatible_qmetatype()),*]);
         };
         Ok(register_signal)
     }
@@ -165,7 +165,7 @@ impl ExpandTokens for QSignalInfo {
             #vis
             #sig
             {
-                use qtbridge::qtbridge_runtime::QMetaCallArg;
+                use qtbridge::qtbridge_runtime::QMetaTypeCompatible;
                 // Never exposed to QML: no QObject, hence no connections
                 // and no receivers - emitting is a no-op.
                 let Some(proxy) = <Self as qtbridge::QObjectHolder>::try_get_rust_proxy_ptr(self) else {

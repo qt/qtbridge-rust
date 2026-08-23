@@ -7,7 +7,7 @@
 pub use qtbridge_runtime;
 pub use qtbridge_runtime::QModelItem;
 pub use qtbridge_runtime::invoke_method;
-pub use qtbridge_runtime::QMetaCallArg;
+pub use qtbridge_runtime::QMetaTypeCompatible;
 pub use qtbridge_runtime::QPropertyMember;
 pub use qtbridge_runtime::registry::collect_garbage;
 #[doc(hidden)]
@@ -216,7 +216,7 @@ pub use qtbridge_gen::qobject;
 ///
 /// - The signal must be defined within a `mod` or `impl` block, annotated with [`qobject`].
 /// - The first argument of the annotated function must be `&mut self`.
-/// - All other parameter types and the return type must implement [`QMetaCallArg`].
+/// - All other parameter types and the return type must implement [`QMetaTypeCompatible`].
 /// - The function must not have a body (end with a semicolon or empty curly braces `{}`).
 ///
 /// ```rust
@@ -276,7 +276,7 @@ pub use qtbridge_gen::qsignal;
 /// - Has to be defined within a `mod` or `impl` block, annotated with [`qobject`].
 /// - The annotated function must have a body.
 /// - The first argument of the annotated function must be `&self` or `&mut self`.
-/// - All other parameter types and the return type must implement [`QMetaCallArg`].
+/// - All other parameter types and the return type must implement [`QMetaTypeCompatible`].
 ///
 /// ### Example
 /// ```rust

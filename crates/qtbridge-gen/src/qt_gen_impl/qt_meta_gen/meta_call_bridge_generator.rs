@@ -103,7 +103,7 @@ impl<'a> MetaCallBridgeGenerator<'a> {
                 _ => quote! { #arg_ident },
             };
             arg_vars.push(quote! {
-                let #var_ident = <#user_type_no_ref as QMetaCallArg>::to_wire(#arg_ref);
+                let #var_ident = <#user_type_no_ref as QMetaTypeCompatible>::to_compatible(#arg_ref);
             });
             argv_arr_init.push(quote! { std::ptr::from_ref(&#var_ident).cast() });
         }
@@ -125,7 +125,7 @@ fn gen_input_ref(user_type: &syn::Type, idx: usize) -> syn::Stmt {
     parse_quote! {
         let #ref_ident = unsafe {
             #inputs[#idx]
-                .cast::<<#user_type_no_ref as QMetaCallArg>::WireType>()
+                .cast::<<#user_type_no_ref as QMetaTypeCompatible>::CompatibleType>()
                 .as_ref()
         }.expect("Argument reference is null");
     }
@@ -136,7 +136,7 @@ fn gen_input_var(user_type: &syn::Type, idx: usize) -> syn::Stmt {
     let ref_ident = input_ref_ident(idx);
     let user_type_no_ref = remove_refs(user_type);
     parse_quote! {
-        let #var_ident = <#user_type_no_ref as QMetaCallArg>::from_wire(#ref_ident);
+        let #var_ident = <#user_type_no_ref as QMetaTypeCompatible>::from_compatible(#ref_ident);
     }
 }
 
@@ -158,7 +158,7 @@ fn gen_to_wire(user_type: &syn::Type, from: &syn::Ident, to: &syn::Ident) -> syn
         false => quote! { &#from },
     };
     parse_quote! {
-        let #to = <#user_type_no_ref as QMetaCallArg>::to_wire(#ref_from);
+        let #to = <#user_type_no_ref as QMetaTypeCompatible>::to_compatible(#ref_from);
     }
 }
 
@@ -166,7 +166,7 @@ fn gen_output_ptr(user_type: &syn::Type) -> syn::Stmt {
     let user_type_no_ref = remove_ref(user_type);
     let outputs = get_outputs_ident();
     parse_quote! {
-        let output_ptr: *mut <#user_type_no_ref as QMetaCallArg>::WireType = #outputs[0].cast();
+        let output_ptr: *mut <#user_type_no_ref as QMetaTypeCompatible>::CompatibleType = #outputs[0].cast();
     }
 }
 
