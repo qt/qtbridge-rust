@@ -66,3 +66,36 @@ impl TryFromQVariant for () {
         }
     }
 }
+
+#[cfg(feature = "serde_json")]
+impl ToQVariant for serde_json::Value {
+    fn to_qvariant(&self) -> QVariant {
+        let jv = crate::serde_tools::serde_to_qjsonvalue(self);
+        (&jv).into()
+    }
+}
+
+#[cfg(feature = "serde_json")]
+impl TryFromQVariant for serde_json::Value {
+    fn try_from_qvariant(value: &QVariant) -> Result<Self, ()> {
+        crate::serde_tools::qvariant_to_serde(value)
+    }
+}
+
+#[cfg(feature = "serde_json")]
+impl ToQVariant for Vec<serde_json::Value> {
+    fn to_qvariant(&self) -> QVariant {
+        let ja = crate::serde_tools::serde_to_qjsonarray(self);
+        (&ja).into()
+    }
+}
+
+#[cfg(feature = "serde_json")]
+impl TryFromQVariant for Vec<serde_json::Value> {
+    fn try_from_qvariant(value: &QVariant) -> Result<Self, ()> {
+        match crate::serde_tools::qvariant_to_serde(value)? {
+            serde_json::Value::Array(arr) => Ok(arr),
+            _ => Err(()),
+        }
+    }
+}

@@ -5,16 +5,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use cxx_qt_lib::QObjectMutPtr;
-use qtbridge_type_lib::{
-    QList, QList_QString, QList_bool, QList_f32, QList_f64, QList_i8, QList_i16, QList_i32,
-    QList_i64, QList_u8, QList_u16, QList_u32, QList_u64, QMetaType, QString, QStringList,
-    QVariant,
-};
+use qtbridge_type_lib::{QMetaType, QVariant};
 
-#[cfg(feature = "serde_json")]
-use qtbridge_type_lib::{QJsonArray, QJsonValue};
-
-use crate::{QMetaTypeGet, QObjectHolder, QMetaInfo, QmlRegister};
+use crate::{QMetaInfo, QMetaTypeCompatible, QObjectHolder, QVariantConvertible, QmlRegister, ToQVariant, TryFromQVariant};
 
 /// Enables a type to be used as a property.
 ///
@@ -60,145 +53,21 @@ pub trait QPropertyMember: Sized {
     fn property_eq(&self, other: &Self) -> bool;
 }
 
-macro_rules! impl_primitive {
-    ($($t:ty),*) => {
-        $(impl QPropertyMember for $t {
-            fn qmetatype() -> QMetaType { <$t as QMetaTypeGet>::get_qmetatype() }
-            fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant { QVariant::from(self) }
-            fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-                value.value()
-                    .ok_or(())
-            }
-            fn property_eq(&self, other: &Self) -> bool { self == other }
-        })*
-    }
-}
-
-impl_primitive!(bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64);
-
-macro_rules! impl_primitive_as {
-    ($($t:ty as $underlying:ty),*) => {
-        $(impl QPropertyMember for $t {
-            fn qmetatype() -> QMetaType { <$underlying>::qmetatype() }
-            fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant { <$underlying>::to_qvariant(&(*self as $underlying), _owner) }
-            fn from_qvariant(value: &QVariant) -> Result<Self, ()> { <$underlying>::from_qvariant(value).map(|v| v as $t) }
-            fn property_eq(&self, other: &Self) -> bool { self == other }
-        })*
-    }
-}
-
-#[cfg(target_pointer_width = "64")]
-impl_primitive_as!(
-    usize as u64,
-    isize as i64
-);
-#[cfg(target_pointer_width = "32")]
-impl_primitive_as!(
-    usize as u32,
-    isize as i32
-);
-
-macro_rules! impl_vec {
-    ($($t:ty => $qlist:ty),*) => {
-        $(impl QPropertyMember for Vec<$t> {
-            fn qmetatype() -> QMetaType { <$qlist as QMetaTypeGet>::get_qmetatype() }
-            fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
-                let list: $qlist = self.into();
-                (&list).into()
-            }
-
-            fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-                let list: $qlist = value.value()
-                    .ok_or(())?;
-                Ok((&list).into())
-            }
-            fn property_eq(&self, other: &Self) -> bool { self == other }
-        })*
-    }
-}
-
-impl_vec!(
-    bool   => QList_bool,
-    i8     => QList_i8,
-    u8     => QList_u8,
-    i16    => QList_i16,
-    u16    => QList_u16,
-    i32    => QList_i32,
-    u32    => QList_u32,
-    i64    => QList_i64,
-    u64    => QList_u64,
-    f32    => QList_f32,
-    f64    => QList_f64
-);
-
-macro_rules! impl_vec_as {
-    ($($t:ty as $underlying:ty),*) => {
-        $(impl QPropertyMember for Vec<$t> {
-            fn qmetatype() -> QMetaType { <Vec<$underlying> as QPropertyMember>::qmetatype() }
-            fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
-                let list: QList<$underlying> = self.iter()
-                    .map(|a| *a as $underlying)
-                    .collect();
-                (&list).into()
-            }
-            fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-                let list: QList<$underlying> = value.value()
-                    .ok_or(())?;
-                Ok(list.into_iter()
-                    .map(|a| *a as $t)
-                    .collect())
-            }
-            fn property_eq(&self, other: &Self) -> bool { self == other }
-        })*
-    }
-}
-
-#[cfg(target_pointer_width = "64")]
-impl_vec_as! (
-    usize as u64,
-    isize as i64
-);
-
-#[cfg(target_pointer_width = "32")]
-impl_vec_as! (
-    usize as u32,
-    isize as i32
-);
-
-impl QPropertyMember for String {
-    fn qmetatype() -> QMetaType { <QString as QMetaTypeGet>::get_qmetatype() }
-    fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
-        let qstr: QString = self.into();
-        (&qstr).into()
-    }
-    fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-        let qstr = value.value::<QString>()
-            .ok_or(())?;
-        Ok(qstr.into())
-    }
-    fn property_eq(&self, other: &Self) -> bool { self == other }
-}
-
-impl QPropertyMember for Vec<String>{
+impl<T: PartialEq + QMetaTypeCompatible + QVariantConvertible> QPropertyMember for T {
     fn qmetatype() -> QMetaType {
-        <QList_QString as QMetaTypeGet>::get_qmetatype()
+        <Self as QMetaTypeCompatible>::compatible_qmetatype()
     }
-    fn to_qvariant<Owner: QObjectHolder>(&self,_owner: &Owner) -> QVariant {
-        let list: QStringList = self.iter()
-            .map(QString::from)
-            .collect();
-        (&list).into()
+
+    fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
+        ToQVariant::to_qvariant(self)
     }
-    fn from_qvariant(value: &QVariant) -> Result<Self,()>{
-        let qlist: QStringList = value.value()
-            .ok_or(())?;
-        let vec = qlist.into_iter()
-            .map(String::from)
-            .collect();
-        Ok(vec)
+
+    fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
+        TryFromQVariant::try_from_qvariant(value)
     }
-    fn property_eq(&self,other: &Self) -> bool {
-        self==other
+
+    fn property_eq(&self, other: &Self) -> bool {
+        self == other
     }
 }
 
@@ -250,35 +119,6 @@ impl<T: QmlRegister> QPropertyMember for Vec<Rc<RefCell<T>>> {
     fn property_eq(&self, other: &Self) -> bool {
         self.len() == other.len() && self.iter().zip(other.iter()).all(|(a, b)| Rc::ptr_eq(a, b))
     }
-}
-
-#[cfg(feature = "serde_json")]
-impl QPropertyMember for serde_json::Value {
-    fn qmetatype() -> QMetaType { <QJsonValue as QMetaTypeGet>::get_qmetatype() }
-    fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
-        let jv = crate::serde_tools::serde_to_qjsonvalue(self);
-        (&jv).into()
-    }
-    fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-        crate::serde_tools::qvariant_to_serde(value)
-    }
-    fn property_eq(&self, other: &Self) -> bool { self == other }
-}
-
-#[cfg(feature = "serde_json")]
-impl QPropertyMember for Vec<serde_json::Value> {
-    fn qmetatype() -> QMetaType { <QJsonArray as QMetaTypeGet>::get_qmetatype() }
-    fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
-        let ja = crate::serde_tools::serde_to_qjsonarray(self);
-        (&ja).into()
-    }
-    fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-        match crate::serde_tools::qvariant_to_serde(value)? {
-            serde_json::Value::Array(arr) => Ok(arr),
-            _ => Err(()),
-        }
-    }
-    fn property_eq(&self, other: &Self) -> bool { self == other }
 }
 
 /// Returns the [`QMetaType`] of the return value of a `FnOnce`. Given a function
