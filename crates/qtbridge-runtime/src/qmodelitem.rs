@@ -3,67 +3,14 @@
 
 use std::collections::HashMap;
 
-use cxx_qt_lib::QString;
 use qtbridge_type_lib::QVariant;
 
-#[doc(hidden)]
-pub trait QVariantConvertible : Sized {
-    fn to_qvariant(&self) -> QVariant;
-    fn from_qvariant(value: &QVariant) -> Result<Self, ()>;
-}
+use crate::{QVariantConvertible, ToQVariant, TryFromQVariant};
 
-/// Implements `QVariantConvertible` for each listed type.
-macro_rules! impl_qvariant_convertible {
-    ($($t:ty),* $(,)?) => {
-        $(
-            impl QVariantConvertible for $t {
-                fn to_qvariant(&self) -> QVariant {
-                    QVariant::from(self)
-                }
-                fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-                    value.value()
-                        .ok_or(())
-                }
-            }
-        )*
-    };
-}
-
-impl_qvariant_convertible!(
-    bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64,
-);
-
-impl QVariantConvertible for String {
-    fn to_qvariant(&self) -> QVariant {
-        let qstr: QString = self.into();
-        (&qstr).into()
-    }
-    fn from_qvariant(value: &QVariant) -> Result<Self,()>{
-        value.value::<QString>()
-            .map(String::from)
-            .ok_or(())
-    }
-}
-impl QVariantConvertible for(){
-    fn to_qvariant(&self) -> QVariant {
-        QVariant::default()
-    }
-    fn from_qvariant(value: &QVariant) -> Result<Self,()>{
-        if value.is_valid() {
-            return Err(())
-        }
-        Ok(())
-    }
-}
-
-fn option_to_qvariant<T: QVariantConvertible>(value: Option<&T>) -> QVariant
-{
+fn option_to_qvariant<T: ToQVariant>(value: Option<&T>) -> QVariant {
     value.map(<T>::to_qvariant)
             .unwrap_or_default()
 }
-
-
-
 
 /// Trait representing a single item in an item model.
 ///
@@ -210,21 +157,21 @@ pub trait QModelItem {
     fn set_role(&mut self, id: i32, value: &QVariant) -> bool
     {
         match id {
-            0 => <Self::T0>::from_qvariant(value).map(|val| self.set0(val)),
-            1 => <Self::T1>::from_qvariant(value).map(|val| self.set1(val)),
-            2 => <Self::T2>::from_qvariant(value).map(|val| self.set2(val)),
-            3 => <Self::T3>::from_qvariant(value).map(|val| self.set3(val)),
-            4 => <Self::T4>::from_qvariant(value).map(|val| self.set4(val)),
-            5 => <Self::T5>::from_qvariant(value).map(|val| self.set5(val)),
-            6 => <Self::T6>::from_qvariant(value).map(|val| self.set6(val)),
-            7 => <Self::T7>::from_qvariant(value).map(|val| self.set7(val)),
-            8 => <Self::T8>::from_qvariant(value).map(|val| self.set8(val)),
-            9 => <Self::T9>::from_qvariant(value).map(|val| self.set9(val)),
-            10 => <Self::T10>::from_qvariant(value).map(|val| self.set10(val)),
-            11 => <Self::T11>::from_qvariant(value).map(|val| self.set11(val)),
-            12 => <Self::T12>::from_qvariant(value).map(|val| self.set12(val)),
-            13 => <Self::T13>::from_qvariant(value).map(|val| self.set13(val)),
-            14 => <Self::T14>::from_qvariant(value).map(|val| self.set14(val)),
+            0 => <Self::T0>::try_from_qvariant(value).map(|val| self.set0(val)),
+            1 => <Self::T1>::try_from_qvariant(value).map(|val| self.set1(val)),
+            2 => <Self::T2>::try_from_qvariant(value).map(|val| self.set2(val)),
+            3 => <Self::T3>::try_from_qvariant(value).map(|val| self.set3(val)),
+            4 => <Self::T4>::try_from_qvariant(value).map(|val| self.set4(val)),
+            5 => <Self::T5>::try_from_qvariant(value).map(|val| self.set5(val)),
+            6 => <Self::T6>::try_from_qvariant(value).map(|val| self.set6(val)),
+            7 => <Self::T7>::try_from_qvariant(value).map(|val| self.set7(val)),
+            8 => <Self::T8>::try_from_qvariant(value).map(|val| self.set8(val)),
+            9 => <Self::T9>::try_from_qvariant(value).map(|val| self.set9(val)),
+            10 => <Self::T10>::try_from_qvariant(value).map(|val| self.set10(val)),
+            11 => <Self::T11>::try_from_qvariant(value).map(|val| self.set11(val)),
+            12 => <Self::T12>::try_from_qvariant(value).map(|val| self.set12(val)),
+            13 => <Self::T13>::try_from_qvariant(value).map(|val| self.set13(val)),
+            14 => <Self::T14>::try_from_qvariant(value).map(|val| self.set14(val)),
             _ =>  return false,
         }.is_ok()
     }
