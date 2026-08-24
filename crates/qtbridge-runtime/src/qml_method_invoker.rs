@@ -68,7 +68,7 @@ macro_rules! invoke_method {
 
     ($invoker:expr, $name:expr, $($arg:expr),+ $(,)?) => {{
         let args: qtbridge::qtbridge_type_lib::QVariantList = [
-            $(qtbridge::qtbridge_type_lib::QVariant::from(&$arg)),+
+            $(qtbridge::qtbridge_runtime::ToQVariant::to_qvariant(&$arg)),+
         ]
         .iter()
         .collect();
