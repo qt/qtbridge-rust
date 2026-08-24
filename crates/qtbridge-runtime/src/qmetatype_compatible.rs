@@ -11,7 +11,7 @@ use qtbridge_type_lib::{QJsonArray, QJsonValue};
 
 use crate::{QMetaInfo, QMetaTypeGet, QObjectHolder, QmlRegister};
 
-/// Enables a type to be used as a meta call argument and to be convertible from/to QVariant (later).
+/// Enables a type to be used as a meta call argument and to be convertible from/to QVariant.
 ///
 /// Implemented for:
 /// - Primitive numeric types and `bool`
