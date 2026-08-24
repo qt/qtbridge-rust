@@ -12,14 +12,14 @@ license = "LicenseRef-Qt-Commercial OR LGPL-3.0-only"
 cxx = { version = "1.0.158", features = ["c++17", "std"] }
 cxx-build = { version = "1.0.158", features = [ "parallel" ] }
 # TODO: switch to cxx-qt from crates.io
-cxx-qt = { git = "https://github.com/KDAB/cxx-qt", rev = "a733e34952481a9f40e9dc5ab22e4ac37339d0a7" }
-cxx-qt-lib = { git = "https://github.com/KDAB/cxx-qt", rev = "a733e34952481a9f40e9dc5ab22e4ac37339d0a7", features = ["qt_gui", "qt_qml"] }
+cxx-qt = { version = "0.10.0" }
+cxx-qt-lib = { version = "0.10.0", features = ["qt_gui", "qt_qml"] }
 linkme = "0.3"
 serde_json = "1"
 proc-macro2 = "1.0.95"
 quote = "1.0.40"
 syn = { version = "2.0.103", features = ["extra-traits", "full"] }
-qt-build-utils = ">=0.9"
+qt-build-utils = ">= 0.10.0"
 qt-version = { version = "0.1.4", features = ["qt_version_at_least_6_10"] }
 qtbridge-build-utils = { path = "crates/qtbridge-build-utils", version = "0.2.0" }
 qtbridge-gen-common = { path = "crates/qtbridge-gen-common", version = "0.2.0" }
