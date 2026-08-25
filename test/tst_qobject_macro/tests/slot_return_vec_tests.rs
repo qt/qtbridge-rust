@@ -4,9 +4,8 @@
 mod common;
 
 use std::fmt::Debug;
-use cxx_qt_lib::{QListElement, QVariantValue};
 use qtbridge::{QApp, QObjectHolder, qobject};
-use qtbridge_type_lib::{QList, QString};
+use qtbridge_type_lib::{QList, QListElement, QString, QVariantValue};
 use crate::common::{capitalize_first_char, get_type_name};
 
 #[qobject(ConvertToCamelCase)]

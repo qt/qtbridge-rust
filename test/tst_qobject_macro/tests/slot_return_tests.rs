@@ -4,9 +4,8 @@
 mod common;
 
 use std::fmt::Debug;
-use cxx_qt_lib::QVariantValue;
 use qtbridge::{QApp, QObjectHolder, qobject};
-use qtbridge::qtbridge_type_lib::QString;
+use qtbridge::qtbridge_type_lib::{QString, QVariantValue};
 use common::{MAX_SAFE_INTEGER, MIN_SAFE_INTEGER, capitalize_first_char, get_type_name};
 
 #[qobject(ConvertToCamelCase)]

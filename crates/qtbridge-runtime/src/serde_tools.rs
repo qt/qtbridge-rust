@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 #![cfg(feature = "serde_json")]
 
-use cxx_qt_lib::{QMetaTypeType, QVariantValue};
 use qtbridge_type_lib::{
-    QJsonArray, QJsonObject, QJsonValue, QString, QVariant, QVariantMap,
+    QJsonArray, QJsonObject, QJsonValue, QMetaTypeType, QString, QVariant, QVariantMap, QVariantValue,
 };
 
 pub(crate) fn qvariant_to_serde(v: &QVariant) -> Result<serde_json::Value, ()> {

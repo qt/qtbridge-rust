@@ -4,8 +4,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use cxx_qt_lib::QObjectMutPtr;
-use qtbridge_type_lib::{QMetaType, QVariant};
+use qtbridge_type_lib::{QMetaType, QObjectMutPtr, QVariant};
 
 use crate::{QMetaInfo, QMetaTypeCompatible, QObjectHolder, QVariantConvertible, QmlRegister, ToQVariant, TryFromQVariant};
 

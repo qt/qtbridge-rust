@@ -7,9 +7,8 @@ use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
 
-use cxx_qt_lib::QVariantValue;
 use qtbridge::{QObjectHolder, qobject};
-use qtbridge_type_lib::{QString, QVariant};
+use qtbridge_type_lib::{QString, QVariant, QVariantValue};
 
 use crate::common::{capitalize_first_char, get_type_name};
 

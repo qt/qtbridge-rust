@@ -3,3 +3,5 @@
 
 mod generated;
 pub use generated::*;
+
+pub use cxx_qt_lib::{QListElement, QMetaTypeType, QObjectMutPtr, QVariantValue};

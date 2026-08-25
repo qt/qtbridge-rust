@@ -5,8 +5,7 @@ use std::cell::RefCell;
 use std::ptr::NonNull;
 use std::rc::Rc;
 
-use cxx_qt_lib::QObjectMutPtr;
-use qtbridge_type_lib::{QObject, QVariant};
+use qtbridge_type_lib::{QObject, QObjectMutPtr, QVariant};
 use crate::qproxies::{QRustProxy, ConstructionMode};
 use crate::rustobjectgetter::get_rust_proxy;
 use crate::{DispatchMetaCall, QMetaInfo, QmlMethodInvoker};
