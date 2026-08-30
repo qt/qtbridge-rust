@@ -93,21 +93,10 @@ pub trait QParserStatus {
 }
 
 #[doc(hidden)]
-pub trait QParserStatusAdapter: DispatchMetaCall {
-    fn class_begin(&mut self);
-    fn component_complete(&mut self);
-}
+pub trait QParserStatusAdapter: QParserStatus + DispatchMetaCall { }
 
 impl<T> QParserStatusAdapter for T
-where T: QParserStatus + QObjectHolder<ProxyRust = QParserStatusProxyRust> {
-    fn class_begin(&mut self) {
-        <Self as QParserStatus>::class_begin(self)
-    }
-
-    fn component_complete(&mut self) {
-        <Self as QParserStatus>::component_complete(self)
-    }
-}
+where T: QParserStatus + QObjectHolder<ProxyRust = QParserStatusProxyRust> { }
 
 pub type QParserStatusProxyRust = GenericRustProxy<QParserStatusProxyCpp, dyn QParserStatusAdapter>;
 
