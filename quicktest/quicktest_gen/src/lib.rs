@@ -5,7 +5,17 @@ use proc_macro::TokenStream;
 
 use syn::{parse_macro_input, ItemFn, Ident, LitBool, LitStr};
 use quote::quote;
-use qtbridge_gen_common::parse_utils::parse_name_value;
+use syn::parse::{Parse, ParseBuffer};
+
+fn parse_name_value<Name: Parse, Value: Parse>(input: &ParseBuffer) -> syn::Result<(Name, Value)> {
+    let begin = input.fork();
+    let parse = |input: &ParseBuffer| -> syn::Result<(Name, Value)> {
+        let name = input.parse()?;
+        let _eq: syn::Token![=] = input.parse()?;
+        Ok((name, input.parse()?))
+    };
+    parse(input).map_err(|_| begin.error("Failed to parse expression like name=value"))
+}
 
 struct QObjectTestData {
     class: Option<syn::Path>,

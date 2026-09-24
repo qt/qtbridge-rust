@@ -1,5 +1,0 @@
----
-source: test/tst_qtbridge_gen_common/src/type_qualified_mapping_tests.rs
-expression: actual
----
-std :: rc :: Rc < std :: cell :: RefCell < < Self :: ProxyRust as qtbridge :: qtbridge_runtime :: qproxies :: QRustProxy > :: AdapterType > >

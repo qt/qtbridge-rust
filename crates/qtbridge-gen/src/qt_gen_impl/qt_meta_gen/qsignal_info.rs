@@ -6,11 +6,11 @@ use quote::quote;
 use syn::{Ident, LitStr};
 use syn::spanned::Spanned;
 
-use qtbridge_gen_common::case_conv;
+use crate::utils::case_conv;
 use crate::function_with_attributes::{FunctionWithAttributes, BlockOrSemi};
-use qtbridge_gen_common::parse_utils::{parse_name_value, partition_attr_by};
-use qtbridge_gen_common::signature_utils::{get_typed_args, get_typed_args_types, is_self_mut};
-use qtbridge_gen_common::type_utils::remove_refs;
+use crate::utils::parse_utils::{parse_name_value, partition_attr_by};
+use crate::utils::signature_utils::{get_typed_args, get_typed_args_types, is_self_mut};
+use crate::utils::type_utils::remove_refs;
 use crate::meta_call_check::check_meta_call_signature;
 use crate::qt_gen_impl::qt_meta_gen;
 use crate::qt_gen_impl::qobject_macro_params::QObjectMacroParams;

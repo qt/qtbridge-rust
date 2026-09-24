@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
+use quote::quote;
 use syn::spanned::Spanned;
 
-use crate::type_to_string::{path_to_string_fallback, type_to_string, type_to_string_fallback};
+use crate::utils::type_to_string::{path_to_string_fallback, type_to_string, type_to_string_fallback};
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum ValuePass {
@@ -56,10 +56,6 @@ pub fn get_take_value_code(value: &syn::Ident, pass: ValuePass) -> TokenStream {
     }
 }
 
-pub fn is_ptr(ty: &syn::Type) -> bool {
-    matches!(ty, syn::Type::Ptr(_))
-}
-
 /// Returns `true` if the input represents a reference type.
 pub fn is_ref(ty: &syn::Type) -> bool {
     matches!(ty, syn::Type::Reference(_))
@@ -70,27 +66,6 @@ pub fn is_mut_ref(ty: &syn::Type) -> bool {
         return ref_.mutability.is_some()
     }
     false
-}
-
-pub fn ident_str_to_path(src: &str) -> syn::Path {
-    let ident = format_ident!("{src}");
-    ident_to_path(ident)
-}
-
-pub fn ident_to_path(src: syn::Ident) -> syn::Path {
-    src.into()
-}
-
-pub fn path_to_type(src: syn::Path) -> syn::Type {
-    let type_path = syn::TypePath {
-        qself: None,
-        path: src,
-    };
-    type_path.into()
-}
-
-pub fn ident_to_type(src: syn::Ident) -> syn::Type {
-    path_to_type(ident_to_path(src))
 }
 
 /// Extract `syn::Path` from `syn::Type` if it is `Path` variant.
@@ -116,47 +91,4 @@ pub fn get_ident_of_last_path_segment(src: &syn::Path) -> Option<&syn::Ident> {
 pub fn get_ident_of_last_path_segment_or_err(src: &syn::Path) -> syn::Result<&syn::Ident> {
     get_ident_of_last_path_segment(src)
         .ok_or_else(|| syn::Error::new(src.span(), format!("Failed to get the last segment from path '{}'", path_to_string_fallback(src))))
-}
-
-pub fn get_angle_bracketed_generic_arguments_of_last_path_segment(src: &syn::Path) -> Option<&syn::AngleBracketedGenericArguments> {
-    let last_seg = src.segments.last()?;
-    let syn::PathArguments::AngleBracketed(ab) = &last_seg.arguments else {
-        return None
-    };
-
-    Some(ab)
-}
-
-/// Return true if 'path' has the same component idents as specified in 'qualified_path'.
-/// 'path' is allowed to have some first components missing.
-pub fn is_same_path<I, S>(path: &syn::Path, qualified_path_comps: I) -> bool
-where
-    I: DoubleEndedIterator<Item = S>,
-    S: AsRef<str>
-{
-    path.segments.iter()
-        .rev()
-        .zip(qualified_path_comps.rev())
-        .all(|(lhs, rhs)| lhs.ident == rhs )
-}
-
-/// Return true if path has arguments in angle brackets
-/// and all of those arguments contained in 'idents' slice.
-pub fn are_all_args_generic_idents(src: &syn::Path, idents: &[syn::Ident]) -> bool {
-    let Some(ab) = get_angle_bracketed_generic_arguments_of_last_path_segment(src) else {
-        return false
-    };
-
-    ab.args.iter()
-        .all(|gen_arg| {
-            if let syn::GenericArgument::Type(ty) = gen_arg &&
-               let syn::Type::Path(ty_path) = ty &&
-               ty_path.qself.is_none() &&
-               let Some(ident) = ty_path.path.get_ident() &&
-               idents.contains(ident)
-            {
-                    return true
-            }
-            false
-        })
 }

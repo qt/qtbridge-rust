@@ -1,9 +1,9 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use quote::quote;
+use quote::{format_ident, quote};
 
-use qtbridge_gen_common::naming;
+use crate::utils::case_conv;
 
 /// Generate the implementation of the `QObjectHolder` trait.
 pub fn generate_qobject_holder(
@@ -13,8 +13,8 @@ pub fn generate_qobject_holder(
 ) -> syn::Result<syn::ItemImpl> {
 
     let iface_name = iface_ident;
-    let iface_module = naming::rust::module::from_struct_name(iface_name);
-    let proxy_rust = naming::rust::structure::proxy_rust(iface_name);
+    let iface_module = format_ident!("{}", case_conv::camel_to_snake(&iface_name.to_string()));
+    let proxy_rust = format_ident!("{iface_name}ProxyRust");
 
     let has_generics = !impl_generics.params.is_empty();
     let (impl_generics, type_generics, where_clause) = impl_generics.split_for_impl();

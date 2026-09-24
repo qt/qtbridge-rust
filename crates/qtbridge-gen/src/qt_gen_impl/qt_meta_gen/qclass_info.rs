@@ -5,7 +5,7 @@ use proc_macro2::{TokenStream};
 use quote::{quote};
 use syn::{parse::Parse, spanned::Spanned};
 
-use qtbridge_gen_common::parse_utils::parse_name_value;
+use crate::utils::parse_utils::parse_name_value;
 
 pub struct QClassInfo{
     pub name: syn::LitStr,

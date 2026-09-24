@@ -3,8 +3,8 @@ use quote::{ToTokens, format_ident, quote};
 use syn::parse_quote;
 use syn::spanned::Spanned;
 
-use qtbridge_gen_common::signature_utils::{get_return_type, get_typed_arg_ident, get_typed_args, get_typed_args_types};
-use qtbridge_gen_common::type_utils::{ValuePass, get_type_pass, is_ref, remove_ref, remove_refs};
+use crate::utils::signature_utils::{get_return_type, get_typed_arg_ident, get_typed_args, get_typed_args_types};
+use crate::utils::type_utils::{ValuePass, get_type_pass, is_ref, remove_ref, remove_refs};
 
 /// Generates code to connect a Rust function to a metacall (e.g. signal or slot).
 pub struct MetaCallBridgeGenerator<'a> {

@@ -5,9 +5,9 @@ use proc_macro2::{Span, TokenStream};
 use quote::{format_ident, quote};
 use syn::{parse::Parse, spanned::Spanned};
 
-use qtbridge_gen_common::parse_utils::parse_name_value;
-use qtbridge_gen_common::type_to_string::type_to_string_fallback;
-use qtbridge_gen_common::type_utils::{ValuePass, get_take_value_code, get_type_pass, is_ref, remove_ref, remove_ref_to_string, remove_refs};
+use crate::utils::parse_utils::parse_name_value;
+use crate::utils::type_to_string::type_to_string_fallback;
+use crate::utils::type_utils::{ValuePass, get_take_value_code, get_type_pass, is_ref, remove_ref, remove_ref_to_string, remove_refs};
 use crate::qt_gen_impl::qt_meta_gen;
 use qt_meta_gen::qproperty_type_deduction::{deduce_type_from_getter, deduce_type_from_member, deduce_type_from_setter};
 use qt_meta_gen::QSignalInfo;

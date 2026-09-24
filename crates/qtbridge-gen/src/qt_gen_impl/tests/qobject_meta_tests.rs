@@ -6,8 +6,8 @@ use insta::assert_snapshot;
 use quote::{ToTokens, quote};
 use crate::qt_gen_impl::qobject_module_builder;
 use qobject_module_builder::{LinkmeSupport, QObjectModuleBuilder, QObjectOutput};
-use qtbridge_gen_common::format_code::{format_rust_code, strip_docs};
-use qtbridge_gen_common::type_utils::get_ident_of_last_path_segment;
+use crate::utils::format_code::{format_rust_code, strip_docs};
+use crate::utils::type_utils::get_ident_of_last_path_segment;
 
 fn find_trait_impl<'a>(items: &'a[syn::Item], name: &str) -> &'a syn::ItemImpl {
     items.iter()

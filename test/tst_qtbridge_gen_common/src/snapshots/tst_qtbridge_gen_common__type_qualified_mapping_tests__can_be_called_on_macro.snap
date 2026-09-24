@@ -1,5 +1,0 @@
----
-source: test/tst_qtbridge_gen_common/src/type_qualified_mapping_tests.rs
-expression: actual
----
-thread_local ! { static DYNAMIC_META_OBJECT : OnceLock < & 'static qtbridge :: qtbridge_runtime :: DynamicMetaObjectData > = OnceLock :: new () ; }

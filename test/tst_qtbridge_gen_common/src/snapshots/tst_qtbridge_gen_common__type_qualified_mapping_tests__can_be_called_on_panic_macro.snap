@@ -1,5 +1,0 @@
----
-source: test/tst_qtbridge_gen_common/src/type_qualified_mapping_tests.rs
-expression: actual
----
-panic ! ("Failed to convert value '{}' to type '{}' in qproperty '{}'" , value . to_string () , std :: any :: type_name_of_val (& self . first_value) , "this_value")

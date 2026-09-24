@@ -6,6 +6,7 @@ mod meta_call_check;
 mod qt_derive;
 mod qt_gen_impl;
 mod qt_resource;
+mod utils;
 
 use proc_macro::TokenStream;
 use crate::qt_gen_impl::qobject_module_builder;

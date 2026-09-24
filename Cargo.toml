@@ -22,7 +22,6 @@ syn = { version = "2.0.103", features = ["extra-traits", "full"] }
 qt-build-utils = ">= 0.10.0"
 qt-version = { version = "0.1.4", features = ["qt_version_at_least_6_10"] }
 qtbridge-build-utils = { path = "crates/qtbridge-build-utils", version = "0.3.0" }
-qtbridge-gen-common = { path = "crates/qtbridge-gen-common", version = "0.3.0" }
 qtbridge-gen = { path = "crates/qtbridge-gen", version = "0.3.0" }
 qtbridge-type-lib = { path = "crates/qtbridge-type-lib", version = "0.3.0" }
 qtbridge-interfaces = { path = "crates/qtbridge-interfaces", version = "0.3.0" }
@@ -35,7 +34,6 @@ resolver = "2"
 members = [
     "crates/qtbridge",
     "crates/qtbridge-build-utils",
-    "crates/qtbridge-gen-common",
     "crates/qtbridge-gen",
     "crates/qtbridge-type-lib",
     "crates/qtbridge-interfaces",
@@ -57,7 +55,6 @@ members = [
     "test/tst_ownership",
     "test/tst_serde_json",
     "test/tst_linkme",
-    "test/tst_qtbridge_gen_common",
     "test/quick/tst_qobject",
     "test/quick/tst_qabstractitemmodel",
     "test/quick/tst_generic_itemmodel",
@@ -71,7 +68,6 @@ members = [
 default-members = [
     "crates/qtbridge",
     "crates/qtbridge-build-utils",
-    "crates/qtbridge-gen-common",
     "crates/qtbridge-gen",
     "crates/qtbridge-type-lib",
     "crates/qtbridge-interfaces",

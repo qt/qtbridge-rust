@@ -3,8 +3,6 @@
 
 #[doc(hidden)]
 pub mod file_system_utils;
-#[doc(hidden)]
-pub mod generate_types;
 /// Utilities for linking Rust applications with a Qt installation.
 ///
 pub mod qt_build;

@@ -6,7 +6,7 @@ use quote::{ToTokens, format_ident, quote};
 use syn::spanned::Spanned;
 
 use crate::function_with_attributes::FunctionWithAttributes;
-use qtbridge_gen_common::type_utils::{get_ident_of_last_path_segment_or_err, path_from_type};
+use crate::utils::type_utils::{get_ident_of_last_path_segment_or_err, path_from_type};
 use crate::qt_gen_impl::generate_qobject_holder::generate_qobject_holder;
 use crate::qt_gen_impl::qt_meta_gen;
 use crate::qt_gen_impl::qt_meta_gen::generate_dispatch_meta_call::generate_dispatch_meta_call;

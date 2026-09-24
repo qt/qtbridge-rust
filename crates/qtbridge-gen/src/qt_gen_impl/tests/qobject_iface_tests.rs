@@ -6,7 +6,7 @@ use insta::assert_snapshot;
 use crate::qt_gen_impl::qobject_module_builder;
 use qobject_module_builder::{LinkmeSupport, QObjectModuleBuilder};
 use quote::quote;
-use qtbridge_gen_common::format_code::{format_rust_code, strip_docs};
+use crate::utils::format_code::{format_rust_code, strip_docs};
 
 #[test]
 pub fn test() {

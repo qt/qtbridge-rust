@@ -4,7 +4,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use crate::file_system_utils::{absolute_path, create_dirs, find_all_files, find_files, get_path_from, get_relative_path, normalize_dir_separators, parent_dir, read_file_content, remove_dir_all, remove_file, write_to_file, write_to_file_if_changed};
+use qtbridge_build_utils::file_system_utils::{absolute_path, create_dirs, find_all_files, find_files, get_path_from, get_relative_path, normalize_dir_separators, parent_dir, read_file_content, remove_dir_all, remove_file, write_to_file, write_to_file_if_changed};
 
 pub struct RustFileInfo {
     // True if file contains #[cxx_bridge] annotated module.

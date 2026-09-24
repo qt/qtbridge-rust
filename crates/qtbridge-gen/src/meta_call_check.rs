@@ -1,8 +1,8 @@
 use syn::spanned::Spanned;
 
-use qtbridge_gen_common::signature_utils::{get_return_type, get_typed_args, is_arg_self_ref};
-use qtbridge_gen_common::type_to_string::type_to_string_fallback;
-use qtbridge_gen_common::type_utils::{is_mut_ref, remove_ref};
+use crate::utils::signature_utils::{get_return_type, get_typed_args, is_arg_self_ref};
+use crate::utils::type_to_string::type_to_string_fallback;
+use crate::utils::type_utils::{is_mut_ref, remove_ref};
 
 /// Checks whether the given signature can participate in meta-calls
 /// (as slot callbacks or property getters/setters).

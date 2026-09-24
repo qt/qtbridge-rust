@@ -3,9 +3,7 @@
 
 use std::io::{self, Write};
 use std::process::{Command, Stdio};
-use std::sync::LazyLock;
-use qtbridge_build_utils::file_system_utils::{find_file_upwards, get_exe_dir, get_manifest_dir};
-use crate::parse_utils::is_not_doc_attribute;
+use crate::utils::parse_utils::is_not_doc_attribute;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 
@@ -57,68 +55,6 @@ pub fn format_rust_code(tokens: &TokenStream) -> Result<String, String> {
     let output = run_cmd("rustfmt", &["+nightly", "--unstable-features", "--emit", "stdout"], &code)
         .map_err(|err| format!("Error running rustfmt:\n{err}"))?;
     Ok(output)
-}
-
-pub fn try_format_cpp_code(code: &str) -> Result<String, String> {
-    static STYLE_FILE: LazyLock<Option<String>> = LazyLock::new(|| {
-        find_clang_format_style_file()
-    });
-
-    let Some(style_file) = &*STYLE_FILE else {
-        return Ok(code.into())
-    };
-
-    let result = run_cmd("clang-format", &[&format!("--style=file:{style_file}")], code);
-    match result {
-        Ok(output) => Ok(output),
-        Err(RunCmdError::Io(_)) =>
-            // Likely the reason of error is clang-format not in the PATH.
-            // Ignore error since clang-format is currently optional.
-            // Return code unformatted.
-            Ok(code.to_owned()),
-        Err(err) => Err(err.to_string()),
-    }
-}
-
-/// Convert TokenStream to string with code
-/// trying to remove unneeded spaces around '.' '::' ';' '<' '>'.
-/// Those space are added in 'impl Display for TokenStream'.
-/// Need to do this because not all of those unneeded spaces are eliminated by clang-fmt called later.
-/// TODO: leave string literals unchanged (if we are within quotes).
-pub fn token_stream_to_code(src: &TokenStream) -> String {
-
-    let src = src.to_string();
-
-    let mut result = String::with_capacity(src.len());
-    let mut prev_ch = '\0';
-    for ch in src.chars() {
-        if ch == ' ' && prev_ch.is_ascii_punctuation() {
-            continue; // remove space after punctuation
-        }
-
-        if ch.is_ascii_punctuation() && prev_ch == ' ' {
-            result.pop(); // remove space before punctuation
-        }
-
-        result.push(ch);
-        prev_ch = ch;
-    }
-
-    result
-}
-
-
-// Search for '.clang-format' file starting from the local folder of the package.
-// If not found - check again a few levels up.
-fn find_clang_format_style_file() -> Option<String> {
-
-    // Start from the package root
-    let manifest_dir = get_manifest_dir()
-        .or_else(|_| get_exe_dir())
-        .ok()?; // If get_manifest_dir() fails then probably called not from the build script
-
-    find_file_upwards(&manifest_dir, ".clang-format", 5)
-        .map(|path| path.to_string_lossy().to_string())
 }
 
 fn run_cmd(cmd_name: &str, args: &[&str], input: &str) -> Result<String, RunCmdError> {
