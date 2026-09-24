@@ -1,14 +1,14 @@
 // Copyright (C) 2026 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
-use qtbridge_type_lib::QObject;
+use qtbridge_type_lib::core::qobject;
 use crate::QmlMethodInvoker;
 use crate::qobjectholder::QObjectHolder;
 use crate::registry::Owner;
 
 pub trait QmlObject: QObjectHolder {
-    /// Creates a default-initialized instance and attaches its [`QObject`]
-    /// eagerly.
+    /// Creates a default-initialized instance and attaches its
+    /// [`QObject`](qtbridge_type_lib::QObject) eagerly.
     ///
     /// The returned `Rc<RefCell<Self>>` is an ordinary handle, shared with
     /// QML. Droping the handle does not drop the instance if it is in use by
@@ -22,20 +22,20 @@ pub trait QmlObject: QObjectHolder {
         instance
     }
 
-    /// Attaches a dedicated [`QObject`] to an existing `instance`,
+    /// Attaches a dedicated [`QObject`](qtbridge_type_lib::QObject) to an existing `instance`,
     /// enabling its use in QML.
     fn attach_qobject(instance: &std::rc::Rc<std::cell::RefCell<Self>>) {
         Self::register_instance(instance.clone(), Owner::RustRegistry, None);
     }
 
-    /// Detaches and deletes the dedicated [`QObject`] of this instance.
+    /// Detaches and deletes the dedicated [`QObject`](qtbridge_type_lib::QObject) of this instance.
     ///
     /// The instance continues as a plain Rust value and heals with a
-    /// fresh [`QObject`] on its next exposure to QML.
+    /// fresh `QObject` on its next exposure to QML.
     fn detach_qobject(&self) {
         let qobj_ptr = self.get_qobject_ptr();
         if !qobj_ptr.is_null() {
-            QObject::delete(qobj_ptr);
+            unsafe { qobject::delete(qobj_ptr) };
         }
     }
 

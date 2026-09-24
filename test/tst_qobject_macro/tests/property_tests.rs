@@ -9,6 +9,7 @@ use std::rc::Rc;
 
 use qtbridge::{QmlObject, qobject};
 use qtbridge_type_lib::{QString, QVariant, QVariantValue};
+use qtbridge_type_lib::core::qobject;
 
 use crate::common::{capitalize_first_char, get_type_name};
 
@@ -456,7 +457,7 @@ where
     // Read the value of the tested property and compare it to the expected one.
     let type_name = get_type_name::<T>();
     let property_name = format!("property{}", capitalize_first_char(&type_name));
-    let var = unsafe { &*obj.borrow().get_qobject_ptr() }.property(&property_name);
+    let var = qobject::property(unsafe { &*obj.borrow().get_qobject_ptr() }, &property_name);
     let actual: T = var.value::<VarT>()
         .unwrap()
         .try_into()
@@ -480,11 +481,10 @@ where
     let type_name = get_type_name::<T>();
     let property_name = format!("property{}", capitalize_first_char(&type_name));
     let qobj_ptr = obj.borrow().get_qobject_ptr();
-    let qobj = unsafe { qobj_ptr.as_mut() }.unwrap();
     let test_value_var_t: VariantT = test_value.clone().try_into().unwrap();
     let test_value_var = QVariant::from(&test_value_var_t);
 
-    qobj.set_property(&property_name, test_value_var);
+    unsafe { qobject::set_property(qobj_ptr, &property_name, &test_value_var) };
     let values = TestValues::from(&obj.borrow());
     let property_type = TestObj::property_type();
     assert_eq!(test_value, get_value(&values), "check failed for type {type_name} of {property_type}");

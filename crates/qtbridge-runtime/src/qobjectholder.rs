@@ -6,6 +6,7 @@ use std::ptr::NonNull;
 use std::rc::Rc;
 
 use qtbridge_type_lib::{QMetaType, QObject};
+use qtbridge_type_lib::core::qobject;
 use crate::qproxies::{QCppProxy, QRustProxy, PlacementAddress, AdapterUpcast};
 use crate::registry::Owner;
 use crate::rustobjectgetter::get_rust_proxy;
@@ -109,7 +110,7 @@ where
         // that is not identical to `Self`'s dynamic meta-object, yet the
         // underlying proxy/object is still a `Self` (QML only layers a
         // meta-object on top, it does not change the Rust type).
-        let qobj_meta_obj = unsafe { qobj_ref.get_qmeta_object().as_ref() };
+        let qobj_meta_obj = unsafe { qobject::meta_object(qobj_ref).as_ref() };
         let self_meta_obj = unsafe {
             Self::get_shared_dynamic_meta_object_data().get_meta_object().as_ref()
         };

@@ -6,6 +6,7 @@ use std::cell::RefCell;
 use std::any::TypeId;
 use std::collections::HashMap;
 use qtbridge_type_lib::{QMetaTypeInterface, QMetaTypeFlag, QMetaObject, QObject};
+use qtbridge_type_lib::core::qobject;
 use crate::qproxies::QCppProxy;
 use crate::QObjectHolder;
 use crate::qobjectholder::CppProxyOf;
@@ -31,7 +32,7 @@ fn monomorphize_default_ctor<T: QObjectHolder + Default>() -> extern "C" fn(*con
 
 fn monomorphize_dtor<T: QObjectHolder>() -> extern "C" fn (*const QMetaTypeInterface, *mut u8)  {
     extern "C" fn dtor<T: QObjectHolder>(_iface: *const QMetaTypeInterface, obj: *mut u8) {
-        QObject::destruct(obj.cast());
+        unsafe { qobject::destruct(obj.cast()) };
     }
     dtor::<T>
 }

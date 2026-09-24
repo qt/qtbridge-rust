@@ -13,7 +13,7 @@ use std::rc::{Rc, Weak};
 use qtbridge::{QApp, QmlObject, QPropertyMember, QmlElement, collect_garbage, qobject};
 use qtbridge::qtbridge_runtime::QObjectHolder;
 use qtbridge::qtbridge_type_lib::{
-    QGuiApplication, QObject, QQmlApplicationEngine, QSignalSpy, QString, QVariant,
+    QGuiApplication, QObjectMutPtr, QQmlApplicationEngine, QSignalSpy, QString, QVariant,
     QVariantMap,
 };
 
@@ -165,7 +165,7 @@ fn unreferenced_object_is_reclaimed_by_collect_garbage() {
     // The pointer travels towards QML, but nothing ever wraps it: The
     // situation of a signal emitted without a connected handler.
     let _var = QVariant::from(&unsafe {
-        QObject::to_cxx_qt(TestObject::rc_ref_cell_to_qobject(&obj).cast_mut())
+        QObjectMutPtr::from_raw(TestObject::rc_ref_cell_to_qobject(&obj).cast_mut())
     });
 
     drop(obj);
@@ -191,7 +191,7 @@ fn object_survives_engine_death() {
         let mut engine = QQmlApplicationEngine::new();
         let mut props = QVariantMap::default();
         let qobject = unsafe {
-            QObject::to_cxx_qt(TestObject::rc_ref_cell_to_qobject(&obj).cast_mut())
+            QObjectMutPtr::from_raw(TestObject::rc_ref_cell_to_qobject(&obj).cast_mut())
         };
         props.insert(QString::from("testObject"), QVariant::from(&qobject));
         engine.pin_mut().set_initial_properties(&props);
@@ -216,7 +216,7 @@ fn object_survives_engine_death() {
 fn qvariant_roundtrip_preserves_identity() {
     let obj = TestObject::default_with_attached_qobject();
     let var = QVariant::from(&unsafe {
-        QObject::to_cxx_qt(TestObject::rc_ref_cell_to_qobject(&obj).cast_mut())
+        QObjectMutPtr::from_raw(TestObject::rc_ref_cell_to_qobject(&obj).cast_mut())
     });
 
     // Exercises the checked downcast from the erased allocation back to the

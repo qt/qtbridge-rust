@@ -44,6 +44,7 @@ use std::collections::HashMap;
 use std::rc::Weak;
 
 use qtbridge_type_lib::QObject;
+use qtbridge_type_lib::core::qobject;
 
 #[cxx::bridge]
 mod ffi {
@@ -131,7 +132,7 @@ impl Drop for Entries {
     fn drop(&mut self) {
         for (_, entry) in self.map.drain() {
             if entry.owner == Owner::RustRegistry {
-                QObject::delete(entry.qobject);  // Deletes both proxies
+                unsafe { qobject::delete(entry.qobject) };  // Deletes both proxies
             }
         }
     }
@@ -270,7 +271,7 @@ pub fn collect_garbage() {
             assert!(keep_alive.is_some());
             // Tears down the proxy pair; its on_drop removes the registry
             // entry.
-            QObject::delete(qobject);
+            unsafe { qobject::delete(qobject) };
             // Ours is the last reference: this frees the Rust object,
             // running a user-provided Drop if there is one.
             drop(keep_alive);

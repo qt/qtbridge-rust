@@ -128,13 +128,13 @@ pub fn run_quick_test(attr: TokenStream, item: TokenStream) -> TokenStream {
                 syn::parse_quote!({
                     #common_setup
 
-                    use qtbridge::qtbridge_type_lib::{QObject, QVariant, QVariantMap};
+                    use qtbridge::qtbridge_type_lib::{QObjectMutPtr, QVariant, QVariantMap};
                     use quicktest::quick_test_main_with_properties;
                     use qtbridge::QmlObject;
                     use qtbridge::qtbridge_runtime::QObjectHolder;
 
                     let test_object = #class_ident::default_with_attached_qobject();
-                    let qobject = unsafe { QObject::to_cxx_qt(
+                    let qobject = unsafe { QObjectMutPtr::from_raw(
                         #class_ident::rc_ref_cell_to_qobject(&test_object).cast_mut()) };
                     let mut properties = QVariantMap::default();
                     properties.insert(#name_ident.into(), QVariant::from(&qobject));

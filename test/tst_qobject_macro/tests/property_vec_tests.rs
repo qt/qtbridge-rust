@@ -9,6 +9,7 @@ use std::rc::Rc;
 
 use qtbridge::{QmlObject, qobject};
 use qtbridge_type_lib::{QList, QString, QListElement, QVariantValue, QVariant};
+use qtbridge_type_lib::core::qobject;
 
 use crate::common::{capitalize_first_char, get_type_name};
 
@@ -519,7 +520,7 @@ where
     // Read the value of the tested property and compare it to the expected one.
     let type_name = get_type_name::<Vec<T>>();
     let property_name = format!("property{}", capitalize_first_char(&type_name));
-    let var = unsafe { &*obj.borrow().get_qobject_ptr() }.property(&property_name);
+    let var = qobject::property(unsafe { &*obj.borrow().get_qobject_ptr() }, &property_name);
     let actual_var_t: QList<VarT> = var.value().unwrap();
     let actual: Vec<T> = actual_var_t.into_iter()
         .map(|arg| T::try_from(arg.clone()).unwrap())
@@ -544,12 +545,11 @@ where
     let type_name = get_type_name::<Vec<T>>();
     let property_name = format!("property{}", capitalize_first_char(&type_name));
     let qobj_ptr = obj.borrow().get_qobject_ptr();
-    let qobj = unsafe { qobj_ptr.as_mut() }.unwrap();
     let test_values_qlist: QList<VarT> = test_value.iter()
         .map(|a| a.clone().try_into().unwrap())
         .collect();
     let test_values_var = QVariant::from(&test_values_qlist);
-    qobj.set_property(&property_name, test_values_var);
+    unsafe { qobject::set_property(qobj_ptr, &property_name, &test_values_var) };
     let values = TestValues::from(&obj.borrow());
     let property_type = TestObj::property_type();
     assert_eq!(test_value, get_value(&values), "check failed for type {type_name} of {property_type}");

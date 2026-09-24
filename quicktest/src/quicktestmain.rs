@@ -9,6 +9,7 @@ mod ffi {
     unsafe extern "C++" {
         include!("qtbridge-type-lib/src/core/qmap/cpp/qmap_qstring_qvariant.h");
         type QMap_QString_QVariant = super::QMap_QString_QVariant;
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         type QObject = super::QObject;
     }
 

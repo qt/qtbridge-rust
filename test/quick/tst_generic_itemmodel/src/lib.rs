@@ -6,7 +6,7 @@ use std::rc::Rc;
 use qtbridge::qobject;
 use qtbridge::QmlObject;
 use qtbridge::qtbridge_runtime::QObjectHolder;
-use qtbridge::qtbridge_type_lib::{QObject, QVariant};
+use qtbridge::qtbridge_type_lib::{QObjectMutPtr, QVariant};
 
 #[qobject(Base = QAbstractItemModel, ConvertToCamelCase)]
 mod backend {
@@ -94,7 +94,7 @@ pub fn test_qabstractitemmodel() {
     Backend::attach_qobject(&test_object);
 
     let qobject = unsafe {
-        QObject::to_cxx_qt(Backend::<i32>::rc_ref_cell_to_qobject(&test_object).cast_mut())
+        QObjectMutPtr::from_raw(Backend::<i32>::rc_ref_cell_to_qobject(&test_object).cast_mut())
     };
     let mut properties = QVariantMap::default();
     properties.insert("listmodel".into(), QVariant::from(&qobject));

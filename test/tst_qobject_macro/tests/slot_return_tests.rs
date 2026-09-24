@@ -7,6 +7,7 @@ use std::fmt::Debug;
 use qtbridge::{QApp, QmlObject, qobject};
 use qtbridge::qtbridge_runtime::QObjectHolder;
 use qtbridge::qtbridge_type_lib::{QString, QVariantValue};
+use qtbridge::qtbridge_type_lib::core::qobject;
 use common::{MAX_SAFE_INTEGER, MIN_SAFE_INTEGER, capitalize_first_char, get_type_name};
 
 #[qobject(ConvertToCamelCase)]
@@ -148,9 +149,9 @@ where
        .load_qml(qml.as_bytes());
 
     // Read the value returned from the slot and stored to the dedicated property.
-    let result_var = unsafe { &*obj.borrow()
-        .get_qobject_ptr() }
-        .property(&format!("slot{suffix}Value"));
+    let result_var = qobject::property(
+        unsafe { &*obj.borrow().get_qobject_ptr() },
+        &format!("slot{suffix}Value"));
 
     // Check returned value.
     assert!(result_var.is_valid());

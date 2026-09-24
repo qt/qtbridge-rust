@@ -4,7 +4,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use qtbridge_type_lib::{QList, QList_QString, QMetaType, QObject, QObjectList, QString};
+use qtbridge_type_lib::{QList, QList_QString, QMetaType, QObject, QObjectList, QObjectMutPtr, QString};
 
 #[cfg(feature = "serde_json")]
 use qtbridge_type_lib::{QJsonArray, QJsonValue};
@@ -148,13 +148,13 @@ impl<T: QmlElement> QMetaTypeCompatible for Vec<Rc<RefCell<T>>> {
 
     fn to_compatible(&self) -> QObjectList {
         self.iter()
-            .map(|rc| unsafe { QObject::to_cxx_qt(T::rc_ref_cell_to_qobject(rc).cast_mut()) })
+            .map(|rc| unsafe { QObjectMutPtr::from_raw(T::rc_ref_cell_to_qobject(rc).cast_mut()) })
             .collect()
     }
 
     fn from_compatible(from: &QObjectList) -> Self {
         from.iter()
-            .map(|ptr| unsafe { T::qobject_to_rc_ref_cell(QObject::ptr_from_cxx_qt(ptr)) })
+            .map(|ptr| unsafe { T::qobject_to_rc_ref_cell(ptr.as_mut_ptr()) })
             .collect()
     }
 }
