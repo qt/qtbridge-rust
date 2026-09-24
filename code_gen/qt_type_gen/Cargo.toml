@@ -9,5 +9,5 @@ description = "Build script performing generation of basic type library using qt
 
 [dependencies]
 qtbridge-build-utils = { path = "../../crates/qtbridge-build-utils" }
-qtbridge-gen-common = { path = "../../crates/qtbridge-gen-common" }
+qtbridge-gen-common = { path = "../qtbridge-gen-common" }
 qt_type_gen_lib = { path = "../qt_type_gen_lib" }
