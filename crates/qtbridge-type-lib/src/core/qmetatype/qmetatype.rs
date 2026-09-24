@@ -6,10 +6,10 @@ use std::mem::MaybeUninit;
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
+        include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
         #[allow(dead_code)]
         type QMetaType = super::QMetaType;
-        include!("qtbridge-type-lib/src/generated/core/qmetatypeinterface/cpp/qmetatypeinterface.h");
+        include!("qtbridge-type-lib/src/core/qmetatypeinterface/cpp/qmetatypeinterface.h");
         #[namespace = "QtPrivate"]
         type QMetaTypeInterface = crate::QMetaTypeInterface;
     }

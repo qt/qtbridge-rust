@@ -9,7 +9,7 @@
 #include <QVariant>
 #include <cstdint>
 #include <memory>
-#include "qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h"
+#include "qtbridge-type-lib/src/core/qobject/cpp/qobject.h"
 #include "rust/cxx.h"
 #include "rustconv.h"
 

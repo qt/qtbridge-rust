@@ -8,12 +8,12 @@ use std::mem::MaybeUninit;
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         #[allow(dead_code)]
         type QObject = super::QObject;
-        include!("qtbridge-type-lib/src/generated/core/qmetaobject/cpp/qmetaobject.h");
+        include!("qtbridge-type-lib/src/core/qmetaobject/cpp/qmetaobject.h");
         type QMetaObject = crate::QMetaObject;
-        include!("qtbridge-type-lib/src/generated/core/qvariant/cpp/qvariant.h");
+        include!("qtbridge-type-lib/src/core/qvariant/cpp/qvariant.h");
         type QVariant = crate::QVariant;
     }
     #[namespace = "rust::bridge::qobject"]

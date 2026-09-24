@@ -16,16 +16,16 @@ pub mod ffi {
         include!("cpp/dynamicmetaobjectdata.h");
         type DynamicMetaObjectData = super::DynamicMetaObjectData;
 
-        include!("qtbridge-type-lib/src/generated/core/qmetaobject/cpp/qmetaobject.h");
+        include!("qtbridge-type-lib/src/core/qmetaobject/cpp/qmetaobject.h");
         type QMetaObject = qtbridge_type_lib::QMetaObject;
 
-        include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
+        include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = qtbridge_type_lib::QMetaType;
 
-        include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         type QObject = qtbridge_type_lib::QObject;
 
-        include!("qtbridge-type-lib/src/generated/core/qvariant/cpp/qvariant.h");
+        include!("qtbridge-type-lib/src/core/qvariant/cpp/qvariant.h");
         type QVariant = qtbridge_type_lib::QVariant;
 
         include!("cpp/dynamicmetaobjectdata.h");

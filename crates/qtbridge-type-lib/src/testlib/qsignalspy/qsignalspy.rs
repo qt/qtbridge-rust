@@ -9,7 +9,7 @@ use std::pin::Pin;
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/testlib/qsignalspy/cpp/qsignalspy.h");
+        include!("qtbridge-type-lib/src/testlib/qsignalspy/cpp/qsignalspy.h");
         /// The `QSignalSpy` is a struct that enables introspection of signal emission.
         ///
         /// A `QSignalSpy` can connect to a signal of a `QObject` and record each time the signal is emitted.
@@ -17,9 +17,9 @@ mod ffi {
         ///
         /// See also: [QSignalSpy documentation](https://doc.qt.io/qt-6/qsignalspy.html#details).
         type QSignalSpy;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qvariant.h");
+        include!("qtbridge-type-lib/src/core/qlist/cpp/qlist_qvariant.h");
         type QList_QVariant = crate::QList_QVariant;
-        include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         type QObject = crate::QObject;
     }
     #[namespace = "rust::bridge::qsignalspy"]

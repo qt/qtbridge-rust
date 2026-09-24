@@ -5,11 +5,11 @@ use super::proxy_rust::QAbstractItemModelProxyRust;
 #[cxx::bridge]
 pub mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qhash/cpp/qhash_i32_qbytearray.h");
+        include!("qtbridge-type-lib/src/core/qhash/cpp/qhash_i32_qbytearray.h");
         type QHash_i32_QByteArray = qtbridge_type_lib::QHash_i32_QByteArray;
-        include!("qtbridge-type-lib/src/generated/core/qmodelindex/cpp/qmodelindex.h");
+        include!("qtbridge-type-lib/src/core/qmodelindex/cpp/qmodelindex.h");
         type QModelIndex = qtbridge_type_lib::QModelIndex;
-        include!("qtbridge-type-lib/src/generated/core/qvariant/cpp/qvariant.h");
+        include!("qtbridge-type-lib/src/core/qvariant/cpp/qvariant.h");
         type QVariant = qtbridge_type_lib::QVariant;
     }
     extern "Rust" {

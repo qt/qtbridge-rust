@@ -7,7 +7,7 @@ use qtbridge_type_lib::{QMap_QString_QVariant, QObject};
 mod ffi {
 
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qmap/cpp/qmap_qstring_qvariant.h");
+        include!("qtbridge-type-lib/src/core/qmap/cpp/qmap_qstring_qvariant.h");
         type QMap_QString_QVariant = super::QMap_QString_QVariant;
         type QObject = super::QObject;
     }

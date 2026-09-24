@@ -4,12 +4,25 @@
 use std::path::Path;
 use qtbridge_build_utils::qt_build::{QtInstallation, get_cxx_qt_lib_include_path};
 
-mod generated_files_bridge;
-use generated_files_bridge::GENERATED_FILES_BRIDGE;
-mod generated_files_cpp;
-use generated_files_cpp::GENERATED_FILES_CPP;
-
 fn main() {
+
+    let bridge_files = [
+        "src/core/qmetaobject/qmetaobject.rs",
+        "src/core/qmetatype/qmetatype.rs",
+        "src/core/qmetatypeinterface/qmetatypeinterface.rs",
+        "src/core/qobject/qobject.rs",
+        "src/core/qqmllistproperty/qqmllistproperty.rs",
+        "src/testlib/qsignalspy/qsignalspy.rs",
+    ];
+
+    let cpp_files = [
+        "src/core/qmetaobject/cpp/qmetaobject.cpp",
+        "src/core/qmetatype/cpp/qmetatype.cpp",
+        "src/core/qmetatypeinterface/cpp/qmetatypeinterface.cpp",
+        "src/core/qobject/cpp/qobject.cpp",
+        "src/core/qqmllistproperty/cpp/qqmllistproperty.cpp",
+        "src/testlib/qsignalspy/cpp/qsignalspy.cpp",
+    ];
 
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
     let include_path = std::path::Path::new(&manifest_dir).join("src");
@@ -19,7 +32,7 @@ fn main() {
     println!("cargo::metadata=include={}", include_path.display());
 
     let qt = QtInstallation::default();
-    for file in GENERATED_FILES_BRIDGE {
+    for file in bridge_files {
         println!("cargo::rerun-if-changed={file}");
     }
 
@@ -27,7 +40,7 @@ fn main() {
         .expect("Failed to get cxx-qt-lib include dir");
 
 
-    let mut builder = cxx_build::bridges(GENERATED_FILES_BRIDGE);
+    let mut builder = cxx_build::bridges(bridge_files);
     builder
         .std("c++17")
         .flag_if_supported("/Zc:__cplusplus")
@@ -37,7 +50,7 @@ fn main() {
         .include("../");
     qt.configure_builder(&mut builder);
 
-    GENERATED_FILES_CPP.iter()
+    cpp_files.iter()
         .for_each(|file| {
             builder.file(file);
             println!("cargo::rerun-if-changed={file}");

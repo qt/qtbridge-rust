@@ -4,10 +4,10 @@
 #[cxx::bridge]
 pub mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qmetaobject/cpp/qmetaobject.h");
+        include!("qtbridge-type-lib/src/core/qmetaobject/cpp/qmetaobject.h");
         type QMetaObject = qtbridge_type_lib::QMetaObject;
 
-        include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         type QObject = qtbridge_type_lib::QObject;
     }
 

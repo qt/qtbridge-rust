@@ -1,8 +1,0 @@
-pub const GENERATED_FILES_BRIDGE: &[&'static str] = &[
-    "src/generated/core/qmetaobject/qmetaobject.rs",
-    "src/generated/core/qmetatype/qmetatype.rs",
-    "src/generated/core/qmetatypeinterface/qmetatypeinterface.rs",
-    "src/generated/core/qobject/qobject.rs",
-    "src/generated/core/qqmllistproperty/qqmllistproperty.rs",
-    "src/generated/testlib/qsignalspy/qsignalspy.rs",
-];

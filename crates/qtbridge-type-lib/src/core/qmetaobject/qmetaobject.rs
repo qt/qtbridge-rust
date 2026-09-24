@@ -7,12 +7,12 @@ use crate::QMetaType;
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qmetaobject/cpp/qmetaobject.h");
+        include!("qtbridge-type-lib/src/core/qmetaobject/cpp/qmetaobject.h");
         /// The QMetaObject struct contains meta-information about Qt objects.
         ///
         /// See also: [QMetaObject documentation](https://doc.qt.io/qt-6/qmetaobject.html).
         type QMetaObject;
-        include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
+        include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = crate::QMetaType;
     }
     #[namespace = "rust::bridge::qmetaobject"]

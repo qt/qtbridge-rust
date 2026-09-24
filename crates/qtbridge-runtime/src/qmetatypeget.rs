@@ -12,13 +12,13 @@ use qtbridge_type_lib::{
 mod ffi {
     unsafe extern "C++" {
         include!("qtbridge-runtime/src/cpp/qmetatypeget.h");
-        include!("qtbridge-type-lib/src/generated/core/qjsonarray/cpp/qjsonarray.h");
-        include!("qtbridge-type-lib/src/generated/core/qjsonobject/cpp/qjsonobject.h");
-        include!("qtbridge-type-lib/src/generated/core/qjsonvalue/cpp/qjsonvalue.h");
-        include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
-        include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
-        include!("qtbridge-type-lib/src/generated/core/qstring/cpp/qstring.h");
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist.h");
+        include!("qtbridge-type-lib/src/core/qjsonarray/cpp/qjsonarray.h");
+        include!("qtbridge-type-lib/src/core/qjsonobject/cpp/qjsonobject.h");
+        include!("qtbridge-type-lib/src/core/qjsonvalue/cpp/qjsonvalue.h");
+        include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
+        include!("qtbridge-type-lib/src/core/qstring/cpp/qstring.h");
+        include!("qtbridge-type-lib/src/core/qlist/cpp/qlist.h");
 
         type QJsonArray = super::QJsonArray;
         type QJsonObject = super::QJsonObject;

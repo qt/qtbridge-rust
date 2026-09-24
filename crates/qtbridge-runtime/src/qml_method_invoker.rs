@@ -11,9 +11,9 @@ use crate::QObjectHolder;
 pub mod ffi {
     #[allow(clippy::missing_safety_doc)]
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         type QObject = qtbridge_type_lib::QObject;
-        include!("qtbridge-type-lib/src/generated/core/qlist/cpp/qlist_qvariant.h");
+        include!("qtbridge-type-lib/src/core/qlist/cpp/qlist_qvariant.h");
         type QList_QVariant = qtbridge_type_lib::QList_QVariant;
 
         include!("cpp/qml_method_invoker.h");

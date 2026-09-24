@@ -7,12 +7,12 @@ use crate::{QMetaType, QObject, QVariant};
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qqmllistproperty/cpp/qqmllistproperty.h");
-        include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
+        include!("qtbridge-type-lib/src/core/qqmllistproperty/cpp/qqmllistproperty.h");
+        include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = crate::QMetaType;
-        include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         type QObject = crate::QObject;
-        include!("qtbridge-type-lib/src/generated/core/qvariant/cpp/qvariant.h");
+        include!("qtbridge-type-lib/src/core/qvariant/cpp/qvariant.h");
         type QVariant = crate::QVariant;
     }
     #[namespace = "rust::bridge::qqmllistproperty"]

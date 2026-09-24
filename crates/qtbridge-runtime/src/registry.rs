@@ -48,14 +48,14 @@ use qtbridge_type_lib::QObject;
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         type QObject = qtbridge_type_lib::QObject;
 
         include!("cpp/registry.h");
     }
 
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/qml/qqmlapplicationengine/cpp/qqmlapplicationengine.h");
+        include!("qtbridge-type-lib/src/qml/qqmlapplicationengine/cpp/qqmlapplicationengine.h");
         type QQmlApplicationEngine = qtbridge_type_lib::QQmlApplicationEngine;
     }
 

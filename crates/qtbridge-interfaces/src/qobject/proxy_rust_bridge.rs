@@ -5,7 +5,7 @@ use super::proxy_rust::QObjectProxyRust;
 #[cxx::bridge]
 pub mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qvariant/cpp/qvariant.h");
+        include!("qtbridge-type-lib/src/core/qvariant/cpp/qvariant.h");
         type QVariant = qtbridge_type_lib::QVariant;
     }
 

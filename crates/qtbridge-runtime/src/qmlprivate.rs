@@ -27,9 +27,9 @@ pub fn call_qml_register_callbacks() {
 #[cxx::bridge]
 mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qmetaobject/cpp/qmetaobject.h");
+        include!("qtbridge-type-lib/src/core/qmetaobject/cpp/qmetaobject.h");
         type QMetaObject = qtbridge_type_lib::QMetaObject;
-        include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
+        include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = qtbridge_type_lib::QMetaType;
 
         include!("cpp/qmlprivate.h");

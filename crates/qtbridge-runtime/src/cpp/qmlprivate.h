@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <qqmlprivate.h>
 #include <QMetaType>
-#include "qtbridge-type-lib/src/generated/core/qmetaobject/cpp/qmetaobject.h"
+#include "qtbridge-type-lib/src/core/qmetaobject/cpp/qmetaobject.h"
 #include "rust/cxx.h"
 #include "rustconv.h"
 

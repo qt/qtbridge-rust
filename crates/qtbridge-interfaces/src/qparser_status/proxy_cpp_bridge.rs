@@ -10,9 +10,9 @@ use crate::impl_qcpp_proxy;
 #[cxx::bridge]
 pub mod ffi {
     unsafe extern "C++" {
-        include!("qtbridge-type-lib/src/generated/core/qmetaobject/cpp/qmetaobject.h");
+        include!("qtbridge-type-lib/src/core/qmetaobject/cpp/qmetaobject.h");
         type QMetaObject = qtbridge_type_lib::QMetaObject;
-        include!("qtbridge-type-lib/src/generated/core/qmetatype/cpp/qmetatype.h");
+        include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = qtbridge_type_lib::QMetaType;
         include!("qtbridge-runtime/src/cpp/dynamicmetaobjectdata.h");
         type DynamicMetaObjectData = qtbridge_runtime::DynamicMetaObjectData;
