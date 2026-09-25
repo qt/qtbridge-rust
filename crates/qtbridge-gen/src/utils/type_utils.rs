@@ -8,11 +8,10 @@ use syn::spanned::Spanned;
 use crate::utils::type_to_string::{path_to_string_fallback, type_to_string, type_to_string_fallback};
 
 #[derive(Copy, Clone, PartialEq)]
-pub enum ValuePass {
-    ByValue,
-    ByConstReference,
-    ByMutReference,
-    // TODO: ByValueCopy ?
+pub enum ValuePassBy {
+    Value,
+    Ref,
+    MutRef,
 }
 
 pub fn remove_ref_to_string(ty: &syn::Type) -> syn::Result<String> {
@@ -36,23 +35,23 @@ pub fn remove_ref(ty: &syn::Type) -> &syn::Type {
     ty
 }
 
-pub fn get_type_pass(ty: &syn::Type) -> ValuePass {
+pub fn get_type_pass(ty: &syn::Type) -> ValuePassBy {
     match ty {
         syn::Type::Reference(reference) => {
             match &reference.mutability {
-                Some(_) => ValuePass::ByMutReference,
-                None => ValuePass::ByConstReference,
+                Some(_) => ValuePassBy::MutRef,
+                None => ValuePassBy::Ref,
             }
         },
-        _ => ValuePass::ByValue,
+        _ => ValuePassBy::Value,
     }
 }
 
-pub fn get_take_value_code(value: &syn::Ident, pass: ValuePass) -> TokenStream {
+pub fn get_take_value_code(value: &syn::Ident, pass: ValuePassBy) -> TokenStream {
     match pass {
-        ValuePass::ByValue => quote!{ #value },
-        ValuePass::ByConstReference => quote!{ &#value },
-        ValuePass::ByMutReference => quote!{ &mut #value },
+        ValuePassBy::Value => quote!{ #value },
+        ValuePassBy::Ref => quote!{ &#value },
+        ValuePassBy::MutRef => quote!{ &mut #value },
     }
 }
 

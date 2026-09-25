@@ -4,7 +4,7 @@ use syn::parse_quote;
 use syn::spanned::Spanned;
 
 use crate::utils::signature_utils::{get_return_type, get_typed_arg_ident, get_typed_args, get_typed_args_types};
-use crate::utils::type_utils::{ValuePass, get_type_pass, is_ref, remove_ref, remove_refs};
+use crate::utils::type_utils::{ValuePassBy, get_type_pass, is_ref, remove_ref, remove_refs};
 
 /// Generates code to connect a Rust function to a metacall (e.g. signal or slot).
 pub struct MetaCallBridgeGenerator<'a> {
@@ -99,7 +99,7 @@ impl<'a> MetaCallBridgeGenerator<'a> {
             let arg_ident = get_typed_arg_ident(arg)?;
             let user_type_no_ref = remove_refs(&arg.ty);
             let arg_ref = match get_type_pass(&arg.ty) {
-                ValuePass::ByValue => quote! { &#arg_ident },
+                ValuePassBy::Value => quote! { &#arg_ident },
                 _ => quote! { #arg_ident },
             };
             arg_vars.push(quote! {
@@ -143,9 +143,9 @@ fn gen_input_var(user_type: &syn::Type, idx: usize) -> syn::Stmt {
 fn gen_pass_expr(user_type: &syn::Type, idx: usize) -> syn::Result<syn::Expr> {
     let var_ident = arg_var_ident(idx);
     match get_type_pass(user_type) {
-        ValuePass::ByValue => Ok(parse_quote! { #var_ident }),
-        ValuePass::ByConstReference => Ok(parse_quote! { &#var_ident }),
-        ValuePass::ByMutReference =>
+        ValuePassBy::Value => Ok(parse_quote! { #var_ident }),
+        ValuePassBy::Ref => Ok(parse_quote! { &#var_ident }),
+        ValuePassBy::MutRef =>
             Err(syn::Error::new(user_type.span(),
                 "Arguments passed by mutable references are not supported")),
     }

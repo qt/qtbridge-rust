@@ -7,7 +7,7 @@ use syn::{parse::Parse, spanned::Spanned};
 
 use crate::utils::parse_utils::parse_name_value;
 use crate::utils::type_to_string::type_to_string_fallback;
-use crate::utils::type_utils::{ValuePass, get_take_value_code, get_type_pass, is_ref, remove_ref, remove_ref_to_string, remove_refs};
+use crate::utils::type_utils::{ValuePassBy, get_take_value_code, get_type_pass, is_ref, remove_ref, remove_ref_to_string, remove_refs};
 use crate::qt_gen_impl::qt_meta_gen;
 use qt_meta_gen::qproperty_type_deduction::{deduce_type_from_getter, deduce_type_from_member, deduce_type_from_setter};
 use qt_meta_gen::QSignalInfo;
@@ -312,9 +312,9 @@ impl QPropertyInfo {
             let signal_arg = signal_info.get_arg_type(0)
                 .ok()
                 .map(|arg_type| match get_type_pass(arg_type) {
-                    ValuePass::ByValue => quote! { self.#member.clone() },
-                    ValuePass::ByConstReference => quote! { &self.#member },
-                    ValuePass::ByMutReference => quote! { &mut self.#member },
+                    ValuePassBy::Value => quote! { self.#member.clone() },
+                    ValuePassBy::Ref => quote! { &self.#member },
+                    ValuePassBy::MutRef => quote! { &mut self.#member },
                 });
             Some(quote! { self.#signal_name_ident(#signal_arg); })
         } else {
