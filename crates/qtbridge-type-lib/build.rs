@@ -16,7 +16,6 @@ fn main() {
     ];
 
     let cpp_files = [
-        "src/core/qmetaobject/cpp/qmetaobject.cpp",
         "src/core/qmetatype/cpp/qmetatype.cpp",
         "src/core/qmetatypeinterface/cpp/qmetatypeinterface.cpp",
         "src/core/qobject/cpp/qobject.cpp",
