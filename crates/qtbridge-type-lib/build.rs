@@ -7,11 +7,11 @@ use qtbridge_build_utils::qt_build::{QtInstallation, get_cxx_qt_lib_include_path
 fn main() {
 
     let bridge_files = [
-        "src/core/qmetaobject/qmetaobject.rs",
-        "src/core/qmetatype/qmetatype.rs",
-        "src/core/qmetatypeinterface/qmetatypeinterface.rs",
-        "src/core/qobject/qobject.rs",
-        "src/testlib/qsignalspy/qsignalspy.rs",
+        "src/core/qmetaobject/mod.rs",
+        "src/core/qmetatype/mod.rs",
+        "src/core/qmetatypeinterface/mod.rs",
+        "src/core/qobject/mod.rs",
+        "src/testlib/qsignalspy/mod.rs",
     ];
 
     let cpp_files = [
