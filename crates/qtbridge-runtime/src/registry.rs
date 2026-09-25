@@ -173,10 +173,9 @@ pub(crate) fn register(
 /// Takes ownership back when a handed-over object re-enters Rust.
 pub(crate) fn repin(key: *const u8) {
     REGISTRY.with_borrow(|entries| {
-        if let Some(entry) = entries.map.get(&key) {
-            if entry.owner == Owner::RustRegistry {
-                unsafe { ffi::set_cpp_ownership(entry.qobject) };
-            }
+        if let Some(entry) = entries.map.get(&key)
+            && entry.owner == Owner::RustRegistry {
+            unsafe { ffi::set_cpp_ownership(entry.qobject) };
         }
     });
 }
