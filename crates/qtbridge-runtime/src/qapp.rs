@@ -54,6 +54,8 @@ impl Drop for QApp {
     }
 }
 
+// Not Default: New needs to be in main thread. Once per process.
+#[allow(clippy::new_without_default)]
 impl QApp {
     /// Creates the Qt application and QML engine.
     ///
