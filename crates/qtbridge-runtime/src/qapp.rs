@@ -66,8 +66,8 @@ impl QApp {
         // garbage collection (see `registry::install_gc_sentinel`).
         crate::registry::install_gc_sentinel(engine.pin_mut());
         Self {
-            engine: engine,
-            app: app,
+            engine,
+            app,
             initial_properties: Vec::new(),
         }
     }
