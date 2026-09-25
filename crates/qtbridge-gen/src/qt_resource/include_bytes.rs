@@ -205,7 +205,7 @@ fn build_qt_resource(raw_data: &[u8], folder_chain: &[&str]) -> Vec<u8> {
     // RCCFileInfo::writeDataBlobs
     let data_offset = data.len();
     append_u32_be(&mut data, raw_data.len() as u32);
-    data.extend_from_slice(&raw_data);
+    data.extend_from_slice(raw_data);
 
     // see qtbase/src/tools/rcc
     // RCCResourceLibrary::writeDataNames
