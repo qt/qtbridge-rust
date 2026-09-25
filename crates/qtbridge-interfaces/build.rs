@@ -8,7 +8,7 @@ use qtbridge_build_utils::qt_build::{QtInstallation, get_cxx_qt_lib_include_path
 
 const MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
-const FILES_BRIDGE: [&'static str; 10] = [
+const FILES_BRIDGE: [&str; 10] = [
     "src/qabstract_item_model/proxy_cpp_bridge.rs",
     "src/qabstract_item_model/proxy_rust_bridge.rs",
     "src/qlist_model/proxy_cpp_bridge.rs",
@@ -21,7 +21,7 @@ const FILES_BRIDGE: [&'static str; 10] = [
     "src/qtable_model/proxy_rust_bridge.rs",
 ];
 
-const FILES_CPP: [&'static str; 5] = [
+const FILES_CPP: [&str; 5] = [
     "src/qabstract_item_model/cpp/QAbstractItemModelProxyCpp.cpp",
     "src/qlist_model/cpp/QListModelProxyCpp.cpp",
     "src/qobject/cpp/QObjectProxyCpp.cpp",
