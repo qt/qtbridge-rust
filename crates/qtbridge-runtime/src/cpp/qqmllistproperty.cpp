@@ -17,4 +17,27 @@ QVariant listPropertyToQVariant(QMetaType const &meta_type, QObject *object, uin
     return QVariant(meta_type, &prop);
 }
 
+::QtPrivate::QMetaTypeInterface listPropertyInterfaceFor(QMetaType const &element)
+{
+    const auto *base = QMetaType::fromType<QQmlListProperty<QObject>>().iface();
+    auto *name = new QByteArray(QByteArrayLiteral("QQmlListProperty<") + element.name() + '>');
+    return ::QtPrivate::QMetaTypeInterface{ base->revision,
+                                            base->alignment,
+                                            base->size,
+                                            base->flags,
+                                            { 0 },
+                                            base->metaObjectFn,
+                                            name->constData(),
+                                            base->defaultCtr,
+                                            base->copyCtr,
+                                            base->moveCtr,
+                                            base->dtor,
+                                            base->equals,
+                                            base->lessThan,
+                                            base->debugStream,
+                                            base->dataStreamOut,
+                                            base->dataStreamIn,
+                                            base->legacyRegisterOp };
+}
+
 } // namespace rust::bridge::qqmllistproperty

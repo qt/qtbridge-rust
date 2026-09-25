@@ -6,7 +6,7 @@ use std::cell::RefCell;
 use std::any::TypeId;
 use std::collections::HashMap;
 use qtbridge_type_lib::{QMetaTypeInterface, QMetaTypeFlag, QMetaObject, QObject};
-use qtbridge_type_lib::core::qobject;
+use qtbridge_type_lib::core::{qmetatypeinterface, qobject};
 use crate::qproxies::QCppProxy;
 use crate::QObjectHolder;
 use crate::qobjectholder::CppProxyOf;
@@ -46,16 +46,11 @@ pub fn init_interface_for<T: QObjectHolder + Default>()-> QMetaTypeInterface {
         | (QMetaTypeFlag::NeedsMoveConstruction as u32)
         | (QMetaTypeFlag::PointerToQObject as u32);
 
-    let class_name = std::ffi::CString::new(std::any::type_name::<T>())
-        .expect("CString::new failed")
-        .into_bytes_with_nul()
-        .leak();
-
-    QMetaTypeInterface::fill_fields(
+    qmetatypeinterface::fill_fields(
         <CppProxyOf<T> as QCppProxy>::get_align(),
         <CppProxyOf<T> as QCppProxy>::get_size(),
         flags,
-        class_name,
+        std::any::type_name::<T>(),
         monomorphize_meta_object_fn::<T>() as usize,
         monomorphize_default_ctor::<T>() as usize,
         0,
@@ -71,16 +66,11 @@ pub fn init_ptr_interface_for<T: QObjectHolder>() -> QMetaTypeInterface {
         | (QMetaTypeFlag::PointerToQObject as u32)
         | (QMetaTypeFlag::RelocatableType as u32);
 
-    let name = std::ffi::CString::new(format!("{}*", std::any::type_name::<T>()))
-        .expect("CString::new failed")
-        .into_bytes_with_nul()
-        .leak();
-
-    QMetaTypeInterface::fill_fields(
+    qmetatypeinterface::fill_fields(
         std::mem::align_of::<*mut QObject>(),
         std::mem::size_of::<*mut QObject>(),
         flags,
-        name,
+        &format!("{}*", std::any::type_name::<T>()),
         monomorphize_meta_object_fn::<T>() as usize,
         0,
         0,

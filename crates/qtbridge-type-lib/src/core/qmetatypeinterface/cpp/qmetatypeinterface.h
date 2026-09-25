@@ -5,22 +5,15 @@
 #define _QMETATYPEINTERFACE_RUST_BRIDGE_H_
 
 #include <QMetaType>
-#include <QObject>
-#include <QtQml/QQmlListProperty>
 #include <cstdint>
 #include "rust/cxx.h"
 
 namespace rust::bridge::qmetatypeinterface {
 
-using namespace QtPrivate;
-
-::QtPrivate::QMetaTypeInterface inlineCppFn_fill_fields(uint16_t align, uint32_t size,
-                                                        uint32_t flags,
-                                                        rust::Slice<uint8_t const> name,
-                                                        size_t meta_obj_fn, size_t default_ctr_fn,
-                                                        size_t copy_ctr_fn, size_t dtor_fn);
-
-::QtPrivate::QMetaTypeInterface inlineCppFn_qqml_list_property_for(QMetaType const &element);
+::QtPrivate::QMetaTypeInterface fillFields(size_t align, size_t size, uint32_t flags,
+                                           rust::Str name, size_t meta_obj_fn,
+                                           size_t default_ctr_fn, size_t copy_ctr_fn,
+                                           size_t dtor_fn);
 
 } // namespace rust::bridge::qmetatypeinterface
 

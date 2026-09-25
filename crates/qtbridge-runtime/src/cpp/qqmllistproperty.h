@@ -8,6 +8,7 @@
 #include <QVariant>
 #include <QtQml/QQmlListProperty>
 #include <cstdint>
+#include "qtbridge-type-lib/src/core/qmetatypeinterface/cpp/qmetatypeinterface.h"
 #include "qtbridge-type-lib/src/core/qobject/cpp/qobject.h"
 #include "rust/cxx.h"
 
@@ -15,6 +16,8 @@ namespace rust::bridge::qqmllistproperty {
 
 QVariant listPropertyToQVariant(QMetaType const &meta_type, QObject *object, uint8_t *data,
                                 size_t append_fn, size_t count_fn, size_t at_fn, size_t clear_fn);
+
+::QtPrivate::QMetaTypeInterface listPropertyInterfaceFor(QMetaType const &element);
 
 } // namespace rust::bridge::qqmllistproperty
 

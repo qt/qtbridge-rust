@@ -1,6 +1,12 @@
 // Copyright (C) 2025 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
+//! Qt types used by Qt Bridge, re-exported from cxx-qt where it provides them.
+//!
+//! This crate holds Qt types plus the operations any user of a type needs (constructors,
+//! accessors), as methods or associated functions. Qt Bridge specific machinery lives in
+//! `qtbridge-runtime`, next to its caller.
+
 pub mod core;
 pub mod gui;
 pub mod qml;

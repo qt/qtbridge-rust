@@ -6,7 +6,7 @@ use std::cell::RefCell;
 
 use crate::QObjectHolder;
 use crate::qobjectholder::CppProxyOf;
-use crate::qqmllistproperty::{list_append, list_count, list_at, list_clear, list_property_to_qvariant};
+use crate::qqmllistproperty::{list_append, list_count, list_at, list_clear, list_property_interface_for, list_property_to_qvariant};
 use crate::qproxies::QCppProxy;
 use crate::registry::Owner;
 use qtbridge_type_lib::QObject;
@@ -45,7 +45,7 @@ pub trait QmlElement : QObjectHolder + Default
         let existing = LIST_IFACE_MAP.with_borrow(|m| m.get(&key).copied());
         let iface = existing.unwrap_or_else(|| {
             let leaked: &'static QMetaTypeInterface = Box::leak(Box::new(
-                QMetaTypeInterface::qqml_list_property_for(&element)
+                list_property_interface_for(&element)
             ));
             LIST_IFACE_MAP.with_borrow_mut(|m| m.insert(key, leaked));
             leaked

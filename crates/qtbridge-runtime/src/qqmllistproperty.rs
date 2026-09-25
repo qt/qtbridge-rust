@@ -14,6 +14,9 @@ mod ffi {
     unsafe extern "C++" {
         include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
         type QMetaType = qtbridge_type_lib::QMetaType;
+        include!("qtbridge-type-lib/src/core/qmetatypeinterface/cpp/qmetatypeinterface.h");
+        #[namespace = "QtPrivate"]
+        type QMetaTypeInterface = qtbridge_type_lib::QMetaTypeInterface;
         include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
         type QObject = qtbridge_type_lib::QObject;
         include!("qtbridge-type-lib/src/core/qvariant/cpp/qvariant.h");
@@ -35,10 +38,19 @@ mod ffi {
             at_fn: usize,
             clear_fn: usize,
         ) -> QVariant;
+
+        /// The list metatype interface for an element type: a clone of `QQmlListProperty<QObject>`
+        /// (layout-identical to any `QQmlListProperty<T>`), named `QQmlListProperty<{element.name}>`
+        /// with the cached typeId reset to 0 so it registers as a fresh, distinct type.
+        ///
+        /// The name is derived from `element`'s own registered name (so the list and element types
+        /// can't drift apart) and leaked in C++.
+        #[rust_name = "list_property_interface_for"]
+        fn listPropertyInterfaceFor(element: &QMetaType) -> QMetaTypeInterface;
     }
 }
 
-pub(crate) use ffi::list_property_to_qvariant;
+pub(crate) use ffi::{list_property_interface_for, list_property_to_qvariant};
 
 /// Plain `#[repr(C)]` view of `QQmlListProperty<QObject>`, used only to read fields out of the
 /// raw pointer QML passes to the callbacks. NOT a cxx type; it never crosses the FFI boundary.
