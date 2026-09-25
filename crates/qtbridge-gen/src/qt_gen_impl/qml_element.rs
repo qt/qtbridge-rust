@@ -43,7 +43,7 @@ pub fn generate_qml_register(struct_ident: &Ident, params: &QObjectMacroParams) 
                 use std::sync::OnceLock;
                 static META_TYPE_INTERFACE: OnceLock<qtbridge::qtbridge_type_lib::QMetaTypeInterface> = OnceLock::new();
                 let iface = META_TYPE_INTERFACE.get_or_init(qtbridge::qtbridge_runtime::qmetatypeforqobject::init_interface_for::<Self>);
-                qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface as *const _)
+                qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface)
             }
         }
     })?;

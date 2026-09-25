@@ -5,29 +5,23 @@
 #define _QMETATYPE_RUST_BRIDGE_H_
 
 #include <QMetaType>
-#include <QObject>
 #include <cstdint>
 #include "qtbridge-type-lib/src/core/qmetatypeinterface/cpp/qmetatypeinterface.h"
-#include "qtbridge-type-lib/src/core/qobject/cpp/qobject.h"
 #include "rust/cxx.h"
-#include "rustconv.h"
 
 namespace rust::bridge::qmetatype {
 
-QMetaType QMetaType_Default();
-bool QMetaType_Eq(const QMetaType &lhs, const QMetaType &rhs);
+QMetaType defaultQMetaType();
 
-QMetaType inlineCppFn_new(int32_t type_id);
+QMetaType newWithInterface(::QtPrivate::QMetaTypeInterface const &iface);
 
-QMetaType inlineCppFn_new_with_interface(::QtPrivate::QMetaTypeInterface const *iface);
+bool eq(QMetaType const &lhs, QMetaType const &rhs);
 
-int32_t inlineCppFn_id(QMetaType const &self);
+int32_t id(QMetaType const &obj);
 
-bool inlineCppFn_is_valid(QMetaType const &self);
+rust::String name(QMetaType const &obj);
 
-rust::String inlineCppFn_name(QMetaType const &self);
-
-void inlineCppFn_register_type(QMetaType const &self);
+void registerType(QMetaType const &obj);
 
 } // namespace rust::bridge::qmetatype
 

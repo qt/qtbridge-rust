@@ -28,7 +28,7 @@ pub trait QmlElement : QObjectHolder + Default
     /// default serves generic types and hand-written impls.
     fn get_qmetatype() -> QMetaType {
         let iface = crate::qmetatypeforqobject::interface_for_generic::<Self>();
-        QMetaType::new_with_interface(iface as *const _)
+        QMetaType::new_with_interface(iface)
     }
     const IS_SINGLETON: bool;
 
@@ -36,22 +36,20 @@ pub trait QmlElement : QObjectHolder + Default
         // TODO: The HashMap can be replaced with OnceCell in a per-type generated implementation
         // of this function in qtbridge-gen. Might improve performance.
         use std::collections::HashMap;
-        thread_local!(static LIST_IFACE_MAP: RefCell<HashMap<i32, *const QMetaTypeInterface>>
+        thread_local!(static LIST_IFACE_MAP: RefCell<HashMap<i32, &'static QMetaTypeInterface>>
             = RefCell::new(HashMap::new()));
 
         let element = Self::get_qmetatype();
         let key = element.id();
 
-        let existing = LIST_IFACE_MAP.with_borrow(|m| m.get(&key).copied().unwrap_or_default());
-        let iface = if existing.is_null() {
-            let leaked = std::ptr::from_ref(Box::leak(Box::new(
+        let existing = LIST_IFACE_MAP.with_borrow(|m| m.get(&key).copied());
+        let iface = existing.unwrap_or_else(|| {
+            let leaked: &'static QMetaTypeInterface = Box::leak(Box::new(
                 QMetaTypeInterface::qqml_list_property_for(&element)
-            )));
+            ));
             LIST_IFACE_MAP.with_borrow_mut(|m| m.insert(key, leaked));
             leaked
-        } else {
-            existing
-        };
+        });
         QMetaType::new_with_interface(iface)
     }
 

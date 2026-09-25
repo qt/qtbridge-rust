@@ -2,47 +2,38 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 #include "qmetatype.h"
+#include "rustconv.h"
 
 namespace rust::bridge::qmetatype {
 
-QMetaType QMetaType_Default()
+QMetaType defaultQMetaType()
 {
     return QMetaType();
 }
 
-bool QMetaType_Eq(const QMetaType &lhs, const QMetaType &rhs)
+QMetaType newWithInterface(::QtPrivate::QMetaTypeInterface const &iface)
+{
+    return QMetaType(&iface);
+}
+
+bool eq(QMetaType const &lhs, QMetaType const &rhs)
 {
     return lhs == rhs;
 }
 
-QMetaType inlineCppFn_new(int32_t type_id)
+int32_t id(QMetaType const &obj)
 {
-    return QMetaType(type_id);
+    return obj.id();
 }
 
-QMetaType inlineCppFn_new_with_interface(::QtPrivate::QMetaTypeInterface const *iface)
+rust::String name(QMetaType const &obj)
 {
-    return QMetaType(iface);
+    return CStrToRustString(obj.name());
 }
 
-int32_t inlineCppFn_id(QMetaType const &self)
+void registerType(QMetaType const &obj)
 {
-    return self.id();
-}
-
-bool inlineCppFn_is_valid(QMetaType const &self)
-{
-    return self.isValid();
-}
-
-rust::String inlineCppFn_name(QMetaType const &self)
-{
-    return CStrToRustString(self.name());
-}
-
-void inlineCppFn_register_type(QMetaType const &self)
-{
-    self.registerType();
+    obj.registerType();
 }
 
 } // namespace rust::bridge::qmetatype

@@ -83,7 +83,7 @@ mod some_module {
             let iface = PTR_META_TYPE_INTERFACE.get_or_init(
                 qtbridge::qtbridge_runtime::qmetatypeforqobject::init_ptr_interface_for::<Self>,
             );
-            qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface as *const _)
+            qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface)
         }
     }
     impl qtbridge::qtbridge_runtime::QmlElement for SomeStruct {
@@ -99,7 +99,7 @@ mod some_module {
             let iface = META_TYPE_INTERFACE.get_or_init(
                 qtbridge::qtbridge_runtime::qmetatypeforqobject::init_interface_for::<Self>,
             );
-            qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface as *const _)
+            qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface)
         }
     }
 }

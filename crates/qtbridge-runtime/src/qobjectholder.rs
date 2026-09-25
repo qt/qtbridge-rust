@@ -55,7 +55,7 @@ where
     /// default serves generic types and hand-written impls.
     fn get_qobject_ptr_qmetatype() -> QMetaType {
         let iface = crate::qmetatypeforqobject::ptr_interface_for_generic::<Self>();
-        QMetaType::new_with_interface(iface as *const _)
+        QMetaType::new_with_interface(iface)
     }
 
     /// Return a pointer to the Rust proxy associated with the specified object,

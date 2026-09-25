@@ -43,7 +43,7 @@ pub fn generate_qobject_holder(
                 use std::sync::OnceLock;
                 static PTR_META_TYPE_INTERFACE: OnceLock<qtbridge::qtbridge_type_lib::QMetaTypeInterface> = OnceLock::new();
                 let iface = PTR_META_TYPE_INTERFACE.get_or_init(qtbridge::qtbridge_runtime::qmetatypeforqobject::init_ptr_interface_for::<Self>);
-                qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface as *const _)
+                qtbridge::qtbridge_type_lib::QMetaType::new_with_interface(iface)
             }
         }
     };
