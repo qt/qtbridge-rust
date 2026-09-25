@@ -13,6 +13,5 @@ pub mod qmetatype;
 pub mod qmetatypeinterface;
 pub mod qmodelindex;
 pub mod qobject;
-pub mod qqmllistproperty;
 pub mod qstring;
 pub mod qvariant;

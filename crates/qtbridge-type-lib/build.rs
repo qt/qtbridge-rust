@@ -11,7 +11,6 @@ fn main() {
         "src/core/qmetatype/qmetatype.rs",
         "src/core/qmetatypeinterface/qmetatypeinterface.rs",
         "src/core/qobject/qobject.rs",
-        "src/core/qqmllistproperty/qqmllistproperty.rs",
         "src/testlib/qsignalspy/qsignalspy.rs",
     ];
 
@@ -19,7 +18,6 @@ fn main() {
         "src/core/qmetatype/cpp/qmetatype.cpp",
         "src/core/qmetatypeinterface/cpp/qmetatypeinterface.cpp",
         "src/core/qobject/cpp/qobject.cpp",
-        "src/core/qqmllistproperty/cpp/qqmllistproperty.cpp",
         "src/testlib/qsignalspy/cpp/qsignalspy.cpp",
     ];
 

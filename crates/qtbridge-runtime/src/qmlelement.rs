@@ -6,13 +6,13 @@ use std::cell::RefCell;
 
 use crate::QObjectHolder;
 use crate::qobjectholder::CppProxyOf;
-use crate::qqmllistproperty::{list_append, list_count, list_at, list_clear};
+use crate::qqmllistproperty::{list_append, list_count, list_at, list_clear, list_property_to_qvariant};
 use crate::qproxies::QCppProxy;
 use crate::registry::Owner;
 use qtbridge_type_lib::QObject;
 use qtbridge_type_lib::QMetaType;
 use qtbridge_type_lib::QMetaTypeInterface;
-use qtbridge_type_lib::{QVariant, list_property_to_qvariant};
+use qtbridge_type_lib::QVariant;
 
 pub trait QmlElement : QObjectHolder + Default
 {

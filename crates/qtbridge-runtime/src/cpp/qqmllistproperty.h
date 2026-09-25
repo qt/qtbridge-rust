@@ -13,9 +13,8 @@
 
 namespace rust::bridge::qqmllistproperty {
 
-QVariant inlineCppFn_list_property_to_qvariant(QMetaType const &meta_type, QObject *object,
-                                               uint8_t *data, size_t append_fn, size_t count_fn,
-                                               size_t at_fn, size_t clear_fn);
+QVariant listPropertyToQVariant(QMetaType const &meta_type, QObject *object, uint8_t *data,
+                                size_t append_fn, size_t count_fn, size_t at_fn, size_t clear_fn);
 
 } // namespace rust::bridge::qqmllistproperty
 

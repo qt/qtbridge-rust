@@ -9,6 +9,37 @@ use crate::qproxies::QRustProxy;
 use crate::rustobjectgetter::get_rust_proxy;
 use qtbridge_type_lib::QObject;
 
+#[cxx::bridge]
+mod ffi {
+    unsafe extern "C++" {
+        include!("qtbridge-type-lib/src/core/qmetatype/cpp/qmetatype.h");
+        type QMetaType = qtbridge_type_lib::QMetaType;
+        include!("qtbridge-type-lib/src/core/qobject/cpp/qobject.h");
+        type QObject = qtbridge_type_lib::QObject;
+        include!("qtbridge-type-lib/src/core/qvariant/cpp/qvariant.h");
+        type QVariant = qtbridge_type_lib::QVariant;
+    }
+
+    #[namespace = "rust::bridge::qqmllistproperty"]
+    unsafe extern "C++" {
+        include!("cpp/qqmllistproperty.h");
+
+        /// Build a `QVariant` holding a `QQmlListProperty<QObject>` stamped with the per-type list metatype.
+        #[rust_name = "list_property_to_qvariant"]
+        unsafe fn listPropertyToQVariant(
+            meta_type: &QMetaType,
+            object: *mut QObject,
+            data: *mut u8,
+            append_fn: usize,
+            count_fn: usize,
+            at_fn: usize,
+            clear_fn: usize,
+        ) -> QVariant;
+    }
+}
+
+pub(crate) use ffi::list_property_to_qvariant;
+
 /// Plain `#[repr(C)]` view of `QQmlListProperty<QObject>`, used only to read fields out of the
 /// raw pointer QML passes to the callbacks. NOT a cxx type; it never crosses the FFI boundary.
 #[repr(C)]

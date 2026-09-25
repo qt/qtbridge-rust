@@ -18,6 +18,7 @@ fn main() {
         "dynamicmetaobjectdata",
         "qmetatypeget",
         "qmlprivate",
+        "qqmllistproperty",
         "qresource",
         "registry",
         "rustobjectgetter",

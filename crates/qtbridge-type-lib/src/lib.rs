@@ -38,7 +38,6 @@ pub use core::qmetatype::QMetaTypeFlag;
 pub use core::qmetatypeinterface::QMetaTypeInterface;
 pub use core::qmodelindex::QModelIndex;
 pub use core::qobject::QObject;
-pub use core::qqmllistproperty::list_property_to_qvariant;
 pub use core::qstring::QString;
 pub use core::qvariant::QVariant;
 pub use gui::qguiapplication::QGuiApplication;
