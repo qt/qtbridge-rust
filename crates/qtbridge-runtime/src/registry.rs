@@ -267,7 +267,7 @@ pub fn collect_garbage() {
         for (value, qobject) in doomed {
             // Ensure that the Rust object is alive for the whole destructor
             let keep_alive = value.upgrade();
-            assert!(!keep_alive.is_none());
+            assert!(keep_alive.is_some());
             // Tears down the proxy pair; its on_drop removes the registry
             // entry.
             QObject::delete(qobject);
