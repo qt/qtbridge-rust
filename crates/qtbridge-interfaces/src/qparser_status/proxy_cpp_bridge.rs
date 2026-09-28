@@ -19,6 +19,7 @@ pub mod ffi {
         include!("qtbridge-interfaces/src/qparser_status/proxy_rust_bridge.rs.h");
         type QParserStatusProxyRust = super::QParserStatusProxyRust;
     }
+    #[allow(clippy::missing_safety_doc)]
     #[namespace = "rust::bridge"]
     unsafe extern "C++" {
         include!("qtbridge-interfaces/src/qparser_status/cpp/QParserStatusProxyCpp.h");

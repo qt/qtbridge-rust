@@ -19,6 +19,7 @@ pub mod ffi {
         include!("qtbridge-interfaces/src/qobject/proxy_rust_bridge.rs.h");
         type QObjectProxyRust = super::QObjectProxyRust;
     }
+    #[allow(clippy::missing_safety_doc)]
     #[namespace = "rust::bridge"]
     unsafe extern "C++" {
         include!("qtbridge-interfaces/src/qobject/cpp/QObjectProxyCpp.h");

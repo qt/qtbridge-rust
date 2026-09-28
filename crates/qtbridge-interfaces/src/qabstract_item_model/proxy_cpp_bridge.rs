@@ -25,6 +25,7 @@ pub mod ffi {
         include!("qtbridge-interfaces/src/qabstract_item_model/proxy_rust_bridge.rs.h");
         type QAbstractItemModelProxyRust = super::QAbstractItemModelProxyRust;
     }
+    #[allow(clippy::missing_safety_doc)]
     #[namespace = "rust::bridge"]
     unsafe extern "C++" {
         include!("qtbridge-interfaces/src/qabstract_item_model/cpp/QAbstractItemModelProxyCpp.h");
