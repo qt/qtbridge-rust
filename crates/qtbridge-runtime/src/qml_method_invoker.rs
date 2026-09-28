@@ -24,11 +24,11 @@ pub mod ffi {
     }
 
     extern "Rust" {
-        fn on_qobject_destroyed(flag_ptr: usize);
+        unsafe fn on_qobject_destroyed(flag_ptr: usize);
     }
 }
 
-fn on_qobject_destroyed(flag_ptr: usize) {
+unsafe fn on_qobject_destroyed(flag_ptr: usize) {
     let arc = unsafe { Arc::from_raw(flag_ptr as *const AtomicBool) };
     arc.store(false, Ordering::Release);
 }
