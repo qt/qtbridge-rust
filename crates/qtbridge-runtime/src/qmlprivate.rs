@@ -34,6 +34,7 @@ mod ffi {
 
         include!("cpp/qmlprivate.h");
     }
+    #[allow(clippy::too_many_arguments)]
     #[namespace = "rust::bridge::qmlprivate"]
     unsafe extern "C++" {
         // Qt keeps the meta object pointer for the lifetime of the type
