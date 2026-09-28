@@ -3,6 +3,7 @@
 
 #[cxx::bridge]
 mod ffi {
+    #[allow(clippy::missing_safety_doc)]
     unsafe extern "C++" {
         include!("qtbridge-type-lib/src/core/qmetaobject/cpp/qmetaobject.h");
         /// The QMetaObject struct contains meta-information about Qt objects.

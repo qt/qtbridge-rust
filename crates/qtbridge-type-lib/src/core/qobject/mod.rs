@@ -13,7 +13,7 @@ mod ffi {
         include!("qtbridge-type-lib/src/core/qvariant/cpp/qvariant.h");
         type QVariant = crate::QVariant;
     }
-
+    #[allow(clippy::missing_safety_doc)]
     #[namespace = "rust::bridge::qobject"]
     unsafe extern "C++" {
         /// Returns a pointer to the meta-object of `obj`.
