@@ -25,7 +25,15 @@ pub trait QCppProxy {
     fn get_size() -> usize;
     fn get_align() -> usize;
     fn parser_status_cast() -> i32;
+    /// # Safety
+    ///
+    /// rust_proxy must be a valid and live pointer to Self::ProxyRustType.
+    /// The QCppProxy must be droped first and will drop rust_proxy in its
+    /// destructor. Ensure that rust_proxy is not droped by anything but QCppProxy.
     unsafe fn create(rust_proxy: *mut Self::ProxyRustType, metaobject: &'static DynamicMetaObjectData) -> *mut Self;
+    /// # Safety
+    ///
+    /// Same contract as [`QCppProxy::create`].
     unsafe fn create_at(rust_proxy: *mut Self::ProxyRustType, metaobject: &'static DynamicMetaObjectData, addr: PlacementAddress) -> *mut Self;
     fn emit_signal(self: Pin<&mut Self>, signal_name: &str, argv: &[*const u8]);
 }
