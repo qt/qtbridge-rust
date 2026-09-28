@@ -119,7 +119,7 @@ impl<T: ?Sized> RustObjAccess<T> {
                 // Protect from a garbage collection.
                 let rc = self.shared_reference.clone();
                 let ref_guarded = rc.try_borrow()
-                    .map_err(|err| RustObjAccessError::BorrowError(err))?;
+                    .map_err(RustObjAccessError::BorrowError)?;
                 Ok(f(&*ref_guarded))
             }
         }
@@ -138,7 +138,7 @@ impl<T: ?Sized> RustObjAccess<T> {
                 // Protect from a garbage collection.
                 let rc = self.shared_reference.clone();
                 let mut ref_guarded = rc.try_borrow_mut()
-                    .map_err(|err| RustObjAccessError::BorrowMutError(err))?;
+                    .map_err(RustObjAccessError::BorrowMutError)?;
                 Ok(f(&mut *ref_guarded))
             }
         }
