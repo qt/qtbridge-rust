@@ -11,6 +11,7 @@ mod ffi {
         type QMetaTypeInterface = super::QMetaTypeInterface;
     }
 
+    #[allow(clippy::too_many_arguments)]
     #[namespace = "rust::bridge::qmetatypeinterface"]
     unsafe extern "C++" {
         /// Builds an interface from the given layout, flags, name and callbacks.
