@@ -29,7 +29,7 @@ where
     }
 
     fn row_count(&self, _parent: &QModelIndex) -> i32 {
-        return self.len() as i32;
+        self.len() as i32
     }
 
     fn data(&self, index: &QModelIndex, role: i32) -> QVariant {
