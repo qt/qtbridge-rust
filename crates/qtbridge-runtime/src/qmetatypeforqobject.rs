@@ -30,11 +30,8 @@ fn monomorphize_default_ctor<T: QObjectHolder + Default>() -> extern "C" fn(*con
     default_ctor::<T>
 }
 
-fn monomorphize_dtor<T: QObjectHolder>() -> extern "C" fn (*const QMetaTypeInterface, *mut u8)  {
-    extern "C" fn dtor<T: QObjectHolder>(_iface: *const QMetaTypeInterface, obj: *mut u8) {
-        unsafe { qobject::destruct(obj.cast()) };
-    }
-    dtor::<T>
+extern "C" fn dtor(_iface: *const QMetaTypeInterface, obj: *mut u8) {
+    unsafe { qobject::destruct(obj.cast()) };
 }
 
 /// Builds the [`QMetaTypeInterface`] describing `T`.
@@ -54,7 +51,7 @@ pub fn init_interface_for<T: QObjectHolder + Default>()-> QMetaTypeInterface {
         monomorphize_meta_object_fn::<T>() as usize,
         monomorphize_default_ctor::<T>() as usize,
         0,
-        monomorphize_dtor::<T>() as usize,
+        dtor as *const () as usize,
     )
 }
 
