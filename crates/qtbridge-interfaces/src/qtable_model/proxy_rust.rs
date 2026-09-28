@@ -40,7 +40,7 @@ where
     }
 
     fn column_count(&self, _: &QModelIndex) -> i32 {
-        <Self as QTableModel>::column_count(&self) as i32
+        <Self as QTableModel>::column_count(self) as i32
     }
 
     fn data(&self, index: &QModelIndex, role: i32) -> QVariant {
