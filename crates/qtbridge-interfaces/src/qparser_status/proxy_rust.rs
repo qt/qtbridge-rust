@@ -6,6 +6,7 @@ use crate::call_rust_trait_impl;
 use crate::genericrustproxy::GenericRustProxy;
 use super::proxy_cpp_bridge::QParserStatusProxyCpp;
 
+#[allow(clippy::needless_doctest_main)]
 /// A trait for hooking into QML component construction stages.
 ///
 /// [`QParserStatus::class_begin`] is called first when the
