@@ -9,6 +9,7 @@ use crate::QObjectHolder;
 
 #[cxx::bridge]
 pub mod ffi {
+    #[allow(clippy::missing_safety_doc)]
     unsafe extern "C++" {
         include!("qtbridge-type-lib/src/generated/core/qobject/cpp/qobject.h");
         type QObject = qtbridge_type_lib::QObject;
