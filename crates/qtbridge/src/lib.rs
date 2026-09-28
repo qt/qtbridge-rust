@@ -308,16 +308,16 @@ pub use qtbridge_gen::qslot;
 ///
 /// - The property must be defined within a `mod` or `impl` block, annotated with [`qobject`].
 /// - The first parameter is the property name. It must begin with a lower case letter and
-/// can only contain letters, numbers and underscores.
+///   can only contain letters, numbers and underscores.
 /// - The property type must implement [`QPropertyMember`].
 /// - The return value of the getter (specified via `Read` parameter) must match the property type.
 /// - The value parameter of the setter (specified via `Write` parameter) must match the property type.
 /// - The member of the `struct` (specified via `Member` parameter) must match the property type.
 /// - A signal indicating any property changes (specified via `Notify` parameter) must be
-/// emitted explicitly by any code that changes the property. The framework does not emit
-/// it automatically.
+///   emitted explicitly by any code that changes the property. The framework does not emit
+///   it automatically.
 /// - Getter and setter methods must be defined within the same `impl` block in which the property
-/// is declared.
+///   is declared.
 ///
 /// A property may be **accessor-based** or **member-based** or a mix of both (see the
 /// [syntax](#qproperty-syntax) section for details).
