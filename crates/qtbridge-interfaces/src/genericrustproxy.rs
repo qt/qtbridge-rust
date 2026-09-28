@@ -6,12 +6,30 @@ use qtbridge_runtime::qproxies::{QRustProxy, QCppProxy, PlacementAddress};
 use qtbridge_runtime::{DispatchMetaCall, DynamicMetaObjectData};
 use qtbridge_type_lib::QVariant;
 use std::cell::RefCell;
+use std::pin::Pin;
 use std::rc::Rc;
 
 pub struct GenericRustProxy<CppProxy: QCppProxy, Adapter: ?Sized> {
     pub(crate) cpp_proxy: *mut CppProxy,
     pub(crate) rust_obj: RustObjAccess<Adapter>,
     pub(crate) on_drop: Box<dyn FnOnce()>,
+}
+
+impl<CppProxy: QCppProxy, Adapter: ?Sized> GenericRustProxy<CppProxy, Adapter> {
+    pub(crate) fn cpp_proxy_ref(&self) -> &CppProxy {
+        // SAFETY: set in `new()` and valid until the paired C++ destructor drops `self`.
+        unsafe { self.cpp_proxy.as_ref() }.expect("cpp_proxy was null")
+    }
+
+    // &mut from &self is deliberate: the proxy is interior-mutable and C++ re-enters it;
+    // CppProxy is an opaque cxx type, all state lives in C++.
+    #[allow(clippy::mut_from_ref)]
+    pub(crate) fn cpp_proxy_pin_mut(&self) -> Pin<&mut CppProxy> {
+        // SAFETY: as in `cpp_proxy_ref`.
+        let proxy = unsafe { self.cpp_proxy.as_mut() }.expect("cpp_proxy was null");
+        // SAFETY: the C++ object is heap- or placement-allocated and never moves.
+        unsafe { Pin::new_unchecked(proxy) }
+    }
 }
 
 impl<CppProxy, Adapter> QRustProxy for GenericRustProxy<CppProxy, Adapter>

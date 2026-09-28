@@ -34,12 +34,7 @@ macro_rules! call_rust_trait_impl {
 #[macro_export]
 macro_rules! call_cpp_impl {
     (mut $self:expr, $mut_reference:expr, $method:ident ( $($arg:expr),* )) => {{
-        let proxy = unsafe {
-            $self.cpp_proxy
-                .as_mut()
-                .expect("cpp_proxy was null")
-        };
-        let proxy_pinned = unsafe { std::pin::Pin::new_unchecked(proxy) };
+        let proxy_pinned = $self.cpp_proxy_pin_mut();
         $self.rust_obj
             .try_store_handle_and_call_cpp_mut($mut_reference, || proxy_pinned.$method($($arg),*))
             .expect(concat!(
@@ -49,12 +44,8 @@ macro_rules! call_cpp_impl {
     }};
 
     ($self:expr, $reference:expr, $method:ident ( $($arg:expr),* )) => {{
-        let proxy = unsafe {
-            $self.cpp_proxy
-                .as_ref()
-                .expect("cpp_proxy was null")
-        };
-         $self.rust_obj
+        let proxy = $self.cpp_proxy_ref();
+        $self.rust_obj
             .try_store_handle_and_call_cpp($reference, || proxy.$method($($arg),*))
             .expect(concat!(
                 "Failed to borrow for ",
