@@ -6,29 +6,29 @@ use qtbridge_type_lib::{
     QJsonArray, QJsonObject, QJsonValue, QMetaTypeType, QString, QVariant, QVariantMap, QVariantValue,
 };
 
-pub(crate) fn qvariant_to_serde(v: &QVariant) -> Result<serde_json::Value, ()> {
+pub(crate) fn qvariant_to_serde(v: &QVariant) -> Option<serde_json::Value> {
     match v.type_id() {
         QMetaTypeType::Bool =>
-            return Ok(serde_json::Value::from(v.value_or_default::<bool>())),
+            return Some(serde_json::Value::from(v.value_or_default::<bool>())),
         QMetaTypeType::SChar |
         QMetaTypeType::Short |
         QMetaTypeType::Int |
         QMetaTypeType::Long |
         QMetaTypeType::LongLong =>
-            return Ok(serde_json::Value::from(v.value_or_default::<i64>())),
+            return Some(serde_json::Value::from(v.value_or_default::<i64>())),
         QMetaTypeType::UChar |
         QMetaTypeType::UShort |
         QMetaTypeType::UInt |
         QMetaTypeType::ULong |
         QMetaTypeType::ULongLong =>
-            return Ok(serde_json::Value::from(v.value_or_default::<u64>())),
+            return Some(serde_json::Value::from(v.value_or_default::<u64>())),
         QMetaTypeType::Float =>
-            return Ok(serde_json::Value::from(v.value_or_default::<f32>())),
+            return Some(serde_json::Value::from(v.value_or_default::<f32>())),
         QMetaTypeType::Double =>
-            return Ok(serde_json::Value::from(v.value_or_default::<f64>())),
+            return Some(serde_json::Value::from(v.value_or_default::<f64>())),
         QMetaTypeType::QString => {
             let qstr = v.value_or_default::<QString>();
-            return Ok(serde_json::Value::String(qstr.into()))
+            return Some(serde_json::Value::String(qstr.into()))
         }
         QMetaTypeType::QJsonValue => {
             return try_from_qvariant(v)
@@ -46,16 +46,15 @@ pub(crate) fn qvariant_to_serde(v: &QVariant) -> Result<serde_json::Value, ()> {
     }
 
     if v.type_name() == "QJSValue" {
-        if let Ok(map) = try_from_qvariant(v) { return qvariantmap_to_serde(&map); }
-        if let Ok(list) = try_from_qvariant(v) { return qvariantlist_to_serde(&list) }
+        if let Some(map) = try_from_qvariant(v) { return qvariantmap_to_serde(&map); }
+        if let Some(list) = try_from_qvariant(v) { return qvariantlist_to_serde(&list) }
     }
 
-    Err(())
+    None
 }
 
-fn try_from_qvariant<T: QVariantValue>(v: &QVariant) -> Result<T, ()> {
+fn try_from_qvariant<T: QVariantValue>(v: &QVariant) -> Option<T> {
     v.value()
-        .ok_or(())
 }
 
 pub(crate) fn serde_to_qjsonvalue(v: &serde_json::Value) -> QJsonValue {
@@ -115,18 +114,18 @@ fn qjsonobject_to_serde(v: &QJsonObject) -> serde_json::Value {
     serde_json::Value::Object(map)
 }
 
-fn qvariantmap_to_serde(v: &QVariantMap) -> Result<serde_json::Value, ()> {
+fn qvariantmap_to_serde(v: &QVariantMap) -> Option<serde_json::Value> {
     let mut map = serde_json::Map::new();
     for (key, value) in v.iter() {
         let val = qvariant_to_serde(value)?;
         map.insert(String::from(key), val);
     }
-    Ok(serde_json::Value::Object(map))
+    Some(serde_json::Value::Object(map))
 }
 
-fn qvariantlist_to_serde(v: &cxx_qt_lib::QList<QVariant>) -> Result<serde_json::Value, ()> {
+fn qvariantlist_to_serde(v: &cxx_qt_lib::QList<QVariant>) -> Option<serde_json::Value> {
     let array = v.into_iter()
         .map(qvariant_to_serde)
-        .collect::<Result<_, _>>()?;
-    Ok(serde_json::Value::Array(array))
+        .collect::<Option<_>>()?;
+    Some(serde_json::Value::Array(array))
 }

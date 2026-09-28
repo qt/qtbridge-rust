@@ -20,7 +20,7 @@ pub trait QVariantConvertible: Sized {
     /// Convert to QVariant. Intended for use with references only.
     fn to_qvariant(&self) -> QVariant;
     /// Fallible conversion from QVariant to a value type.
-    fn try_from_qvariant(value: &QVariant) -> Result<Self, ()>;
+    fn try_from_qvariant(value: &QVariant) -> Option<Self>;
 
 }
 
@@ -35,10 +35,9 @@ macro_rules! impl_to_qvariant_and_try_from_qvariant {
                     (&compat).into()
                 }
                 // Conversion from a QVariant to value.
-                fn try_from_qvariant(value: &QVariant) -> Result<Self, ()> {
-                    let compat: <$t as QMetaTypeCompatible>::CompatibleType = value.value()
-                        .ok_or(())?;
-                    Ok(<Self as QMetaTypeCompatible>::from_compatible(&compat))
+                fn try_from_qvariant(value: &QVariant) -> Option<Self> {
+                    let compat: <$t as QMetaTypeCompatible>::CompatibleType = value.value()?;
+                    Some(<Self as QMetaTypeCompatible>::from_compatible(&compat))
                 }
             }
         )*
@@ -55,10 +54,10 @@ impl QVariantConvertible for () {
     fn to_qvariant(&self) -> QVariant {
         QVariant::default()
     }
-    fn try_from_qvariant(value: &QVariant) -> Result<Self, ()> {
+    fn try_from_qvariant(value: &QVariant) -> Option<Self> {
         match value.is_valid() {
-            true => Err(()),
-            false => Ok(()),
+            true => None,
+            false => Some(()),
         }
     }
 }
@@ -69,7 +68,7 @@ impl QVariantConvertible for serde_json::Value {
         let jv = crate::serde_tools::serde_to_qjsonvalue(self);
         (&jv).into()
     }
-    fn try_from_qvariant(value: &QVariant) -> Result<Self, ()> {
+    fn try_from_qvariant(value: &QVariant) -> Option<Self> {
         crate::serde_tools::qvariant_to_serde(value)
     }
 }
@@ -80,10 +79,10 @@ impl QVariantConvertible for Vec<serde_json::Value> {
         let ja = crate::serde_tools::serde_to_qjsonarray(self);
         (&ja).into()
     }
-    fn try_from_qvariant(value: &QVariant) -> Result<Self, ()> {
+    fn try_from_qvariant(value: &QVariant) -> Option<Self> {
         match crate::serde_tools::qvariant_to_serde(value)? {
-            serde_json::Value::Array(arr) => Ok(arr),
-            _ => Err(()),
+            serde_json::Value::Array(arr) => Some(arr),
+            _ => None,
         }
     }
 }

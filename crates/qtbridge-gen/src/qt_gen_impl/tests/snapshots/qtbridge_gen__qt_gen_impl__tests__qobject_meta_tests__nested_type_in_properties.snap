@@ -65,19 +65,19 @@ pub mod node {
             use qtbridge::qtbridge_runtime::QPropertyMember;
             match prop_id {
                 1u32 => {
-                    let Ok(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                    let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
                         panic!("Failed to convert QVariant for qproperty '{}'", "value");
                     };
                     self.set_value(value);
                 }
                 2u32 => {
-                    let Ok(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                    let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
                         panic!("Failed to convert QVariant for qproperty '{}'", "left");
                     };
                     self.set_left(&value);
                 }
                 3u32 => {
-                    let Ok(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                    let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
                         panic!("Failed to convert QVariant for qproperty '{}'", "right");
                     };
                     self.set_right(value);

@@ -283,7 +283,7 @@ impl QPropertyInfo {
         let input_conv_code = quote! {
             // SAFETY: value comes from the C++ metaobject dispatch, which
             // type-checks the property write before handing it to us.
-            let Ok(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+            let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
                 panic!("Failed to convert QVariant for qproperty '{}'", #name);
             };
         };

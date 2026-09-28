@@ -63,7 +63,7 @@ pub trait QPropertyMember: Sized {
     /// variant and dereferences it: the caller must guarantee the variant
     /// genuinely holds a live `QObject` of a compatible type. The metaobject
     /// dispatch upholds this (Qt type-checks the property write).
-    unsafe fn from_qvariant(value: &QVariant) -> Result<Self, ()>;
+    unsafe fn from_qvariant(value: &QVariant) -> Option<Self>;
 
     /// Returns `true` if `self` and `other` are equal.
     /// Used to decide whether the notify signal should be emitted and the
@@ -80,7 +80,7 @@ impl<T: PartialEq + QMetaTypeCompatible + QVariantConvertible> QPropertyMember f
         QVariantConvertible::to_qvariant(self)
     }
 
-    unsafe fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
+    unsafe fn from_qvariant(value: &QVariant) -> Option<Self> {
         QVariantConvertible::try_from_qvariant(value)
     }
 
@@ -100,11 +100,10 @@ impl<T: QObjectHolder> QPropertyMember for Rc<RefCell<T>> {
         (&ptr_wrap).into()
     }
 
-    unsafe fn from_qvariant(value: &QVariant) -> Result<Self, ()> {
-        let ptr_wrap: QObjectMutPtr = value.value()
-            .ok_or(())?;
+    unsafe fn from_qvariant(value: &QVariant) -> Option<Self> {
+        let ptr_wrap: QObjectMutPtr = value.value()?;
         let ptr: *mut cxx_qt::QObject = ptr_wrap.into_raw();
-        Ok(unsafe { T::qobject_to_rc_ref_cell(ptr.cast()) })
+        Some(unsafe { T::qobject_to_rc_ref_cell(ptr.cast()) })
     }
 
     fn property_eq(&self, other: &Self) -> bool {
@@ -129,9 +128,9 @@ impl<T: QmlElement> QPropertyMember for Vec<Rc<RefCell<T>>> {
         T::list_to_qvariant(owner, self, notify)
     }
 
-    unsafe fn from_qvariant(_value: &QVariant) -> Result<Self, ()> {
+    unsafe fn from_qvariant(_value: &QVariant) -> Option<Self> {
         // Vec<Rc<RefCell<T>>> is exposed as writeable view and no write operation will ever happen
-        Err(())
+        None
     }
 
     fn property_eq(&self, other: &Self) -> bool {

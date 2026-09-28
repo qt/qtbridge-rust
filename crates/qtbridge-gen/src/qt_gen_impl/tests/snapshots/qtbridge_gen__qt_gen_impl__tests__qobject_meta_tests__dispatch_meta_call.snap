@@ -47,7 +47,7 @@ unsafe impl qtbridge::qtbridge_runtime::DispatchMetaCall for SomeStruct {
         use qtbridge::qtbridge_runtime::QPropertyMember;
         match prop_id {
             1u32 => {
-                let Ok(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
                     panic!(
                         "Failed to convert QVariant for qproperty '{}'",
                         "this_value"
@@ -59,7 +59,7 @@ unsafe impl qtbridge::qtbridge_runtime::DispatchMetaCall for SomeStruct {
                 }
             }
             2u32 => {
-                let Ok(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
                     panic!(
                         "Failed to convert QVariant for qproperty '{}'",
                         "otherValue"
@@ -70,7 +70,7 @@ unsafe impl qtbridge::qtbridge_runtime::DispatchMetaCall for SomeStruct {
                 }
             }
             3u32 => {
-                let Ok(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
                     panic!(
                         "Failed to convert QVariant for qproperty '{}'",
                         "thirdValue"

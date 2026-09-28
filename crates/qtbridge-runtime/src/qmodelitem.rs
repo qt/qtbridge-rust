@@ -173,7 +173,7 @@ pub trait QModelItem {
             13 => <Self::T13>::try_from_qvariant(value).map(|val| self.set13(val)),
             14 => <Self::T14>::try_from_qvariant(value).map(|val| self.set14(val)),
             _ =>  return false,
-        }.is_ok()
+        }.is_some()
     }
 
     fn role_names() -> HashMap<i32, String>;
