@@ -16,13 +16,13 @@ pub mod ffi {
         unsafe fn drop_self(self_ptr: *mut QObjectProxyRust);
 
         # [cxx_name = invokeSlot]
-        fn invoke_slot(&self, slot_id: u32, args: &[*const u8], outputs: &[*mut u8]);
+        unsafe fn invoke_slot(&self, slot_id: u32, args: &[*const u8], outputs: &[*mut u8]);
         # [cxx_name = invokeSlotMut]
-        fn invoke_slot_mut(&self, slot_id: u32, args: &[*const u8], outputs: &[*mut u8]);
+        unsafe fn invoke_slot_mut(&self, slot_id: u32, args: &[*const u8], outputs: &[*mut u8]);
         # [cxx_name = readProperty]
-        fn read_property(&self, prop_id: u32) -> QVariant;
+        unsafe fn read_property(&self, prop_id: u32) -> QVariant;
         # [cxx_name = writeProperty]
-        fn write_property(&self, prop_id: u32, value: &QVariant);
+        unsafe fn write_property(&self, prop_id: u32, value: &QVariant);
     }
 }
 unsafe impl cxx::ExternType for QObjectProxyRust {

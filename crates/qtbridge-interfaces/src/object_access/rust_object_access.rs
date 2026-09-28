@@ -7,27 +7,6 @@ use std::cell::{Cell, RefCell};
 
 #[macro_export]
 macro_rules! call_rust_trait_impl {
-    (unsafe mut $self:expr, $method:ident ( $($arg:expr),* )) => {
-        $self.rust_obj
-            .try_call_rust_with_handle_mut(|vtable| {
-                unsafe { vtable.$method($($arg),*) }
-            })
-            .expect(concat!(
-                "Failed to borrow mutably for ",
-                stringify!($method)
-            ))
-    };
-
-    (unsafe $self:expr, $method:ident ( $($arg:expr),* )) => {
-        $self.rust_obj
-            .try_call_rust_with_handle(|vtable| {
-                unsafe { vtable.$method($($arg),*) }
-            })
-            .expect(concat!(
-                "Failed to borrow for ",
-                stringify!($method)
-            ))
-    };
 
     (mut $self:expr, $method:ident ( $($arg:expr),* )) => {
         $self.rust_obj
