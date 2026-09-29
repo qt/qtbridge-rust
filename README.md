@@ -203,21 +203,22 @@ path, since they build against the in-repo crate. In your own project, resolve
 the dependency from crates.io instead, as shown in the [Dependency](#dependency)
 section (`qtbridge = "*"`).
 
-### [Hello World!](https://github.com/qt/qtbridge-rust/tree/dev/apps/hello_world)
+### [Hello World!](https://github.com/qt/qtbridge-rust-examples/tree/main/hello_world)
 
 The classic "Hello World!" example showing the minimal building bricks for a
 QtBridge application.
 
-### [Minimal App](https://github.com/qt/qtbridge-rust/tree/dev/apps/minimal_app)
+### [Minimal App](https://github.com/qt/qtbridge-rust-examples/tree/main/minimal_app)
 
+minimal_app
 A working backend with data displayed in QML.
 
-### [Host Monitor](https://github.com/qt/qtbridge-rust/tree/dev/apps/host_monitor)
+### [Host Monitor](https://github.com/qt/qtbridge-rust-examples/tree/main/host_monitor)
 
 This example shows how to combine a Qt UI with [tokio](https://tokio.rs/) runtime
 in a multithreaded environment using [`QmlMethodInvoker`].
 
-### [Color Palette](https://github.com/qt/qtbridge-rust/tree/dev/apps/color_palette)
+### [Color Palette](https://github.com/qt/qtbridge-rust-examples/tree/main/color_palette)
 
 Port of the C++ Color Palette example to Rust. Shows a moderately complex application
 using tokio, reqwest, and serde_json, as well as many QML constructs, such as complex
