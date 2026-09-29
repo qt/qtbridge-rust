@@ -91,7 +91,7 @@ sudo dnf install qt6-qtbase-private-devel
 On Ubuntu 26.04 and Debian Testing (Forky) the packages are:
 ```sh
 sudo apt install -y qt6-base-dev qt6-declarative-dev
-sudo apt install -y qt6-base-private-dev
+sudo apt install -y qt6-base-private-dev qt6-declarative-private-dev
 ```
 
 #### Qt build from source or Qt installer
