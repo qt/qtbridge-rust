@@ -35,7 +35,7 @@ fn require_that_try_call_rust_with_handle_mut_invokes_function_and_succeeds_when
     let rc = Rc::new(RefCell::new(42));
     let instance = RustObjAccess::new(rc.clone());
 
-    assert_eq!(true, instance.try_call_rust_with_handle_mut(|value| *value += 1).is_ok());
+    assert!(instance.try_call_rust_with_handle_mut(|value| *value += 1).is_ok());
     assert_eq!(*rc.borrow(), 43);
 }
 
