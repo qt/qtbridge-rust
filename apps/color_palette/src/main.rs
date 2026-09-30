@@ -18,14 +18,15 @@ const DEFAULT_URL: &str = "http://127.0.0.1:49425/api";
 
 /// Parses the `--url <url>` command line option, falling back to `DEFAULT_URL`.
 fn parse_url_arg() -> String {
+    let mut url = None;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--url" => {
-                return args.next().unwrap_or_else(|| {
+                url = Some(args.next().unwrap_or_else(|| {
                     eprintln!("--url requires a value");
                     std::process::exit(1);
-                });
+                }));
             }
             "-h" | "--help" => {
                 println!("Usage: {} [--url <url>]", env!("CARGO_BIN_NAME"));
@@ -34,15 +35,12 @@ fn parse_url_arg() -> String {
                 std::process::exit(0);
             }
             _ => {
-                if let Some(value) = arg.strip_prefix("--url=") {
-                    return value.to_string();
-                }
                 eprintln!("Unknown argument: {arg}");
                 std::process::exit(1);
             }
         }
     }
-    DEFAULT_URL.to_string()
+    url.unwrap_or_else(|| DEFAULT_URL.to_string())
 }
 
 fn main() {
