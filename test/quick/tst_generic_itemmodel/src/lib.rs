@@ -79,7 +79,7 @@ pub fn test_qabstractitemmodel() {
     input_path.push("qml");
     let input_folder = input_path.to_str().unwrap().to_string();
 
-    println!("Running quick test with qml files in \"{}\"", &input_folder);
+    println!("Running quick test with qml files in \"{}\"", input_folder);
 
     let args: Vec<String> = vec![
         file!().to_string(),

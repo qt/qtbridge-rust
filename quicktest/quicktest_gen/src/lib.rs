@@ -111,7 +111,7 @@ pub fn run_quick_test(attr: TokenStream, item: TokenStream) -> TokenStream {
                 input_path.push(&#subfolder.to_string());
                 let input_folder = input_path.to_str().unwrap().to_string();
 
-                println!("Running quick test with qml files in \"{}\"", &input_folder);
+                println!("Running quick test with qml files in \"{}\"", input_folder);
 
                 let args: Vec<String> = vec![
                     #file_name.into(),
