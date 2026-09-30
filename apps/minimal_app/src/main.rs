@@ -24,8 +24,8 @@ mod backend {
         }
         fn set_unnotified(&mut self, index: usize, value: String) -> bool {
             match self.string_list.contains(&value) {
-                true => { self.duplicate_found(&value); return false },
-                false => { self.string_list[index] = value; return true },
+                true => { self.duplicate_found(&value); false },
+                false => { self.string_list[index] = value; true },
             }
         }
         fn push_unnotified(&mut self, value: String) {
