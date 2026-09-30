@@ -69,8 +69,8 @@ fn parse_base() {
 #[test]
 fn comma_separated_values() {
     let params = syn::parse_str::<QObjectMacroParams>("ConvertToCamelCase, Singleton").unwrap();
-    assert_eq!(params.convert_to_camel_case, true);
-    assert_eq!(params.singleton, true);
+    assert!(params.convert_to_camel_case);
+    assert!(params.singleton);
 }
 
 #[test]
