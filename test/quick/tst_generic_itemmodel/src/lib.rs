@@ -26,7 +26,7 @@ mod backend {
     {
         pub fn new(data: Vec<T>) -> Self {
             Self {
-                data: data
+                data
             }
         }
     }

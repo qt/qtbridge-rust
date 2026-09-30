@@ -10,13 +10,18 @@ pub struct Cell {
     data: Vec<QVariant>,
 }
 
+impl Default for Cell {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Cell {
     pub fn new() -> Self {
         Self {
             data: vec![QVariant::default(); 6], // 6 default roles in Qt
         }
     }
-
     pub fn set(&mut self, role: usize, value: QVariant) {
         if role < self.data.len() {
             self.data[role] = value;
@@ -42,14 +47,13 @@ pub struct Row {
 impl Row {
     pub fn new(column_count: usize) -> Self {
         Self {
-            columns: vec![Cell::new(); column_count],
+            columns: vec![Cell::default(); column_count],
             children: Vec::new(),
         }
     }
-
     pub fn from_children(row_vec: Vec<Row>) -> Self {
         Self {
-            columns: vec![Cell::new(); 5],
+            columns: vec![Cell::default(); 5],
             children: row_vec,
         }
     }
@@ -89,7 +93,7 @@ impl Row {
     pub fn parent_of(&self, row: &Row) -> Option<&Row> {
         // Not the most efficient way of finding a parent but good enough for a test
         for child in &self.children {
-            if child as *const Row == row as *const Row {
+            if std::ptr::eq(child, row) {
                 return Some(self);
             }
             if let Some(found) = child.parent_of(row) {
@@ -101,7 +105,7 @@ impl Row {
 
     pub fn index_of(&self, row: &Row) -> Option<usize> {
         for (i, child) in self.children.iter().enumerate() {
-            if child as *const Row == row as *const Row {
+            if std::ptr::eq(child, row) {
                 return Some(i);
             }
         }
@@ -191,24 +195,21 @@ mod backend {
                     return self.create_index(row, column, ptr)
                 }
             }
-            return QModelIndex::default();
+            QModelIndex::default()
         }
 
         fn parent(&self, child: &QModelIndex) -> QModelIndex {
             if child.is_valid() {
                 let child_ptr: *const Row = child.internal_pointer_mut() as *const Row;
-                if let Some(child_row_ref) = unsafe { child_ptr.as_ref() } {
-                    if let Some(parent_ref) = self.root.parent_of(child_row_ref) {
-                        if let Some(grandparent_ref) = self.root.parent_of(parent_ref) {
-                            if let Some(row_index) = grandparent_ref.index_of(parent_ref) {
-                                let ptr = parent_ref as *const Row as usize;
-                                return self.create_index(row_index as i32, 0, ptr);
-                            }
-                        }
-                    }
+                if let Some(child_row_ref) = unsafe { child_ptr.as_ref() }
+                && let Some(parent_ref) = self.root.parent_of(child_row_ref)
+                && let Some(grandparent_ref) = self.root.parent_of(parent_ref)
+                && let Some(row_index) = grandparent_ref.index_of(parent_ref) {
+                    let ptr = parent_ref as *const Row as usize;
+                    return self.create_index(row_index as i32, 0, ptr);
                 }
             }
-            return QModelIndex::default();
+            QModelIndex::default()
         }
 
         fn row_count(&self, parent: &QModelIndex) -> i32 {
@@ -217,7 +218,7 @@ mod backend {
                 let parent_ref: &Row = unsafe { &*parent_ptr };
                 return parent_ref.row_count() as i32;
             }
-            return self.root.row_count() as i32;
+            self.root.row_count() as i32
         }
 
         fn column_count(&self, parent: &QModelIndex) -> i32 {
@@ -227,7 +228,7 @@ mod backend {
                 let parent_ref: &Row = unsafe { &*parent_ptr };
                 return parent_ref.column_count() as i32;
             }
-            return self.root.column_count() as i32;
+            self.root.column_count() as i32
         }
 
         fn data(&self, index: &QModelIndex, role: i32) -> QVariant {
@@ -240,7 +241,7 @@ mod backend {
                     }
                 }
             }
-            return QVariant::default();
+            QVariant::default()
         }
 
         fn set_data(&mut self, _index: &QModelIndex, _value: &QVariant, _role: i32) -> bool {
