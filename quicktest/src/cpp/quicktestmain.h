@@ -16,8 +16,6 @@ namespace bridge
 
     int quickTestMainWithProperties(const rust::Vec<rust::String>& args, const rust::String &name, const QVariantMap &properties);
 
-    int quickTestMainWithSetup(const rust::Vec<rust::String>& args, const rust::String &name, QObject *setup);
-
 } // namespace bridge
 
 } // namespace rust

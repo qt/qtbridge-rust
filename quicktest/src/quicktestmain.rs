@@ -22,12 +22,8 @@ mod ffi {
 
         #[rust_name = "quick_test_main_with_properties"]
         fn quickTestMainWithProperties(args: &Vec<String>, name: &String, properties: &QMap_QString_QVariant) -> i32;
-
-        #[rust_name = "quick_test_main_with_setup"]
-        unsafe fn quickTestMainWithSetup(args: &Vec<String>, name: &String, setup: *mut QObject) -> i32;
     }
 }
 
 pub use ffi::quick_test_main;
-pub use ffi::quick_test_main_with_setup;
 pub use ffi::quick_test_main_with_properties;
