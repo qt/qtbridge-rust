@@ -134,6 +134,13 @@ instructions:
     userMessageOnFailure: >
       Failed to run extended test.
 
+  - type: ExecuteCommand
+    command: "cargo clippy  --workspace -- -D warnings"
+    maxTimeInSeconds: 6000
+    maxTimeBetweenOutput: 1200
+    userMessageOnFailure: >
+      Failed clippy test.
+
   - type: UploadArtifact
     archiveDirectory: "{{.AgentWorkingDir}}/qt/qtbridge-rust/"
     transferType: UploadModuleBuildArtifact
