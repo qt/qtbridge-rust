@@ -135,6 +135,20 @@ instructions:
       Failed to run extended test.
 
   - type: ExecuteCommand
+    command: "cargo build --release --workspace"
+    maxTimeInSeconds: 6000
+    maxTimeBetweenOutput: 1200
+    userMessageOnFailure: >
+      Failed to build extended qtbridge-rust in release mode.
+
+  - type: ExecuteCommand
+    command: "cargo test --release --workspace"
+    maxTimeInSeconds: 6000
+    maxTimeBetweenOutput: 1200
+    userMessageOnFailure: >
+      Failed to run extended test in release mode.
+
+  - type: ExecuteCommand
     command: "cargo clippy  --workspace -- -D warnings"
     maxTimeInSeconds: 6000
     maxTimeBetweenOutput: 1200
