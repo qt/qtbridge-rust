@@ -61,7 +61,7 @@ where
         if updated {
             self.set_unnotified(index.row() as usize, item);
             let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-            unsafe { &mut *proxy }.base_data_changed(&mut *self, index, index);
+            unsafe { &*proxy }.base_data_changed(&mut *self, index, index);
         }
         updated
     }
@@ -73,11 +73,11 @@ where
             return false;
         }
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, parent, first as i32, (last - 1) as i32);
+        unsafe { &*proxy }.base_begin_remove_rows(&mut *self, parent, first as i32, (last - 1) as i32);
         for index in (first..last).rev() {
             self.remove_unnotified(index);
         }
-        unsafe { &mut *proxy }.base_end_remove_rows(&mut *self);
+        unsafe { &*proxy }.base_end_remove_rows(&mut *self);
         true
     }
 
@@ -292,7 +292,7 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
         if self.set_unnotified(index, value) {
             if let Some(proxy) = self.try_get_rust_proxy_ptr() {
                 let model_index = unsafe { &*proxy }.base_index(&*self, index as i32, 0, &QModelIndex::default());
-                unsafe { &mut *proxy }.base_data_changed(&mut *self, &model_index, &model_index);
+                unsafe { &*proxy }.base_data_changed(&mut *self, &model_index, &model_index);
             }
             true
         } else {
@@ -309,9 +309,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
             return self.push_unnotified(value);
         };
         let len = self.len() as i32;
-        unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), len, len);
+        unsafe { &*proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), len, len);
         self.push_unnotified(value);
-        unsafe { &mut *proxy }.base_end_insert_rows(&mut *self);
+        unsafe { &*proxy }.base_end_insert_rows(&mut *self);
     }
 
     /// Inserts `value` at `index` and notifies any attached views about
@@ -322,9 +322,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
         let Some(proxy) = self.try_get_rust_proxy_ptr() else {
             return self.insert_unnotified(index, value);
         };
-        unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
+        unsafe { &*proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         self.insert_unnotified(index, value);
-        unsafe { &mut *proxy }.base_end_insert_rows(&mut *self);
+        unsafe { &*proxy }.base_end_insert_rows(&mut *self);
     }
 
     /// Removes and returns the last item in the model and notifies any attached views about
@@ -342,9 +342,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
             return self.pop_unnotified();
         };
         let len = self.len() as i32;
-        unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), len - 1, len - 1);
+        unsafe { &*proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), len - 1, len - 1);
         let value = self.pop_unnotified();
-        unsafe { &mut *proxy }.base_end_remove_rows(&mut *self);
+        unsafe { &*proxy }.base_end_remove_rows(&mut *self);
         value
     }
 
@@ -356,9 +356,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
         let Some(proxy) = self.try_get_rust_proxy_ptr() else {
             return self.remove_unnotified(index);
         };
-        unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
+        unsafe { &*proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         let value = self.remove_unnotified(index);
-        unsafe { &mut *proxy }.base_end_remove_rows(&mut *self);
+        unsafe { &*proxy }.base_end_remove_rows(&mut *self);
         value
     }
 
@@ -369,9 +369,9 @@ pub trait QListModelBase : QListModel + QObjectHolder<ProxyRust = QListModelProx
         let Some(proxy) = self.try_get_rust_proxy_ptr() else {
             return self.reset_unnotified();
         };
-        unsafe { &mut *proxy }.base_begin_reset_model(&mut *self);
+        unsafe { &*proxy }.base_begin_reset_model(&mut *self);
         self.reset_unnotified();
-        unsafe { &mut *proxy }.base_end_reset_model(&mut *self);
+        unsafe { &*proxy }.base_end_reset_model(&mut *self);
     }
 }
 
@@ -399,10 +399,10 @@ impl QListModelProxyRust {
     pub fn role_names(&self) -> QHash_i32_QByteArray {
         call_rust_trait_impl!(self, role_names())
     }
-    pub fn set_data(&mut self, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
+    pub fn set_data(&self, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
         call_rust_trait_impl!(mut self, set_data(index, value, role))
     }
-    pub fn remove_rows(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool {
+    pub fn remove_rows(&self, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_rust_trait_impl!(mut self, remove_rows(first, count, parent))
     }
     pub fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
@@ -415,40 +415,40 @@ impl QListModelProxyRust {
     pub fn base_role_names(&self, reference: &dyn QListModelAdapter) -> QHash_i32_QByteArray {
         call_cpp_impl!(self, reference, base_role_names())
     }
-    pub fn base_set_data(&mut self, mut_ref: &mut dyn QListModelAdapter, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
+    pub fn base_set_data(&self, mut_ref: &mut dyn QListModelAdapter, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_set_data(index, value, role))
     }
-    pub fn base_remove_rows(&mut self, mut_ref: &mut dyn QListModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
+    pub fn base_remove_rows(&self, mut_ref: &mut dyn QListModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_remove_rows(first, count, parent))
     }
     pub fn base_sibling(&self, reference: &dyn QListModelAdapter, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
         call_cpp_impl!(self, reference, base_sibling(row, column, idx))
     }
-    pub fn base_data_changed(&mut self, mut_ref: &mut dyn QListModelAdapter, top_left: &QModelIndex, bottom_right: &QModelIndex) {
+    pub fn base_data_changed(&self, mut_ref: &mut dyn QListModelAdapter, top_left: &QModelIndex, bottom_right: &QModelIndex) {
         call_cpp_impl!(mut self, mut_ref, base_data_changed(top_left, bottom_right))
     }
-    pub fn base_begin_insert_rows(&mut self, mut_ref: &mut dyn QListModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_insert_rows(&self, mut_ref: &mut dyn QListModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_insert_rows(parent, first, last))
     }
-    pub fn base_end_insert_rows(&mut self, mut_ref: &mut dyn QListModelAdapter) {
+    pub fn base_end_insert_rows(&self, mut_ref: &mut dyn QListModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_insert_rows())
     }
-    pub fn base_begin_move_rows(&mut self, mut_ref: &mut dyn QListModelAdapter, source_parent: &QModelIndex, source_first: i32, source_last: i32, destination_parent: &QModelIndex, destination_child: i32) {
+    pub fn base_begin_move_rows(&self, mut_ref: &mut dyn QListModelAdapter, source_parent: &QModelIndex, source_first: i32, source_last: i32, destination_parent: &QModelIndex, destination_child: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_move_rows(source_parent, source_first, source_last, destination_parent, destination_child))
     }
-    pub fn base_end_move_rows(&mut self, mut_ref: &mut dyn QListModelAdapter) {
+    pub fn base_end_move_rows(&self, mut_ref: &mut dyn QListModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_move_rows())
     }
-    pub fn base_begin_remove_rows(&mut self, mut_ref: &mut dyn QListModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_remove_rows(&self, mut_ref: &mut dyn QListModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_remove_rows(parent, first, last))
     }
-    pub fn base_end_remove_rows(&mut self, mut_ref: &mut dyn QListModelAdapter) {
+    pub fn base_end_remove_rows(&self, mut_ref: &mut dyn QListModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_remove_rows())
     }
-    pub fn base_begin_reset_model(&mut self, mut_ref: &mut dyn QListModelAdapter) {
+    pub fn base_begin_reset_model(&self, mut_ref: &mut dyn QListModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_begin_reset_model())
     }
-    pub fn base_end_reset_model(&mut self, mut_ref: &mut dyn QListModelAdapter) {
+    pub fn base_end_reset_model(&self, mut_ref: &mut dyn QListModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_reset_model())
     }
 }

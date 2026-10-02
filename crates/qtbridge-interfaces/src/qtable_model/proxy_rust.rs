@@ -72,7 +72,7 @@ where
         if updated {
             self.set_unnotified((index.row() as usize, index.column() as usize), item);
             let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-            unsafe { &mut *proxy }.base_data_changed(&mut *self, index, index);
+            unsafe { &*proxy }.base_data_changed(&mut *self, index, index);
         }
         updated
     }
@@ -84,11 +84,11 @@ where
             return false;
         }
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &mut *proxy }.base_begin_remove_columns(&mut *self, parent, first as i32, (last - 1) as i32);
+        unsafe { &*proxy }.base_begin_remove_columns(&mut *self, parent, first as i32, (last - 1) as i32);
         for index in (first..last).rev() {
             self.remove_column_unnotified(index);
         }
-        unsafe { &mut *proxy }.base_end_remove_columns(&mut *self);
+        unsafe { &*proxy }.base_end_remove_columns(&mut *self);
         true
     }
 
@@ -99,11 +99,11 @@ where
             return false;
         }
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, parent, first as i32, (last - 1) as i32);
+        unsafe { &*proxy }.base_begin_remove_rows(&mut *self, parent, first as i32, (last - 1) as i32);
         for index in (first..last).rev() {
             self.remove_row_unnotified(index);
         }
-        unsafe { &mut *proxy }.base_end_remove_rows(&mut *self);
+        unsafe { &*proxy }.base_end_remove_rows(&mut *self);
         true
     }
 
@@ -378,7 +378,7 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
         if self.set_unnotified(index, value) {
             if let Some(proxy) = self.try_get_rust_proxy_ptr() {
                 let model_index = unsafe { &*proxy }.base_create_index(self, index.0 as i32, index.1 as i32, 0);
-                unsafe { &mut *proxy }.base_data_changed(&mut *self, &model_index, &model_index);
+                unsafe { &*proxy }.base_data_changed(&mut *self, &model_index, &model_index);
             }
             true
         } else {
@@ -395,9 +395,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
             return self.push_row_unnotified(values);
         };
         let row_count = self.row_count() as i32;
-        unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), row_count, row_count);
+        unsafe { &*proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), row_count, row_count);
         self.push_row_unnotified(values);
-        unsafe { &mut *proxy }.base_end_insert_rows(&mut *self);
+        unsafe { &*proxy }.base_end_insert_rows(&mut *self);
     }
 
     /// Appends a column of `value` to the end of the model and notifies any attached views about
@@ -409,9 +409,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
             return self.push_column_unnotified(values);
         };
         let col_count = self.column_count() as i32;
-        unsafe { &mut *proxy }.base_begin_insert_columns(&mut *self, &QModelIndex::default(), col_count, col_count);
+        unsafe { &*proxy }.base_begin_insert_columns(&mut *self, &QModelIndex::default(), col_count, col_count);
         self.push_column_unnotified(values);
-        unsafe { &mut *proxy }.base_end_insert_columns(&mut *self);
+        unsafe { &*proxy }.base_end_insert_columns(&mut *self);
     }
 
     /// Inserts a row with `values` at `index` and notifies any attached views about
@@ -422,9 +422,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
         let Some(proxy) = self.try_get_rust_proxy_ptr() else {
             return self.insert_row_unnotified(index, values);
         };
-        unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
+        unsafe { &*proxy }.base_begin_insert_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         self.insert_row_unnotified(index, values);
-        unsafe { &mut *proxy }.base_end_insert_rows(&mut *self);
+        unsafe { &*proxy }.base_end_insert_rows(&mut *self);
     }
 
     /// Inserts a column with `values` at `index` and notifies any attached views about
@@ -435,9 +435,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
         let Some(proxy) = self.try_get_rust_proxy_ptr() else {
             return self.insert_column_unnotified(index, values);
         };
-        unsafe { &mut *proxy }.base_begin_insert_columns(&mut *self, &QModelIndex::default(), index as i32, index as i32);
+        unsafe { &*proxy }.base_begin_insert_columns(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         self.insert_column_unnotified(index, values);
-        unsafe { &mut *proxy }.base_end_insert_columns(&mut *self);
+        unsafe { &*proxy }.base_end_insert_columns(&mut *self);
     }
 
     /// Removes and returns the last row in the model and notifies any attached views about
@@ -455,9 +455,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
             return self.pop_row_unnotified();
         };
         let row_count = self.row_count() as i32;
-        unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), row_count - 1, row_count - 1);
+        unsafe { &*proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), row_count - 1, row_count - 1);
         let values = self.pop_row_unnotified();
-        unsafe { &mut *proxy }.base_end_remove_rows(&mut *self);
+        unsafe { &*proxy }.base_end_remove_rows(&mut *self);
         values
     }
 
@@ -476,9 +476,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
             return self.pop_column_unnotified();
         };
         let col_count = self.column_count() as i32;
-        unsafe { &mut *proxy }.base_begin_remove_columns(&mut *self, &QModelIndex::default(), col_count - 1, col_count - 1);
+        unsafe { &*proxy }.base_begin_remove_columns(&mut *self, &QModelIndex::default(), col_count - 1, col_count - 1);
         let values = self.pop_column_unnotified();
-        unsafe { &mut *proxy }.base_end_remove_columns(&mut *self);
+        unsafe { &*proxy }.base_end_remove_columns(&mut *self);
         values
     }
 
@@ -490,9 +490,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
         let Some(proxy) = self.try_get_rust_proxy_ptr() else {
             return self.remove_row_unnotified(index);
         };
-        unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
+        unsafe { &*proxy }.base_begin_remove_rows(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         let values = self.remove_row_unnotified(index);
-        unsafe { &mut *proxy }.base_end_remove_rows(&mut *self);
+        unsafe { &*proxy }.base_end_remove_rows(&mut *self);
         values
     }
 
@@ -504,9 +504,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
         let Some(proxy) = self.try_get_rust_proxy_ptr() else {
             return self.remove_column_unnotified(index);
         };
-        unsafe { &mut *proxy }.base_begin_remove_columns(&mut *self, &QModelIndex::default(), index as i32, index as i32);
+        unsafe { &*proxy }.base_begin_remove_columns(&mut *self, &QModelIndex::default(), index as i32, index as i32);
         let values = self.remove_column_unnotified(index);
-        unsafe { &mut *proxy }.base_end_remove_columns(&mut *self);
+        unsafe { &*proxy }.base_end_remove_columns(&mut *self);
         values
     }
 
@@ -517,9 +517,9 @@ pub trait QTableModelBase : QTableModel + QObjectHolder<ProxyRust = QTableModelP
         let Some(proxy) = self.try_get_rust_proxy_ptr() else {
             return self.reset_unnotified();
         };
-        unsafe { &mut *proxy }.base_begin_reset_model(&mut *self);
+        unsafe { &*proxy }.base_begin_reset_model(&mut *self);
         self.reset_unnotified();
-        unsafe { &mut *proxy }.base_end_reset_model(&mut *self);
+        unsafe { &*proxy }.base_end_reset_model(&mut *self);
     }
 }
 
@@ -553,13 +553,13 @@ impl QTableModelProxyRust {
     pub fn role_names(&self) -> QHash_i32_QByteArray {
         call_rust_trait_impl!(self, role_names())
     }
-    pub fn set_data(&mut self, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
+    pub fn set_data(&self, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
         call_rust_trait_impl!(mut self, set_data(index, value, role))
     }
-    pub fn remove_columns(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool {
+    pub fn remove_columns(&self, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_rust_trait_impl!(mut self, remove_columns(first, count, parent))
     }
-    pub fn remove_rows(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool {
+    pub fn remove_rows(&self, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_rust_trait_impl!(mut self, remove_rows(first, count, parent))
     }
     pub fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
@@ -569,31 +569,31 @@ impl QTableModelProxyRust {
     pub fn base_role_names(&self, reference: &dyn QTableModelAdapter) -> QHash_i32_QByteArray {
         call_cpp_impl!(self, reference, base_role_names())
     }
-    pub fn base_set_data(&mut self, mut_ref: &mut dyn QTableModelAdapter, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
+    pub fn base_set_data(&self, mut_ref: &mut dyn QTableModelAdapter, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_set_data(index, value, role))
     }
-    pub fn base_remove_columns(&mut self, mut_ref: &mut dyn QTableModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
+    pub fn base_remove_columns(&self, mut_ref: &mut dyn QTableModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_remove_columns(first, count, parent))
     }
-    pub fn base_remove_rows(&mut self, mut_ref: &mut dyn QTableModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
+    pub fn base_remove_rows(&self, mut_ref: &mut dyn QTableModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_remove_rows(first, count, parent))
     }
     pub fn base_sibling(&self, reference: &dyn QTableModelAdapter, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
         call_cpp_impl!(self, reference, base_sibling(row, column, idx))
     }
-    pub fn base_data_changed(&mut self, mut_ref: &mut dyn QTableModelAdapter, top_left: &QModelIndex, bottom_right: &QModelIndex) {
+    pub fn base_data_changed(&self, mut_ref: &mut dyn QTableModelAdapter, top_left: &QModelIndex, bottom_right: &QModelIndex) {
         call_cpp_impl!(mut self, mut_ref, base_data_changed(top_left, bottom_right))
     }
-    pub fn base_begin_insert_columns(&mut self, mut_ref: &mut dyn QTableModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_insert_columns(&self, mut_ref: &mut dyn QTableModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_insert_columns(parent, first, last))
     }
-    pub fn base_end_insert_columns(&mut self, mut_ref: &mut dyn QTableModelAdapter) {
+    pub fn base_end_insert_columns(&self, mut_ref: &mut dyn QTableModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_insert_columns())
     }
-    pub fn base_begin_insert_rows(&mut self, mut_ref: &mut dyn QTableModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_insert_rows(&self, mut_ref: &mut dyn QTableModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_insert_rows(parent, first, last))
     }
-    pub fn base_end_insert_rows(&mut self, mut_ref: &mut dyn QTableModelAdapter) {
+    pub fn base_end_insert_rows(&self, mut_ref: &mut dyn QTableModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_insert_rows())
     }
     pub fn base_begin_move_columns(
@@ -607,31 +607,31 @@ impl QTableModelProxyRust {
     ) {
         call_cpp_impl!(mut self, mut_ref, base_begin_move_columns(source_parent, source_first, source_last, destination_parent, destination_child))
     }
-    pub fn base_end_move_columns(&mut self, mut_ref: &mut dyn QTableModelAdapter) {
+    pub fn base_end_move_columns(&self, mut_ref: &mut dyn QTableModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_move_columns())
     }
-    pub fn base_begin_move_rows(&mut self, mut_ref: &mut dyn QTableModelAdapter, source_parent: &QModelIndex, source_first: i32, source_last: i32, destination_parent: &QModelIndex, destination_child: i32) {
+    pub fn base_begin_move_rows(&self, mut_ref: &mut dyn QTableModelAdapter, source_parent: &QModelIndex, source_first: i32, source_last: i32, destination_parent: &QModelIndex, destination_child: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_move_rows(source_parent, source_first, source_last, destination_parent, destination_child))
     }
-    pub fn base_end_move_rows(&mut self, mut_ref: &mut dyn QTableModelAdapter) {
+    pub fn base_end_move_rows(&self, mut_ref: &mut dyn QTableModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_move_rows())
     }
-    pub fn base_begin_remove_columns(&mut self, mut_ref: &mut dyn QTableModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_remove_columns(&self, mut_ref: &mut dyn QTableModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_remove_columns(parent, first, last))
     }
-    pub fn base_end_remove_columns(&mut self, mut_ref: &mut dyn QTableModelAdapter) {
+    pub fn base_end_remove_columns(&self, mut_ref: &mut dyn QTableModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_remove_columns())
     }
-    pub fn base_begin_remove_rows(&mut self, mut_ref: &mut dyn QTableModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_remove_rows(&self, mut_ref: &mut dyn QTableModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_remove_rows(parent, first, last))
     }
-    pub fn base_end_remove_rows(&mut self, mut_ref: &mut dyn QTableModelAdapter) {
+    pub fn base_end_remove_rows(&self, mut_ref: &mut dyn QTableModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_remove_rows())
     }
-    pub fn base_begin_reset_model(&mut self, mut_ref: &mut dyn QTableModelAdapter) {
+    pub fn base_begin_reset_model(&self, mut_ref: &mut dyn QTableModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_begin_reset_model())
     }
-    pub fn base_end_reset_model(&mut self, mut_ref: &mut dyn QTableModelAdapter) {
+    pub fn base_end_reset_model(&self, mut_ref: &mut dyn QTableModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_reset_model())
     }
     pub fn base_create_index(&self, reference: &dyn QTableModelAdapter, row: i32, column: i32, ptr: usize) -> QModelIndex {

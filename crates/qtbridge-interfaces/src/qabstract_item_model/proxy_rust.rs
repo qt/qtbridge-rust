@@ -63,11 +63,11 @@ pub trait QAbstractItemModel : QObjectHolder<ProxyRust = QAbstractItemModelProxy
     }
     fn set_data(&mut self, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &mut *proxy }.base_set_data(&mut *self, index, value, role)
+        unsafe { &*proxy }.base_set_data(&mut *self, index, value, role)
     }
     fn remove_rows(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool {
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &mut *proxy }.base_remove_rows(&mut *self, first, count, parent)
+        unsafe { &*proxy }.base_remove_rows(&mut *self, first, count, parent)
     }
     fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
@@ -87,7 +87,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         role: i32,
     ) -> bool {
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &mut *proxy }.base_set_data(&mut *self, index, value, role)
+        unsafe { &*proxy }.base_set_data(&mut *self, index, value, role)
     }
     fn remove_rows(
         &mut self,
@@ -96,7 +96,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         parent: &QModelIndex,
     ) -> bool {
         let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &mut *proxy }.base_remove_rows(&mut *self, first, count, parent)
+        unsafe { &*proxy }.base_remove_rows(&mut *self, first, count, parent)
     }
     fn sibling(
         &self,
@@ -113,7 +113,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         bottom_right: &QModelIndex,
     ) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_data_changed(&mut *self, top_left, bottom_right)
+        unsafe { &*proxy }.base_data_changed(&mut *self, top_left, bottom_right)
     }
     fn begin_insert_columns(
         &mut self,
@@ -122,11 +122,11 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         last: i32,
     ) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_begin_insert_columns(&mut *self, parent, first, last)
+        unsafe { &*proxy }.base_begin_insert_columns(&mut *self, parent, first, last)
     }
     fn end_insert_columns(&mut self) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_end_insert_columns(&mut *self)
+        unsafe { &*proxy }.base_end_insert_columns(&mut *self)
     }
     fn begin_insert_rows(
         &mut self,
@@ -135,11 +135,11 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         last: i32,
     ) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_begin_insert_rows(&mut *self, parent, first, last)
+        unsafe { &*proxy }.base_begin_insert_rows(&mut *self, parent, first, last)
     }
     fn end_insert_rows(&mut self) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_end_insert_rows(&mut *self)
+        unsafe { &*proxy }.base_end_insert_rows(&mut *self)
     }
     fn begin_move_columns(
         &mut self,
@@ -150,7 +150,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         destination_child: i32,
     ) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_begin_move_columns(
+        unsafe { &*proxy }.base_begin_move_columns(
             &mut *self,
             source_parent,
             source_first,
@@ -161,7 +161,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
     }
     fn end_move_columns(&mut self) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_end_move_columns(&mut *self)
+        unsafe { &*proxy }.base_end_move_columns(&mut *self)
     }
     fn begin_move_rows(
         &mut self,
@@ -172,7 +172,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         destination_child: i32,
     ) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_begin_move_rows(
+        unsafe { &*proxy }.base_begin_move_rows(
             &mut *self,
             source_parent,
             source_first,
@@ -183,7 +183,7 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
     }
     fn end_move_rows(&mut self) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_end_move_rows(&mut *self)
+        unsafe { &*proxy }.base_end_move_rows(&mut *self)
     }
     fn begin_remove_columns(
         &mut self,
@@ -192,11 +192,11 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         last: i32,
     ) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_begin_remove_columns(&mut *self, parent, first, last)
+        unsafe { &*proxy }.base_begin_remove_columns(&mut *self, parent, first, last)
     }
     fn end_remove_columns(&mut self) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_end_remove_columns(&mut *self)
+        unsafe { &*proxy }.base_end_remove_columns(&mut *self)
     }
     fn begin_remove_rows(
         &mut self,
@@ -205,19 +205,19 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         last: i32,
     ) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_begin_remove_rows(&mut *self, parent, first, last)
+        unsafe { &*proxy }.base_begin_remove_rows(&mut *self, parent, first, last)
     }
     fn end_remove_rows(&mut self) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_end_remove_rows(&mut *self)
+        unsafe { &*proxy }.base_end_remove_rows(&mut *self)
     }
     fn begin_reset_model(&mut self) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_begin_reset_model(&mut *self)
+        unsafe { &*proxy }.base_begin_reset_model(&mut *self)
     }
     fn end_reset_model(&mut self) {
         let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
-        unsafe { &mut *proxy }.base_end_reset_model(&mut *self)
+        unsafe { &*proxy }.base_end_reset_model(&mut *self)
     }
     fn create_index(
         &self,
@@ -273,32 +273,32 @@ impl QAbstractItemModelProxyRust {
     pub fn base_role_names(&self, reference: &dyn QAbstractItemModelAdapter) -> QHash_i32_QByteArray {
         call_cpp_impl!(self, reference, base_role_names())
     }
-    pub fn base_set_data(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
+    pub fn base_set_data(&self, mut_ref: &mut dyn QAbstractItemModelAdapter, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_set_data(index, value, role))
     }
-    pub fn base_remove_rows(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
+    pub fn base_remove_rows(&self, mut_ref: &mut dyn QAbstractItemModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_remove_rows(first, count, parent))
     }
     pub fn base_sibling(&self, reference: &dyn QAbstractItemModelAdapter, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
         call_cpp_impl!(self, reference, base_sibling(row, column, idx))
     }
-    pub fn base_data_changed(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter, top_left: &QModelIndex, bottom_right: &QModelIndex) {
+    pub fn base_data_changed(&self, mut_ref: &mut dyn QAbstractItemModelAdapter, top_left: &QModelIndex, bottom_right: &QModelIndex) {
         call_cpp_impl!(mut self, mut_ref, base_data_changed(top_left, bottom_right))
     }
-    pub fn base_begin_insert_columns(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_insert_columns(&self, mut_ref: &mut dyn QAbstractItemModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_insert_columns(parent, first, last))
     }
-    pub fn base_end_insert_columns(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
+    pub fn base_end_insert_columns(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_insert_columns())
     }
-    pub fn base_begin_insert_rows(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_insert_rows(&self, mut_ref: &mut dyn QAbstractItemModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_insert_rows(parent, first, last))
     }
-    pub fn base_end_insert_rows(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
+    pub fn base_end_insert_rows(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_insert_rows())
     }
     pub fn base_begin_move_columns(
-        &mut self,
+        &self,
         mut_ref: &mut dyn QAbstractItemModelAdapter,
         source_parent: &QModelIndex,
         source_first: i32,
@@ -308,11 +308,11 @@ impl QAbstractItemModelProxyRust {
     ) {
         call_cpp_impl!(mut self, mut_ref, base_begin_move_columns(source_parent, source_first, source_last, destination_parent, destination_child))
     }
-    pub fn base_end_move_columns(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
+    pub fn base_end_move_columns(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_move_columns())
     }
     pub fn base_begin_move_rows(
-        &mut self,
+        &self,
         mut_ref: &mut dyn QAbstractItemModelAdapter,
         source_parent: &QModelIndex,
         source_first: i32,
@@ -322,25 +322,25 @@ impl QAbstractItemModelProxyRust {
     ) {
         call_cpp_impl!(mut self, mut_ref, base_begin_move_rows(source_parent, source_first, source_last, destination_parent, destination_child))
     }
-    pub fn base_end_move_rows(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
+    pub fn base_end_move_rows(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_move_rows())
     }
-    pub fn base_begin_remove_columns(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_remove_columns(&self, mut_ref: &mut dyn QAbstractItemModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_remove_columns(parent, first, last))
     }
-    pub fn base_end_remove_columns(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
+    pub fn base_end_remove_columns(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_remove_columns())
     }
-    pub fn base_begin_remove_rows(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
+    pub fn base_begin_remove_rows(&self, mut_ref: &mut dyn QAbstractItemModelAdapter, parent: &QModelIndex, first: i32, last: i32) {
         call_cpp_impl!(mut self, mut_ref, base_begin_remove_rows(parent, first, last))
     }
-    pub fn base_end_remove_rows(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
+    pub fn base_end_remove_rows(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_remove_rows())
     }
-    pub fn base_begin_reset_model(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
+    pub fn base_begin_reset_model(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_begin_reset_model())
     }
-    pub fn base_end_reset_model(&mut self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
+    pub fn base_end_reset_model(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_reset_model())
     }
     pub fn base_create_index(&self, reference: &dyn QAbstractItemModelAdapter, row: i32, column: i32, ptr: usize) -> QModelIndex {
