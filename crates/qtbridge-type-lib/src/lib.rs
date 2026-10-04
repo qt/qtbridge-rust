@@ -45,6 +45,7 @@ pub use core::qmetatypeinterface::QMetaTypeInterface;
 pub use core::qmodelindex::QModelIndex;
 pub use core::qobject::QObject;
 pub use core::qstring::QString;
+pub use core::qurl::QUrl;
 pub use core::qvariant::QVariant;
 pub use gui::qguiapplication::QGuiApplication;
 pub use qml::qqmlapplicationengine::QQmlApplicationEngine;

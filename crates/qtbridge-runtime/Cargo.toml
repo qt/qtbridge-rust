@@ -26,6 +26,11 @@ qtbridge-build-utils = { workspace = true }
 [dev-dependencies]
 qtbridge = { path = "../qtbridge" }
 
+[[test]]
+name = "qapp_tests"
+path = "tests/qapp_tests.rs"
+harness = false
+
 [features]
 linkme = ["dep:linkme"]
 serde_json = ["dep:serde_json"]

@@ -3,11 +3,12 @@
 
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::pin::Pin;
 
 use cxx::UniquePtr;
 use cxx_qt::casting::Upcast;
 use qtbridge_type_lib::{
-    QGuiApplication, QObjectMutPtr, QQmlApplicationEngine, QQmlEngine, QString, QVariant, QVariantMap,
+    QGuiApplication, QObjectMutPtr, QQmlApplicationEngine, QQmlEngine, QUrl, QString, QVariant, QVariantMap,
 };
 use crate::qmlelement::QmlElement;
 use crate::qobjectholder::QObjectHolder;
@@ -42,6 +43,8 @@ pub struct QApp {
     engine: UniquePtr<QQmlApplicationEngine>,
     #[allow(dead_code)]
     app: UniquePtr<QGuiApplication>,
+    #[allow(dead_code)]
+    quit_connection: cxx_qt::QMetaObjectConnectionGuard,
     // create QVariant at load time to avoid storing raw QObject pointers.
     initial_properties: Vec<(QString, Box<dyn FnOnce() -> QVariant>)>,
 }
@@ -69,9 +72,17 @@ impl QApp {
         // Clean up the registry in sync with the QML
         // garbage collection (see `registry::install_gc_sentinel`).
         crate::registry::install_gc_sentinel(engine.pin_mut());
+
+        let quit_connection = engine.as_mut().unwrap().on_object_creation_failed(
+            |engine: Pin::<&mut QQmlApplicationEngine>, _: &QUrl| {
+                let engine: Pin<&mut QQmlEngine> = engine.upcast_pin();
+                engine.quit();
+            });
+
         Self {
             engine,
             app,
+            quit_connection,
             initial_properties: Vec::new(),
         }
     }
