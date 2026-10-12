@@ -51,7 +51,7 @@ pub mod node {
             meta_obj.as_mut().end_meta_registration();
         }
     }
-    impl qtbridge::qtbridge_runtime::QObjectHolder for MyStruct {
+    unsafe impl qtbridge::qtbridge_runtime::QObjectHolder for MyStruct {
         type ProxyRust = qtbridge::qtbridge_interfaces::qobject::QObjectProxyRust;
         fn get_shared_dynamic_meta_object_data(
         ) -> &'static qtbridge::qtbridge_runtime::DynamicMetaObjectData {

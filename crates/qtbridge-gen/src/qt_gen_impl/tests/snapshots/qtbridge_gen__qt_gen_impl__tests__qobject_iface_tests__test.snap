@@ -61,7 +61,7 @@ mod some_module {
             meta_obj.as_mut().end_meta_registration();
         }
     }
-    impl qtbridge::qtbridge_runtime::QObjectHolder for SomeStruct {
+    unsafe impl qtbridge::qtbridge_runtime::QObjectHolder for SomeStruct {
         type ProxyRust =
             qtbridge::qtbridge_interfaces::qabstract_list_model::QAbstractListModelProxyRust;
         fn get_shared_dynamic_meta_object_data(

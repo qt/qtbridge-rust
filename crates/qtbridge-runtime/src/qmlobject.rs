@@ -25,7 +25,7 @@ pub trait QmlObject: QObjectHolder {
     /// Attaches a dedicated [`QObject`](qtbridge_type_lib::QObject) to an existing `instance`,
     /// enabling its use in QML.
     fn attach_qobject(instance: &std::rc::Rc<std::cell::RefCell<Self>>) {
-        Self::register_instance(instance.clone(), Owner::RustRegistry, None);
+        Self::register_instance(instance.clone(), Owner::RustRegistry);
     }
 
     /// Detaches and deletes the dedicated [`QObject`](qtbridge_type_lib::QObject) of this instance.

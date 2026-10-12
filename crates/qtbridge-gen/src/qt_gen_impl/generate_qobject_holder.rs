@@ -49,7 +49,7 @@ pub fn generate_qobject_holder(
     };
 
     let code = quote! {
-        impl #impl_generics qtbridge::qtbridge_runtime::QObjectHolder for #struct_ident #type_generics #where_clause {
+        unsafe impl #impl_generics qtbridge::qtbridge_runtime::QObjectHolder for #struct_ident #type_generics #where_clause {
             type ProxyRust = qtbridge::qtbridge_interfaces::#iface_module::#proxy_rust;
 
             #realization_overrides

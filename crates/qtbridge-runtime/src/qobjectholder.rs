@@ -17,7 +17,7 @@ pub type CppProxyOf<T> = <<T as QObjectHolder>::ProxyRust as QRustProxy>::ProxyC
 
 /// Bridge proxy selection and connector behind every `#[qobject]` type.
 #[doc(hidden)]
-pub trait QObjectHolder : DispatchMetaCall + QMetaInfo + Sized + 'static
+pub unsafe trait QObjectHolder : DispatchMetaCall + QMetaInfo + Sized + 'static
 where
     Self::ProxyRust: AdapterUpcast<Self>,
     Self::ProxyRust: QRustProxy,
@@ -86,7 +86,7 @@ where
     fn rc_ref_cell_to_qobject(self_obj: &Rc<RefCell<Self>>) -> *const QObject {
         let proxy_ptr = Self::try_get_rust_proxy_ptr_from_ptr(self_obj.as_ptr())
             .unwrap_or_else( || {
-                Self::register_instance(self_obj.clone(), Owner::RustRegistry, None);
+                Self::register_instance(self_obj.clone(), Owner::RustRegistry);
                 Self::try_get_rust_proxy_ptr_from_ptr(self_obj.as_ptr())
                     .expect("Failed to attach and register a proxy")
             }
@@ -145,10 +145,27 @@ where
 
     /// Creates the proxy pair for the given Rust object instance, links
     /// them together and registers the object in `crate::registry`.
-    /// The C++ proxy is created with placement new at `at_address` if
-    /// given (QML-created elements), on the heap otherwise.
+    /// The C++ proxy is created on the heap.
     #[doc(hidden)]
-    fn register_instance(
+    fn register_instance(rust_obj_rc: Rc<RefCell<Self>>, owner: Owner) {
+        // SAFETY: Passing no placement address is always safe.
+        unsafe { Self::register_instance_at(rust_obj_rc, owner, None) }
+    }
+
+    /// Like [`register_instance`](Self::register_instance), but the C++
+    /// proxy is created with placement new at `at_address` if
+    /// given (QML-created elements), on the heap otherwise.
+    ///
+    /// # Safety
+    ///
+    /// If `at_address` is `Some(addr)`, `addr` must point to uninitialized
+    /// memory that is valid for writes of a `QCppProxy`. Ownership of that
+    /// storage remains with the caller (in practice the QML engine), which
+    /// must destruct the proxy in place.
+    ///
+    /// Passing `None` is always safe.
+    #[doc(hidden)]
+    unsafe fn register_instance_at(
         rust_obj_rc: Rc<RefCell<Self>>, owner: Owner, at_address: Option<PlacementAddress>,
     ) {
         let key = (*rust_obj_rc).as_ptr() as *const u8;

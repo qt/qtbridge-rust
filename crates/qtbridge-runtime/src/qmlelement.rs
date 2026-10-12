@@ -126,20 +126,20 @@ pub trait QmlElement : QObjectHolder + Default
     }
 }
 
-fn element_ctor<T: QmlElement>(addr: *mut u8, _userdata: *mut u8) {
+unsafe fn element_ctor<T: QmlElement>(addr: *mut u8, _userdata: *mut u8) {
     let instance = std::rc::Rc::new(std::cell::RefCell::new(T::default()));
-    T::register_instance(instance.clone(), Owner::Engine, Some(addr));
+    unsafe { T::register_instance_at(instance.clone(), Owner::Engine, Some(addr)) };
 }
 
 fn singleton_ctor<T: QmlElement>() -> *mut QObject {
     let instance = std::rc::Rc::new(std::cell::RefCell::new(T::default()));
-    T::register_instance(instance.clone(), Owner::Engine, None);
+    T::register_instance(instance.clone(), Owner::Engine);
     instance.borrow().get_qobject_ptr()
 }
 
 fn monomorphize_element_ctor<T: QmlElement>() -> usize {
     extern "C" fn default_ctor<T: QmlElement>(addr: *mut u8, userdata: *mut u8) {
-        element_ctor::<T>(addr, userdata)
+        unsafe { element_ctor::<T>(addr, userdata) }
     }
     default_ctor::<T> as *const () as usize
 }
