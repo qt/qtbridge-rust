@@ -260,6 +260,7 @@ pub use qtbridge_gen::qobject;
 /// The signal name as seen in QML. Defaults to the Rust function name.
 ///
 #[doc(inline)]
+#[rust_analyzer::completions(ignore_flyimport)]
 pub use qtbridge_gen::qsignal;
 
 /// Annotates a function as invokable from QML.
@@ -297,6 +298,7 @@ pub use qtbridge_gen::qsignal;
 ///
 /// The function name as seen from QML. Defaults to the Rust function name.
 #[doc(inline)]
+#[rust_analyzer::completions(ignore_flyimport)]
 pub use qtbridge_gen::qslot;
 
 // TODO: Remove name mangling from doc snippets.
