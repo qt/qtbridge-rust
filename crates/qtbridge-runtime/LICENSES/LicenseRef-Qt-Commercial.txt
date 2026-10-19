@@ -1,0 +1,1 @@
+../../../LICENSES/LicenseRef-Qt-Commercial.txt
