@@ -244,7 +244,7 @@ fn signal_is_emitted_when_called_with_string_ref_arg() {
     assert_eq!(spy.count(), 1);
     let args = spy.pin_mut().take_first();
     let arg: QString = args.get(0)
-        .map(cxx_qt_lib::QVariant::value)
+        .map(QVariant::value)
         .flatten()
         .unwrap_or_default();
     assert_eq!(arg, "DEF".into());

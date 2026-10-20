@@ -6,9 +6,9 @@ use std::rc::Rc;
 
 use cxx::UniquePtr;
 use cxx_qt::casting::Upcast;
-use cxx_qt_lib::QObjectMutPtr;
-use cxx_qt_lib::QQmlEngine;
-use qtbridge_type_lib::{QGuiApplication, QQmlApplicationEngine, QString, QVariant, QVariantMap};
+use qtbridge_type_lib::{
+    QGuiApplication, QObjectMutPtr, QQmlApplicationEngine, QQmlEngine, QString, QVariant, QVariantMap,
+};
 use crate::qmlelement::QmlElement;
 use crate::qobjectholder::QObjectHolder;
 

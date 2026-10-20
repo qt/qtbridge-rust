@@ -48,6 +48,7 @@ pub use core::qstring::QString;
 pub use core::qvariant::QVariant;
 pub use gui::qguiapplication::QGuiApplication;
 pub use qml::qqmlapplicationengine::QQmlApplicationEngine;
+pub use qml::qqmlengine::QQmlEngine;
 pub use testlib::qsignalspy::QSignalSpy;
 
 pub use cxx_qt_lib::{QListElement, QMetaTypeType, QObjectMutPtr, QVariantValue};

@@ -3,7 +3,7 @@
 #![cfg(feature = "serde_json")]
 
 use qtbridge_type_lib::{
-    QJsonArray, QJsonObject, QJsonValue, QMetaTypeType, QString, QVariant, QVariantMap, QVariantValue,
+    QJsonArray, QJsonObject, QJsonValue, QMetaTypeType, QString, QVariant, QVariantList, QVariantMap, QVariantValue,
 };
 
 pub(crate) fn qvariant_to_serde(v: &QVariant) -> Option<serde_json::Value> {
@@ -123,7 +123,7 @@ fn qvariantmap_to_serde(v: &QVariantMap) -> Option<serde_json::Value> {
     Some(serde_json::Value::Object(map))
 }
 
-fn qvariantlist_to_serde(v: &cxx_qt_lib::QList<QVariant>) -> Option<serde_json::Value> {
+fn qvariantlist_to_serde(v: &QVariantList) -> Option<serde_json::Value> {
     let array = v.into_iter()
         .map(qvariant_to_serde)
         .collect::<Option<_>>()?;
