@@ -132,7 +132,7 @@ impl QObjectClosureBox {
 /// ```
 pub struct QThreadHandle<T> {
     cpp: cxx::UniquePtr<ffi::QThreadHandleCpp>,
-    _target_type: PhantomData<fn(fn(&mut T))>,
+    _target_type: PhantomData<fn(T) -> T>,
 }
 
 // SAFETY: the C++ guard is immutable after construction. `post_closure`
