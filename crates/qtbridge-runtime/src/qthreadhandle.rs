@@ -53,9 +53,11 @@ pub mod ffi {
     }
 }
 
+
+type VoidClosure = dyn FnOnce() + Send;
 #[doc(hidden)]
 pub struct VoidClosureBox {
-    f: Option<Box<dyn FnOnce() + Send>>,
+    f: Option<Box<VoidClosure>>,
 }
 
 impl VoidClosureBox {
@@ -66,9 +68,10 @@ impl VoidClosureBox {
     }
 }
 
+type QObjectClosure = dyn FnOnce(&QObject) + Send;
 #[doc(hidden)]
 pub struct QObjectClosureBox {
-    f: Option<Box<dyn FnOnce(&QObject) + Send>>,
+    f: Option<Box<QObjectClosure>>,
 }
 
 impl QObjectClosureBox {
