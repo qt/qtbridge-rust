@@ -78,7 +78,7 @@ pub mod node {
     impl qtbridge::qtbridge_runtime::QmlElement for MyStruct {
         const URI: &str = "qtbridge_gen";
         const ELEMENT_NAME: &str = "MyStruct";
-        const MINOR_VERSION: u8 = 3u8;
+        const MINOR_VERSION: u8 = 4u8;
         const MAJOR_VERSION: u8 = 0u8;
         const IS_SINGLETON: bool = false;
         fn get_qmetatype() -> qtbridge::qtbridge_type_lib::QMetaType {
