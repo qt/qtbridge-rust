@@ -136,7 +136,7 @@ fn gen_input_var(user_type: &syn::Type, idx: usize) -> syn::Stmt {
     let ref_ident = input_ref_ident(idx);
     let user_type_no_ref = remove_refs(user_type);
     parse_quote! {
-        let #var_ident = <#user_type_no_ref as QMetaTypeCompatible>::from_compatible(#ref_ident);
+        let #var_ident = unsafe { <#user_type_no_ref as QMetaTypeCompatible>::from_compatible(#ref_ident) };
     }
 }
 

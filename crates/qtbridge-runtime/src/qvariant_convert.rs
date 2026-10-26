@@ -37,7 +37,8 @@ macro_rules! impl_to_qvariant_and_try_from_qvariant {
                 // Conversion from a QVariant to value.
                 fn try_from_qvariant(value: &QVariant) -> Option<Self> {
                     let compat: <$t as QMetaTypeCompatible>::CompatibleType = value.value()?;
-                    Some(<Self as QMetaTypeCompatible>::from_compatible(&compat))
+                    // SAFETY: Value types do not carry pointers.
+                    Some(unsafe { <Self as QMetaTypeCompatible>::from_compatible(&compat) })
                 }
             }
         )*

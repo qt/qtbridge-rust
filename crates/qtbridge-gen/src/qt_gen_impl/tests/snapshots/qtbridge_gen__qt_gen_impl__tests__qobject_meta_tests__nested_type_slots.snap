@@ -36,8 +36,9 @@ pub mod node {
                             .as_ref()
                     }
                     .expect("Argument reference is null");
-                    let arg_0_var =
-                        <Rc<RefCell<Node>> as QMetaTypeCompatible>::from_compatible(arg_0_ref);
+                    let arg_0_var = unsafe {
+                        <Rc<RefCell<Node>> as QMetaTypeCompatible>::from_compatible(arg_0_ref)
+                    };
                     self.slot_with_nested_type_argument_by_value(arg_0_var)
                 }
                 2u32 => {
@@ -47,8 +48,9 @@ pub mod node {
                             .as_ref()
                     }
                     .expect("Argument reference is null");
-                    let arg_0_var =
-                        <Rc<RefCell<Node>> as QMetaTypeCompatible>::from_compatible(arg_0_ref);
+                    let arg_0_var = unsafe {
+                        <Rc<RefCell<Node>> as QMetaTypeCompatible>::from_compatible(arg_0_ref)
+                    };
                     self.slot_with_nested_type_argument_by_reference(&arg_0_var)
                 }
                 _ => panic!("Unhandled slot id {slot_id}"),

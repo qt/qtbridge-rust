@@ -28,6 +28,8 @@ pub trait QPropertyMember: Sized {
     ///
     /// # Safety
     ///
+    /// `self` must be a field of `owner`.
+    ///
     /// For `QObject`-backed members the returned `QVariant` carries a raw,
     /// untracked `QObject*`: the caller must consume it and start tracking
     /// its state immediately, before any garbage collector can run. The
@@ -45,7 +47,7 @@ pub trait QPropertyMember: Sized {
     ///
     /// # Safety
     ///
-    /// Same untracked-pointer contract as [`to_qvariant`](QPropertyMember::to_qvariant).
+    /// Same contract as [`to_qvariant`](QPropertyMember::to_qvariant).
     unsafe fn to_qvariant_view<Owner, Notify>(&self, owner: &Owner, notify: Notify) -> QVariant
     where
         Owner: QObjectHolder,
@@ -117,7 +119,8 @@ impl<T: QmlElement> QPropertyMember for Vec<Rc<RefCell<T>>> {
     }
 
     unsafe fn to_qvariant<Owner: QObjectHolder>(&self, owner: &Owner) -> QVariant {
-        T::list_to_qvariant(owner, self, |_: &mut Owner| {})
+        // SAFETY: `self` is a field of `owner`, see `to_qvariant`.
+        unsafe { T::list_to_qvariant(owner, self, |_: &mut Owner| {}) }
     }
 
     unsafe fn to_qvariant_view<Owner, Notify>(&self, owner: &Owner, notify: Notify) -> QVariant
@@ -125,7 +128,8 @@ impl<T: QmlElement> QPropertyMember for Vec<Rc<RefCell<T>>> {
         Owner: QObjectHolder,
         Notify: Fn(&mut Owner) + 'static,
     {
-        T::list_to_qvariant(owner, self, notify)
+        // SAFETY: `self` is a field of `owner`, see `to_qvariant`.
+        unsafe { T::list_to_qvariant(owner, self, notify) }
     }
 
     unsafe fn from_qvariant(_value: &QVariant) -> Option<Self> {

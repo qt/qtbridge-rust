@@ -34,12 +34,19 @@ mod ffi {
 
         include!("cpp/qmlprivate.h");
     }
-    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::too_many_arguments, clippy::missing_safety_doc)]
     #[namespace = "rust::bridge::qmlprivate"]
     unsafe extern "C++" {
         // Qt keeps the meta object pointer for the lifetime of the type
         // registration, hence &'static.
-        fn qml_register_element(
+        /// Registers a creatable QML element.
+        ///
+        /// # Safety
+        ///
+        /// `create_fn` must be the address of an
+        /// `extern "C" fn(addr: *mut u8, userdata: *mut u8)` that
+        /// placement-constructs an object of `object_size` bytes at `addr`.
+        unsafe fn qml_register_element(
             type_id: QMetaType,
             list_id: QMetaType,
             object_size: u32,
@@ -51,7 +58,13 @@ mod ffi {
             elm_name: &[u8],
             meta_object: &'static QMetaObject,
         );
-        fn qml_register_singleton(
+        /// Registers a QML singleton.
+        ///
+        /// # Safety
+        ///
+        /// `create_fn` must be the address of an `extern "C" fn() -> *mut QObject`
+        /// returning a live `QObject` of the registered type.
+        unsafe fn qml_register_singleton(
             type_id: QMetaType,
             create_fn: usize,
             uri: &[u8],

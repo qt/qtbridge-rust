@@ -53,7 +53,13 @@ pub trait QmlElement : QObjectHolder + Default
         QMetaType::new_with_interface(iface)
     }
 
-    fn list_to_qvariant<Owner, Notify>(owner: &Owner, store: &Vec<Rc<RefCell<Self>>>, _notify: Notify) -> QVariant
+    /// Returns a `QVariant` holding a `QQmlListProperty` view onto `store`.
+    ///
+    /// # Safety
+    ///
+    /// `store` must be a field of `owner`: the list callbacks locate it
+    /// through its byte offset within `owner`.
+    unsafe fn list_to_qvariant<Owner, Notify>(owner: &Owner, store: &Vec<Rc<RefCell<Self>>>, _notify: Notify) -> QVariant
     where
         Owner: QObjectHolder,
         Notify: Fn(&mut Owner) + 'static,
@@ -88,7 +94,8 @@ pub trait QmlElement : QObjectHolder + Default
         };
 
         if Self::IS_SINGLETON {
-            crate::qmlprivate::qml_register_singleton(
+            // SAFETY: The constructor is monomorphized for `Self`.
+            unsafe { crate::qmlprivate::qml_register_singleton(
                 <Self as QObjectHolder>::get_qobject_ptr_qmetatype(),
                 monomorphize_singleton_ctor::<Self>(),
                 Self::URI.as_bytes(),
@@ -96,12 +103,14 @@ pub trait QmlElement : QObjectHolder + Default
                 Self::MINOR_VERSION,
                 Self::ELEMENT_NAME.as_bytes(),
                 meta_obj,
-            )
+            ) }
         } else {
             let list_metatype = Self::get_list_qmetatype();
             list_metatype.register_type();
 
-            crate::qmlprivate::qml_register_element(
+            // SAFETY: The constructor is monomorphized for `Self` and
+            // placement-constructs `Self`'s C++ proxy, whose size is passed.
+            unsafe { crate::qmlprivate::qml_register_element(
                 <Self as QObjectHolder>::get_qobject_ptr_qmetatype(),
                 list_metatype,
                 <CppProxyOf<Self> as QCppProxy>::get_size() as u32,
@@ -112,7 +121,7 @@ pub trait QmlElement : QObjectHolder + Default
                 Self::MINOR_VERSION,
                 Self::ELEMENT_NAME.as_bytes(),
                 meta_obj,
-            );
+            ) };
         }
     }
 }
