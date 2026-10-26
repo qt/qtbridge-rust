@@ -4,7 +4,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use qtbridge_type_lib::{QMetaType, QObjectMutPtr, QVariant};
+use qtbridge_type_lib::{QMetaType, QObjectList, QObjectMutPtr, QVariant};
 
 use crate::{QMetaTypeCompatible, QObjectHolder, QVariantConvertible, QmlElement};
 
@@ -18,43 +18,57 @@ use crate::{QMetaTypeCompatible, QObjectHolder, QVariantConvertible, QmlElement}
 /// - [`Vec<Rc<RefCell<T>>>`] where `T` implements [`QmlElement`]
 ///
 /// You will not need to implement this trait yourself; adding support for custom types requires CXX/C++ bindings.
-pub trait QProperty: Sized {
+///
+/// # Safety
+/// `qmetatype` has to match the [`QMetaType`] of the content returned by
+/// `to_qvariant`. `qmetatype_view` has to match the [`QMetaType`] of the
+/// content returned by `to_qvariant_view`.
+pub unsafe trait QProperty: Sized {
+    /// Returns the [`QMetaType`] of a property exposed through a getter or
+    /// setter.
     fn qmetatype() -> QMetaType;
 
-    /// Returns a `QVariant` representation of `self` for read operations.
-    /// `Owner` is the [`QObjectHolder`] that holds this property; passing it
-    /// allows returning views onto its members and borrowing correctly on
-    /// access. If the member is passed by value, `owner` can be ignored.
+    /// Returns a `QVariant` copy of `self` for properties exposed through a
+    /// getter or setter.
     ///
     /// # Safety
-    ///
-    /// `self` must be a field of `owner`.
     ///
     /// For `QObject`-backed members the returned `QVariant` carries a raw,
     /// untracked `QObject*`: the caller must consume it and start tracking
     /// its state immediately, before any garbage collector can run. The
     /// metaobject dispatch upholds this by consuming the variant within
-    /// the same call stack. See [`from_qvariant`](QProperty::from_qvariant).
-    unsafe fn to_qvariant<Owner: QObjectHolder>(&self, owner: &Owner) -> QVariant;
+    /// the same call stack. See [`from_qvariant`](QPropertyMember::from_qvariant).
+    unsafe fn to_qvariant(&self) -> QVariant;
 
-    /// Returns a `QVariant` view of `self` for read operations, with access to
-    /// the property's notify signal. Unlike [`to_qvariant`](QPropertyMember::to_qvariant),
-    /// this variant can return a live view that emits `notify` when the
-    /// underlying data changes.
+    /// Returns the [`QMetaType`] of a property exposed through Member only.
     ///
-    /// The default implementation ignores `notify` and falls back to
-    /// [`to_qvariant`](QProperty::to_qvariant).
+    /// The default implementation returns [`qmetatype`](QPropertyMember::qmetatype).
+    fn qmetatype_view() -> QMetaType {
+        Self::qmetatype()
+    }
+
+    /// Returns a `QVariant` representation of `self` for properties exposed
+    /// through Member only. `Owner` is the [`QObjectHolder`] that holds this
+    /// property; passing it allows returning a live view onto the member that
+    /// borrows `owner` correctly on access and emits `notify` when the view
+    /// modifies the member.
+    ///
+    /// The default implementation ignores `owner` and `notify` and falls back
+    /// to [`to_qvariant`](QPropertyMember::to_qvariant) and thus creating a copy.
+    /// The only type not using the default implementation, thus providing a real
+    /// view, is `Vec<Rc<RefCell<T: QmlElement>>>`.
     ///
     /// # Safety
     ///
-    /// Same contract as [`to_qvariant`](QProperty::to_qvariant).
+    /// `self` must be a field of `owner`. In addition, the contract of
+    /// [`to_qvariant`](QProperty::to_qvariant) applies.
     unsafe fn to_qvariant_view<Owner, Notify>(&self, owner: &Owner, notify: Notify) -> QVariant
     where
         Owner: QObjectHolder,
         Notify: Fn(&mut Owner) + 'static,
     {
-        let _ = notify;
-        unsafe { self.to_qvariant(owner) }
+        let _ = (owner, notify);
+        unsafe { self.to_qvariant() }
     }
 
     /// Converts `value` into the concrete type, used for write operations.
@@ -73,12 +87,12 @@ pub trait QProperty: Sized {
     fn property_eq(&self, other: &Self) -> bool;
 }
 
-impl<T: PartialEq + QMetaTypeCompatible + QVariantConvertible> QProperty for T {
+unsafe impl<T: PartialEq + QMetaTypeCompatible + QVariantConvertible> QProperty for T {
     fn qmetatype() -> QMetaType {
         <Self as QMetaTypeCompatible>::compatible_qmetatype()
     }
 
-    unsafe fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
+    unsafe fn to_qvariant(&self) -> QVariant {
         QVariantConvertible::to_qvariant(self)
     }
 
@@ -91,12 +105,12 @@ impl<T: PartialEq + QMetaTypeCompatible + QVariantConvertible> QProperty for T {
     }
 }
 
-impl<T: QObjectHolder> QProperty for Rc<RefCell<T>> {
+unsafe impl<T: QObjectHolder> QProperty for Rc<RefCell<T>> {
     fn qmetatype() -> QMetaType {
         <T as QObjectHolder>::get_qobject_ptr_qmetatype()
     }
 
-    unsafe fn to_qvariant<Owner: QObjectHolder>(&self, _owner: &Owner) -> QVariant {
+    unsafe fn to_qvariant(&self) -> QVariant {
         let ptr = T::rc_ref_cell_to_qobject(self).cast_mut();
         let ptr_wrap = unsafe { QObjectMutPtr::from_raw(ptr.cast()) };
         (&ptr_wrap).into()
@@ -113,14 +127,17 @@ impl<T: QObjectHolder> QProperty for Rc<RefCell<T>> {
     }
 }
 
-impl<T: QmlElement> QProperty for Vec<Rc<RefCell<T>>> {
+unsafe impl<T: QmlElement> QProperty for Vec<Rc<RefCell<T>>> {
     fn qmetatype() -> QMetaType {
-        T::get_list_qmetatype()
+        <Self as QMetaTypeCompatible>::compatible_qmetatype()
     }
 
-    unsafe fn to_qvariant<Owner: QObjectHolder>(&self, owner: &Owner) -> QVariant {
-        // SAFETY: `self` is a field of `owner`, see `to_qvariant`.
-        unsafe { T::list_to_qvariant(owner, self, |_: &mut Owner| {}) }
+    unsafe fn to_qvariant(&self) -> QVariant {
+        (&<Self as QMetaTypeCompatible>::to_compatible(self)).into()
+    }
+
+    fn qmetatype_view() -> QMetaType {
+        T::get_list_qmetatype()
     }
 
     unsafe fn to_qvariant_view<Owner, Notify>(&self, owner: &Owner, notify: Notify) -> QVariant
@@ -128,13 +145,15 @@ impl<T: QmlElement> QProperty for Vec<Rc<RefCell<T>>> {
         Owner: QObjectHolder,
         Notify: Fn(&mut Owner) + 'static,
     {
-        // SAFETY: `self` is a field of `owner`, see `to_qvariant`.
+        // SAFETY: `self` is a field of `owner`.
         unsafe { T::list_to_qvariant(owner, self, notify) }
     }
 
-    unsafe fn from_qvariant(_value: &QVariant) -> Option<Self> {
-        // Vec<Rc<RefCell<T>>> is exposed as writeable view and no write operation will ever happen
-        None
+    unsafe fn from_qvariant(value: &QVariant) -> Option<Self> {
+        // Only properties exposed through a getter or setter are written as a
+        // whole; views are modified through their `QQmlListProperty`.
+        let list: QObjectList = value.value()?;
+        Some(unsafe { <Self as QMetaTypeCompatible>::from_compatible(&list) })
     }
 
     fn property_eq(&self, other: &Self) -> bool {
@@ -152,5 +171,5 @@ where
     F: FnOnce(&This) -> &R,
     R: QProperty,
 {
-    R::qmetatype()
+    R::qmetatype_view()
 }

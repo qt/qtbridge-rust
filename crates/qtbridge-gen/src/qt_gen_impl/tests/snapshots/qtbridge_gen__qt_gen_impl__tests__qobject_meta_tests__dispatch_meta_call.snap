@@ -34,8 +34,8 @@ unsafe impl qtbridge::qtbridge_runtime::DispatchMetaCall for SomeStruct {
         use qtbridge::qtbridge_runtime::QProperty;
         match prop_id {
             1u32 => unsafe { (&self.first_value).to_qvariant_view(self, Self::this_value_changed) },
-            2u32 => unsafe { (&self.second_value).to_qvariant(self) },
-            3u32 => unsafe { (&self.third_value).to_qvariant(self) },
+            2u32 => unsafe { (&self.second_value).to_qvariant_view(self, |_: &mut Self| {}) },
+            3u32 => unsafe { (&self.third_value).to_qvariant_view(self, |_: &mut Self| {}) },
             _ => panic!("Unhandled property id {prop_id}"),
         }
     }

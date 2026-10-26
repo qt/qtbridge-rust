@@ -106,3 +106,13 @@ harness = false
 name = "property_attributed_accessor_tests"
 path = "tests/property_attributed_accessor_tests.rs"
 harness = false
+
+[[test]]
+name = "property_list_getter_by_value_tests"
+path = "tests/property_list_getter_by_value_tests.rs"
+harness = false
+
+[[test]]
+name = "property_list_member_setter_tests"
+path = "tests/property_list_member_setter_tests.rs"
+harness = false

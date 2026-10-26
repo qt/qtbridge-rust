@@ -59,6 +59,16 @@ impl QPropertyInfo {
         self.notify_signal.as_ref()
     }
 
+    /// Returns `true` if the property can be exposed as view onto its member.
+    ///
+    /// A getter's result is not necessarily part of `self` and its lifetime
+    /// is thus unknown to Qt. A setter is bypassed by views which clearly is
+    /// not the intent of the developer.
+    /// Therefore, properties with either are exposed as a copy.
+    fn view_compatible(&self) -> bool {
+        self.read_method.is_none() && self.write_method.is_none()
+    }
+
     fn get_deduced_type(&self) -> Option<&syn::Type> {
         self.getter_type.as_ref()
             .or(self.setter_type.as_ref())
@@ -213,7 +223,11 @@ impl QPropertyInfo {
             // or member (if struct fields are accessible to the macro).
             Some(ty) => {
                 let t = remove_ref(ty);
-                quote! { <#t as QProperty>::qmetatype() }
+                if self.view_compatible() {
+                    quote! { <#t as QProperty>::qmetatype_view() }
+                } else {
+                    quote! { <#t as QProperty>::qmetatype() }
+                }
             },
             None => {
                 let member_var = member.as_ref()
@@ -245,22 +259,24 @@ impl QPropertyInfo {
         })
     }
 
-    pub fn get_read_code(&self) -> syn::Result<TokenStream> {
+    pub fn get_read_code(&self, signal: Option<&QSignalInfo>) -> syn::Result<TokenStream> {
         let value_src_ref = self.get_value_src_ref()?;
+        let to_qvariant = if self.view_compatible() {
+            let notify = match signal {
+                Some(signal) => {
+                    let signal_name = signal.get_rust_name();
+                    quote! { Self::#signal_name }
+                },
+                None => quote! { |_: &mut Self| {} },
+            };
+            quote! { to_qvariant_view(self, #notify) }
+        } else {
+            quote! { to_qvariant() }
+        };
         Ok(quote! {
             // SAFETY: the variant is consumed by the metaobject dispatch
             // within this call stack, never outliving the object it may point to.
-            unsafe { (#value_src_ref).to_qvariant(self) }
-        })
-    }
-
-    pub fn get_read_notifying_code(&self, signal: &QSignalInfo) -> syn::Result<TokenStream> {
-        let value_src_ref = self.get_value_src_ref()?;
-        let signal_name = signal.get_rust_name();
-        Ok(quote! {
-            // SAFETY: see get_read_code; the view variant is consumed by the
-            // metaobject dispatch within this call stack.
-            unsafe { (#value_src_ref).to_qvariant_view(self, Self::#signal_name) }
+            unsafe { (#value_src_ref).#to_qvariant }
         })
     }
 
