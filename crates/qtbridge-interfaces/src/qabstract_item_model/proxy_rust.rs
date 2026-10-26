@@ -235,7 +235,8 @@ where T: QAbstractItemModel {}
 
 pub type QAbstractItemModelProxyRust = GenericRustProxy<QAbstractItemModelProxyCpp, dyn QAbstractItemModelAdapter>;
 
-impl<T: QAbstractItemModelAdapter + 'static> qtbridge_runtime::qproxies::AdapterUpcast<T> for QAbstractItemModelProxyRust {
+// SAFETY: `upcast` is an unsizing coercion of the same allocation.
+unsafe impl<T: QAbstractItemModelAdapter + 'static> qtbridge_runtime::qproxies::AdapterUpcast<T> for QAbstractItemModelProxyRust {
     fn upcast(rc: std::rc::Rc<std::cell::RefCell<T>>) -> std::rc::Rc<std::cell::RefCell<dyn QAbstractItemModelAdapter>> {
         rc
     }

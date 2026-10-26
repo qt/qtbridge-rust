@@ -19,7 +19,15 @@ pub type PlacementAddress = *mut u8;
 ///
 /// This includes access to the C++ static meta-object, which is then extended
 /// on the Rust side to create a dynamic meta-object.
-pub trait QCppProxy {
+///
+/// # Safety
+///
+/// `Self` must be a `QObject` subclass, so that a `*mut Self` can be used as
+/// a `*mut QObject`. [`get_size`](QCppProxy::get_size) and
+/// [`get_align`](QCppProxy::get_align) must return the size and alignment of
+/// `Self`: the QML engine allocates the storage for
+/// [`create_at`](QCppProxy::create_at) from them.
+pub unsafe trait QCppProxy {
     type ProxyRustType: QRustProxy;
     fn get_static_meta_object() -> &'static QMetaObject;
     fn get_size() -> usize;
@@ -96,7 +104,17 @@ pub trait QCppProxy {
 /// A wrapper trait for the interface trait that QtBridge users implement. This wrapper
 /// is required because not all traits can be used with dyn and are thus incompatible with
 /// `RustObjAccess` (See "object safety" or "dyn compatibility").
-pub trait QRustProxy {
+///
+/// # Safety
+///
+/// [`new`](QRustProxy::new) must return a valid pointer to a live proxy, and
+/// [`get_cpp_proxy`](QRustProxy::get_cpp_proxy) and
+/// [`get_cpp_proxy_mut`](QRustProxy::get_cpp_proxy_mut) must return the
+/// paired C++ proxy, valid for as long as `self` lives.
+/// [`get_rust_object_rc`](QRustProxy::get_rust_object_rc) must return the
+/// allocation passed to [`new`](QRustProxy::new): callers reinterpret it as
+/// the concrete type.
+pub unsafe trait QRustProxy {
     type ProxyCppType: QCppProxy<ProxyRustType = Self>;
     type AdapterType: DispatchMetaCall + ?Sized;
 
@@ -125,6 +143,12 @@ pub trait QRustProxy {
 /// Coerces a concrete user type into the proxy's type-erased adapter handle.
 ///
 /// Implemented once per interface.
-pub trait AdapterUpcast<T>: QRustProxy {
+///
+/// # Safety
+///
+/// [`upcast`](AdapterUpcast::upcast) must return the allocation it was
+/// passed (an unsizing coercion): callers reinterpret the adapter handle
+/// back as `Rc<RefCell<T>>`.
+pub unsafe trait AdapterUpcast<T>: QRustProxy {
     fn upcast(rc: std::rc::Rc<std::cell::RefCell<T>>) -> std::rc::Rc<std::cell::RefCell<Self::AdapterType>>;
 }

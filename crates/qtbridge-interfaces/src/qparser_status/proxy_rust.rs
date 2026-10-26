@@ -101,7 +101,8 @@ where T: QParserStatus + QObjectHolder<ProxyRust = QParserStatusProxyRust> { }
 
 pub type QParserStatusProxyRust = GenericRustProxy<QParserStatusProxyCpp, dyn QParserStatusAdapter>;
 
-impl<T: QParserStatusAdapter + 'static> qtbridge_runtime::qproxies::AdapterUpcast<T> for QParserStatusProxyRust {
+// SAFETY: `upcast` is an unsizing coercion of the same allocation.
+unsafe impl<T: QParserStatusAdapter + 'static> qtbridge_runtime::qproxies::AdapterUpcast<T> for QParserStatusProxyRust {
     fn upcast(rc: std::rc::Rc<std::cell::RefCell<T>>) -> std::rc::Rc<std::cell::RefCell<dyn QParserStatusAdapter>> {
         rc
     }

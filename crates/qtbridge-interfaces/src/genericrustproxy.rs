@@ -32,7 +32,9 @@ impl<CppProxy: QCppProxy, Adapter: ?Sized> GenericRustProxy<CppProxy, Adapter> {
     }
 }
 
-impl<CppProxy, Adapter> QRustProxy for GenericRustProxy<CppProxy, Adapter>
+// SAFETY: `new` boxes `self` and pairs it with a freshly created C++ proxy,
+// which owns `self` and outlives it. `rust_obj` keeps the `Rc` passed to `new`.
+unsafe impl<CppProxy, Adapter> QRustProxy for GenericRustProxy<CppProxy, Adapter>
 where
     CppProxy: QCppProxy<ProxyRustType = Self>,
     Adapter: ?Sized + DispatchMetaCall,
@@ -153,7 +155,9 @@ where
 #[macro_export]
 macro_rules! impl_qcpp_proxy {
     ($cpp_proxy:ty, $rust_proxy:ty) => {
-        impl QCppProxy for $cpp_proxy {
+        // SAFETY: The C++ proxies derive from `QObject`; size and alignment
+        // come from C++ `sizeof`/`alignof`.
+        unsafe impl QCppProxy for $cpp_proxy {
             type ProxyRustType = $rust_proxy;
             fn get_static_meta_object() -> &'static QMetaObject {
                 Self::static_qmeta_object()

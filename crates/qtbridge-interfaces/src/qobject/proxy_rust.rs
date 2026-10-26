@@ -14,7 +14,8 @@ where T: QObjectHolder<ProxyRust = QObjectProxyRust> {}
 
 pub type QObjectProxyRust = GenericRustProxy<QObjectProxyCpp, dyn QObjectAdapter>;
 
-impl<T: QObjectAdapter + 'static> qtbridge_runtime::qproxies::AdapterUpcast<T> for QObjectProxyRust {
+// SAFETY: `upcast` is an unsizing coercion of the same allocation.
+unsafe impl<T: QObjectAdapter + 'static> qtbridge_runtime::qproxies::AdapterUpcast<T> for QObjectProxyRust {
     fn upcast(rc: std::rc::Rc<std::cell::RefCell<T>>) -> std::rc::Rc<std::cell::RefCell<dyn QObjectAdapter>> {
         rc
     }

@@ -528,7 +528,8 @@ where T: QTableModel + QObjectHolder<ProxyRust = QTableModelProxyRust> { }
 
 pub type QTableModelProxyRust = GenericRustProxy<QTableModelProxyCpp, dyn QTableModelAdapter>;
 
-impl<T: QTableModelAdapter + 'static> qtbridge_runtime::qproxies::AdapterUpcast<T> for QTableModelProxyRust {
+// SAFETY: `upcast` is an unsizing coercion of the same allocation.
+unsafe impl<T: QTableModelAdapter + 'static> qtbridge_runtime::qproxies::AdapterUpcast<T> for QTableModelProxyRust {
     fn upcast(rc: std::rc::Rc<std::cell::RefCell<T>>) -> std::rc::Rc<std::cell::RefCell<dyn QTableModelAdapter>> {
         rc
     }
