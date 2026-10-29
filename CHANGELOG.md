@@ -2,6 +2,10 @@
 
 All notable changes to QtBridge for Rust are documented in this file.
 
+## 0.4.1 - 2026-10-29
+
+- Add keywords to make the crate discoverable on crates.io.
+
 ## 0.4.0 - 2026-10-26
 
 - `QThreadHandle<T>` runs closures on the Qt thread from any thread, with
