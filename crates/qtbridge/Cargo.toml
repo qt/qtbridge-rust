@@ -9,6 +9,8 @@ license.workspace = true
 rust-version.workspace = true
 repository.workspace = true
 description = "Meta-package for Qt Bridge"
+keywords = ["qt", "qml", "gui", "qt-quick"]
+categories = ["gui"]
 
 [dependencies]
 qtbridge-gen = { workspace = true }
