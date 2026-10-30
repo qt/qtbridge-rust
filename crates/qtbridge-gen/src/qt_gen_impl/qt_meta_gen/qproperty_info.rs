@@ -72,6 +72,13 @@ impl QPropertyInfo {
             return Err(syn::Error::new(self.member.span(), "qproperty must not have 'member' flag if both Read and Write functions are set"));
         }
 
+        // Default makes mostly sense for QQmlListProperty, however, which is only
+        // created for Member based properties. Accessor based properties and Default
+        // is rather confusing which is why we don't allow it.
+        if self.default.is_some() && (self.read_method.is_some() || self.write_method.is_some()) {
+            return Err(syn::Error::new(self.default.span(), "Default qproperty must use Member without Read or Write"));
+        }
+
         if self.constant.is_some() {
             if self.write_method.is_some() {
                 return Err(syn::Error::new(self.write_method.span(), "Constant qproperty must not have Write method"));

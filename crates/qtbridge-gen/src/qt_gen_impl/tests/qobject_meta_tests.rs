@@ -29,8 +29,8 @@ fn test() {
     let input = quote! {
         impl SomeStruct {
 
-            qproperty!("this_value", Read = get_value, Write = set_value, Notify = this_value_changed, Default);
-            qproperty!("otherValue", Member = otherValueVar, Notify = other_value_changed);
+            qproperty!("this_value", Read = get_value, Write = set_value, Notify = this_value_changed);
+            qproperty!("otherValue", Member = otherValueVar, Notify = other_value_changed, Default);
             qclass_info!(Name = "Author", Value = "The Qt Company");
 
             #[qsignal(qml_name = "thisValueChanged")]
@@ -84,8 +84,8 @@ fn test_case_casting() {
     let input = quote! {
         impl SomeStruct {
 
-            qproperty!("this_value", Read = get_value, Write = set_value, Notify = this_value_changed, Default);
-            qproperty!("otherValue", Member = otherValueVar, Notify = other_value_changed);
+            qproperty!("this_value", Read = get_value, Write = set_value, Notify = this_value_changed);
+            qproperty!("otherValue", Member = otherValueVar, Notify = other_value_changed, Default);
             qclass_info!(Name = "Author", Value = "The Qt Company");
 
             #[qsignal(qml_name = "this_value_changed")]
@@ -304,4 +304,33 @@ fn test_auto_register_code_without_linkme_feature() {
         .expect("build_token_stream() failed");
     let formatted = format_rust_code(&strip_docs(output)).unwrap();
     assert_snapshot!(formatted);
+}
+
+#[test]
+fn default_property_with_getter_or_setter_is_rejected() {
+    for property in [
+        quote! { qproperty!("value", Read = get_value, Default); },
+        quote! { qproperty!("value", Member = value, Write = set_value, Default); },
+    ] {
+        let input = quote! {
+            impl SomeStruct {
+                #property
+
+                pub fn get_value(&self) -> i32 {
+                    self.value
+                }
+
+                pub fn set_value(&mut self, value: i32) {
+                    self.value = value;
+                }
+            }
+        };
+
+        let mut builder = QObjectModuleBuilder::new(LinkmeSupport::Disabled);
+        let Err(err) = builder.build_token_stream(input, quote!{}) else {
+            panic!("Default with Read or Write must be rejected: {property}");
+        };
+        assert!(err.to_string().contains("Default qproperty must use Member without Read or Write"),
+            "unexpected error: {err}");
+    }
 }

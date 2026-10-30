@@ -411,7 +411,8 @@ pub use qtbridge_gen::qslot;
 /// **Default**
 ///
 /// Marks this as the QML default property. Content placed inside an object literal
-/// without an explicit property assignment is written to it.
+/// without an explicit property assignment is written to it. A default property
+/// must use `Member` without `Read` or `Write`.
 /// Expected as a single keyword without an assignment expression.
 ///
 #[doc(inline)]

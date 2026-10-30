@@ -39,9 +39,6 @@ unsafe impl qtbridge::qtbridge_runtime::QMetaInfo for SomeStruct {
             false,
             "this_value_changed",
         );
-        meta_obj
-            .as_mut()
-            .add_class_info("DefaultProperty", "this_value");
         meta_obj.as_mut().register_property(
             "otherValue",
             2u32,
@@ -51,6 +48,9 @@ unsafe impl qtbridge::qtbridge_runtime::QMetaInfo for SomeStruct {
             false,
             "otherValueChanged",
         );
+        meta_obj
+            .as_mut()
+            .add_class_info("DefaultProperty", "otherValue");
         meta_obj.as_mut().add_class_info("Author", "The Qt Company");
         meta_obj.as_mut().end_meta_registration();
     }
