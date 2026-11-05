@@ -20,7 +20,11 @@ use crate::{QMetaTypeGet, QObjectHolder, QmlElement};
 /// - [`Rc<RefCell<T>>`] where `T` implements [`QObjectHolder`]
 /// - [`Vec<Rc<RefCell<T>>>`] where `T` implements [`QmlElement`]
 ///
-pub trait QMetaTypeCompatible {
+///
+/// # Safety
+/// The `CompatibleType` has to match the QMetaType returned by
+/// `compatible_qmetatype`
+pub unsafe trait QMetaTypeCompatible {
     type CompatibleType: QMetaTypeGet;
 
     fn to_compatible(&self) -> Self::CompatibleType;
@@ -39,7 +43,7 @@ pub trait QMetaTypeCompatible {
 
 macro_rules! impl_primitive_direct {
     ($($t:ty),*) => {
-        $(impl QMetaTypeCompatible for $t {
+        $(unsafe impl QMetaTypeCompatible for $t {
             type CompatibleType = $t;
             fn to_compatible(&self) -> Self::CompatibleType { *self }
             unsafe fn from_compatible(from: &Self::CompatibleType) -> Self { *from }
@@ -50,7 +54,7 @@ impl_primitive_direct!(bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64);
 
 macro_rules! impl_primitive_convert {
     ($($t:ty => $compat:ty),*) => {
-        $(impl QMetaTypeCompatible for $t {
+        $(unsafe impl QMetaTypeCompatible for $t {
             type CompatibleType = $compat;
             fn to_compatible(&self) -> Self::CompatibleType { *self as $compat }
             unsafe fn from_compatible(from: &Self::CompatibleType) -> Self { *from as Self }
@@ -74,7 +78,7 @@ impl_primitive_convert!(
 // can cross threads.
 macro_rules! impl_vec_direct {
     ($($t:ty),*) => {
-        $(impl QMetaTypeCompatible for Vec<$t> {
+        $(unsafe impl QMetaTypeCompatible for Vec<$t> {
             type CompatibleType = QList<$t>;
             fn to_compatible(&self) -> Self::CompatibleType { self.into_iter().collect() }
             unsafe fn from_compatible(from: &Self::CompatibleType) -> Self { from.into() }
@@ -85,7 +89,7 @@ impl_vec_direct!(bool, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64);
 
 macro_rules! impl_vec_convert {
     ($($t:ty => $compat:ty),*) => {
-        $(impl QMetaTypeCompatible for Vec<$t> {
+        $(unsafe impl QMetaTypeCompatible for Vec<$t> {
             type CompatibleType = QList<$compat>;
             fn to_compatible(&self) -> Self::CompatibleType {
                 self.iter()
@@ -111,13 +115,13 @@ impl_vec_convert!(
     usize => u32
 );
 
-impl QMetaTypeCompatible for String {
+unsafe impl QMetaTypeCompatible for String {
     type CompatibleType = QString;
     fn to_compatible(&self) -> QString { self.into() }
     unsafe fn from_compatible(from: &QString) -> String { from.into() }
 }
 
-impl QMetaTypeCompatible for Vec<String> {
+unsafe impl QMetaTypeCompatible for Vec<String> {
     type CompatibleType = QList_QString;
 
     fn to_compatible(&self) -> Self::CompatibleType {
@@ -133,7 +137,7 @@ impl QMetaTypeCompatible for Vec<String> {
     }
 }
 
-impl<T: QObjectHolder> QMetaTypeCompatible for Rc<RefCell<T>> {
+unsafe impl<T: QObjectHolder> QMetaTypeCompatible for Rc<RefCell<T>> {
     type CompatibleType = *mut QObject;
 
     fn to_compatible(&self) -> *mut QObject {
@@ -150,7 +154,7 @@ impl<T: QObjectHolder> QMetaTypeCompatible for Rc<RefCell<T>> {
 }
 
 // The compatible pointers share the in-flight guarantee of Rc<RefCell<T>> above.
-impl<T: QmlElement> QMetaTypeCompatible for Vec<Rc<RefCell<T>>> {
+unsafe impl<T: QmlElement> QMetaTypeCompatible for Vec<Rc<RefCell<T>>> {
     type CompatibleType = QObjectList;
 
     fn to_compatible(&self) -> QObjectList {
@@ -167,14 +171,14 @@ impl<T: QmlElement> QMetaTypeCompatible for Vec<Rc<RefCell<T>>> {
 }
 
 #[cfg(feature = "serde_json")]
-impl QMetaTypeCompatible for serde_json::Value {
+unsafe impl QMetaTypeCompatible for serde_json::Value {
     type CompatibleType = QJsonValue;
     fn to_compatible(&self) -> QJsonValue { crate::serde_tools::serde_to_qjsonvalue(self) }
     unsafe fn from_compatible(from: &QJsonValue) -> serde_json::Value { crate::serde_tools::qjsonvalue_to_serde(from) }
 }
 
 #[cfg(feature = "serde_json")]
-impl QMetaTypeCompatible for Vec<serde_json::Value> {
+unsafe impl QMetaTypeCompatible for Vec<serde_json::Value> {
     type CompatibleType = QJsonArray;
     fn to_compatible(&self) -> QJsonArray { crate::serde_tools::serde_to_qjsonarray(self) }
     unsafe fn from_compatible(from: &QJsonArray) -> Vec<serde_json::Value> {
