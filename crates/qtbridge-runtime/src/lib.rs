@@ -18,7 +18,7 @@ pub mod qproxies;
 pub mod qmetatype_compatible;
 pub mod qmetatypeforqobject;
 pub mod qmodelitem;
-pub mod qpropertymember;
+pub mod qproperty;
 pub mod qvariant_convert;
 pub mod registry;
 pub mod rustobjectgetter;
@@ -36,7 +36,7 @@ pub use qmlobject::QmlObject;
 pub use qthreadhandle::QThreadHandle;
 pub use qmodelitem::QModelItem;
 pub use qmetatype_compatible::QMetaTypeCompatible;
-pub use qpropertymember::{QPropertyMember, get_meta_type_of_fn_return_value};
+pub use qproperty::{QProperty, get_meta_type_of_fn_return_value};
 pub use qvariant_convert::{QVariantConvertible};
 pub use registry::{registry_owned_count, attached_object_count};
 

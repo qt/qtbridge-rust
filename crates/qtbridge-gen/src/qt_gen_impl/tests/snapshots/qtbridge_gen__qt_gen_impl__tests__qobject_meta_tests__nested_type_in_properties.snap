@@ -48,7 +48,7 @@ pub mod node {
         }
         unsafe fn read_property(&self, prop_id: u32) -> qtbridge::qtbridge_type_lib::QVariant {
             #[allow(unused_imports)]
-            use qtbridge::qtbridge_runtime::QPropertyMember;
+            use qtbridge::qtbridge_runtime::QProperty;
             match prop_id {
                 1u32 => unsafe { (&self.value).to_qvariant(self) },
                 2u32 => unsafe { (&self.get_left()).to_qvariant(self) },
@@ -62,22 +62,22 @@ pub mod node {
             value: &qtbridge::qtbridge_type_lib::QVariant,
         ) {
             #[allow(unused_imports)]
-            use qtbridge::qtbridge_runtime::QPropertyMember;
+            use qtbridge::qtbridge_runtime::QProperty;
             match prop_id {
                 1u32 => {
-                    let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                    let Some(value) = (unsafe { QProperty::from_qvariant(value) }) else {
                         panic!("Failed to convert QVariant for qproperty '{}'", "value");
                     };
                     self.set_value(value);
                 }
                 2u32 => {
-                    let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                    let Some(value) = (unsafe { QProperty::from_qvariant(value) }) else {
                         panic!("Failed to convert QVariant for qproperty '{}'", "left");
                     };
                     self.set_left(&value);
                 }
                 3u32 => {
-                    let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                    let Some(value) = (unsafe { QProperty::from_qvariant(value) }) else {
                         panic!("Failed to convert QVariant for qproperty '{}'", "right");
                     };
                     self.set_right(value);
@@ -90,27 +90,27 @@ pub mod node {
         fn build_dynamic_meta_type(
             mut meta_obj: std::pin::Pin<&mut qtbridge::qtbridge_runtime::DynamicMetaObjectBuilder>,
         ) {
-            use qtbridge::qtbridge_runtime::{QMetaTypeCompatible, QMetaTypeGet, QPropertyMember};
+            use qtbridge::qtbridge_runtime::{QMetaTypeCompatible, QMetaTypeGet, QProperty};
             use qtbridge::qtbridge_type_lib;
             use qtbridge_type_lib::QMetaType;
             meta_obj.as_mut().register_property(
                 "value",
                 1u32,
-                &(<i32 as QPropertyMember>::qmetatype()),
+                &(<i32 as QProperty>::qmetatype()),
                 false,
                 "",
             );
             meta_obj.as_mut().register_property(
                 "left",
                 2u32,
-                &(<Rc<RefCell<Self>> as QPropertyMember>::qmetatype()),
+                &(<Rc<RefCell<Self>> as QProperty>::qmetatype()),
                 false,
                 "",
             );
             meta_obj.as_mut().register_property(
                 "right",
                 3u32,
-                &(<Rc<RefCell<Self>> as QPropertyMember>::qmetatype()),
+                &(<Rc<RefCell<Self>> as QProperty>::qmetatype()),
                 false,
                 "",
             );

@@ -6,7 +6,7 @@ unsafe impl qtbridge::qtbridge_runtime::QMetaInfo for SomeStruct {
     fn build_dynamic_meta_type(
         mut meta_obj: std::pin::Pin<&mut qtbridge::qtbridge_runtime::DynamicMetaObjectBuilder>,
     ) {
-        use qtbridge::qtbridge_runtime::{QMetaTypeCompatible, QMetaTypeGet, QPropertyMember};
+        use qtbridge::qtbridge_runtime::{QMetaTypeCompatible, QMetaTypeGet, QProperty};
         use qtbridge::qtbridge_type_lib;
         use qtbridge_type_lib::QMetaType;
         meta_obj.as_mut().register_signal(
@@ -35,7 +35,7 @@ unsafe impl qtbridge::qtbridge_runtime::QMetaInfo for SomeStruct {
         meta_obj.as_mut().register_property(
             "this_value",
             1u32,
-            &(<String as QPropertyMember>::qmetatype()),
+            &(<String as QProperty>::qmetatype()),
             false,
             "this_value_changed",
         );

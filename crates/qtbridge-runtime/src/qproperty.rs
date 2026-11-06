@@ -18,7 +18,7 @@ use crate::{QMetaTypeCompatible, QObjectHolder, QVariantConvertible, QmlElement}
 /// - [`Vec<Rc<RefCell<T>>>`] where `T` implements [`QmlElement`]
 ///
 /// You will not need to implement this trait yourself; adding support for custom types requires CXX/C++ bindings.
-pub trait QPropertyMember: Sized {
+pub trait QProperty: Sized {
     fn qmetatype() -> QMetaType;
 
     /// Returns a `QVariant` representation of `self` for read operations.
@@ -34,7 +34,7 @@ pub trait QPropertyMember: Sized {
     /// untracked `QObject*`: the caller must consume it and start tracking
     /// its state immediately, before any garbage collector can run. The
     /// metaobject dispatch upholds this by consuming the variant within
-    /// the same call stack. See [`from_qvariant`](QPropertyMember::from_qvariant).
+    /// the same call stack. See [`from_qvariant`](QProperty::from_qvariant).
     unsafe fn to_qvariant<Owner: QObjectHolder>(&self, owner: &Owner) -> QVariant;
 
     /// Returns a `QVariant` view of `self` for read operations, with access to
@@ -43,11 +43,11 @@ pub trait QPropertyMember: Sized {
     /// underlying data changes.
     ///
     /// The default implementation ignores `notify` and falls back to
-    /// [`to_qvariant`](QPropertyMember::to_qvariant).
+    /// [`to_qvariant`](QProperty::to_qvariant).
     ///
     /// # Safety
     ///
-    /// Same contract as [`to_qvariant`](QPropertyMember::to_qvariant).
+    /// Same contract as [`to_qvariant`](QProperty::to_qvariant).
     unsafe fn to_qvariant_view<Owner, Notify>(&self, owner: &Owner, notify: Notify) -> QVariant
     where
         Owner: QObjectHolder,
@@ -73,7 +73,7 @@ pub trait QPropertyMember: Sized {
     fn property_eq(&self, other: &Self) -> bool;
 }
 
-impl<T: PartialEq + QMetaTypeCompatible + QVariantConvertible> QPropertyMember for T {
+impl<T: PartialEq + QMetaTypeCompatible + QVariantConvertible> QProperty for T {
     fn qmetatype() -> QMetaType {
         <Self as QMetaTypeCompatible>::compatible_qmetatype()
     }
@@ -91,7 +91,7 @@ impl<T: PartialEq + QMetaTypeCompatible + QVariantConvertible> QPropertyMember f
     }
 }
 
-impl<T: QObjectHolder> QPropertyMember for Rc<RefCell<T>> {
+impl<T: QObjectHolder> QProperty for Rc<RefCell<T>> {
     fn qmetatype() -> QMetaType {
         <T as QObjectHolder>::get_qobject_ptr_qmetatype()
     }
@@ -113,7 +113,7 @@ impl<T: QObjectHolder> QPropertyMember for Rc<RefCell<T>> {
     }
 }
 
-impl<T: QmlElement> QPropertyMember for Vec<Rc<RefCell<T>>> {
+impl<T: QmlElement> QProperty for Vec<Rc<RefCell<T>>> {
     fn qmetatype() -> QMetaType {
         T::get_list_qmetatype()
     }
@@ -150,7 +150,7 @@ impl<T: QmlElement> QPropertyMember for Vec<Rc<RefCell<T>>> {
 pub fn get_meta_type_of_fn_return_value<F, This, R>(_f: F) -> QMetaType
 where
     F: FnOnce(&This) -> &R,
-    R: QPropertyMember,
+    R: QProperty,
 {
     R::qmetatype()
 }

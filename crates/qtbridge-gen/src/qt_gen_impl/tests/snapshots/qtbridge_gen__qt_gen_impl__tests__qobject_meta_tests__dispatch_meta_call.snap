@@ -31,7 +31,7 @@ unsafe impl qtbridge::qtbridge_runtime::DispatchMetaCall for SomeStruct {
     }
     unsafe fn read_property(&self, prop_id: u32) -> qtbridge::qtbridge_type_lib::QVariant {
         #[allow(unused_imports)]
-        use qtbridge::qtbridge_runtime::QPropertyMember;
+        use qtbridge::qtbridge_runtime::QProperty;
         match prop_id {
             1u32 => unsafe { (&self.first_value).to_qvariant_view(self, Self::this_value_changed) },
             2u32 => unsafe { (&self.second_value).to_qvariant(self) },
@@ -45,39 +45,39 @@ unsafe impl qtbridge::qtbridge_runtime::DispatchMetaCall for SomeStruct {
         value: &qtbridge::qtbridge_type_lib::QVariant,
     ) {
         #[allow(unused_imports)]
-        use qtbridge::qtbridge_runtime::QPropertyMember;
+        use qtbridge::qtbridge_runtime::QProperty;
         match prop_id {
             1u32 => {
-                let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                let Some(value) = (unsafe { QProperty::from_qvariant(value) }) else {
                     panic!(
                         "Failed to convert QVariant for qproperty '{}'",
                         "this_value"
                     );
                 };
-                if !QPropertyMember::property_eq(&self.first_value, &value) {
+                if !QProperty::property_eq(&self.first_value, &value) {
                     self.first_value = value;
                     self.this_value_changed();
                 }
             }
             2u32 => {
-                let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                let Some(value) = (unsafe { QProperty::from_qvariant(value) }) else {
                     panic!(
                         "Failed to convert QVariant for qproperty '{}'",
                         "otherValue"
                     );
                 };
-                if !QPropertyMember::property_eq(&self.second_value, &value) {
+                if !QProperty::property_eq(&self.second_value, &value) {
                     self.second_value = value;
                 }
             }
             3u32 => {
-                let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+                let Some(value) = (unsafe { QProperty::from_qvariant(value) }) else {
                     panic!(
                         "Failed to convert QVariant for qproperty '{}'",
                         "thirdValue"
                     );
                 };
-                if !QPropertyMember::property_eq(&self.third_value, &value) {
+                if !QProperty::property_eq(&self.third_value, &value) {
                     self.third_value = value;
                 }
             }

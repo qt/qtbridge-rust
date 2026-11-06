@@ -14,7 +14,7 @@ mod common;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use qtbridge::{QApp, QmlObject, QPropertyMember, QmlElement, collect_garbage, qobject};
+use qtbridge::{QApp, QmlObject, QProperty, QmlElement, collect_garbage, qobject};
 use qtbridge::qtbridge_runtime::QObjectHolder;
 use qtbridge::qtbridge_type_lib::{
     QGuiApplication, QObjectMutPtr, QQmlApplicationEngine, QSignalSpy, QString, QVariant,
@@ -227,7 +227,7 @@ fn qvariant_roundtrip_preserves_identity() {
     // typed handle.
     // SAFETY: `var` was just produced from a live `obj` in this test.
     let roundtripped: Rc<std::cell::RefCell<TestObject>> =
-        unsafe { QPropertyMember::from_qvariant(&var) }.expect("QVariant holds a TestObject");
+        unsafe { QProperty::from_qvariant(&var) }.expect("QVariant holds a TestObject");
     assert!(Rc::ptr_eq(&obj, &roundtripped));
 }
 

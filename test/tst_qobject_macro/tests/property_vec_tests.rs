@@ -429,7 +429,7 @@ mod accessor_reference_properties {
 
 
 // #[qobject] impl variant — struct defined outside the macro so the macro cannot see its fields.
-// Member = <field> must resolve via QPropertyMember trait dispatch.
+// Member = <field> must resolve via QProperty trait dispatch.
 #[derive(Default)]
 pub struct TestObjectImpl {
     pub bool: Vec<bool>,

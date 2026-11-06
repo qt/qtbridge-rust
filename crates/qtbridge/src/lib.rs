@@ -10,7 +10,7 @@ pub use qtbridge_runtime;
 pub use qtbridge_runtime::QModelItem;
 pub use qtbridge_runtime::QVariantConvertible;
 pub use qtbridge_runtime::QMetaTypeCompatible;
-pub use qtbridge_runtime::QPropertyMember;
+pub use qtbridge_runtime::QProperty;
 pub use qtbridge_runtime::registry::collect_garbage;
 #[doc(hidden)]
 pub use qtbridge_interfaces;
@@ -311,7 +311,7 @@ pub use qtbridge_gen::qslot;
 /// - The property must be defined within a `mod` or `impl` block, annotated with [`qobject`].
 /// - The first parameter is the property name. It must begin with a lower case letter and
 ///   can only contain letters, numbers and underscores.
-/// - The property type must implement [`QPropertyMember`].
+/// - The property type must implement [`QProperty`].
 /// - The return value of the getter (specified via `Read` parameter) must match the property type.
 /// - The value parameter of the setter (specified via `Write` parameter) must match the property type.
 /// - The member of the `struct` (specified via `Member` parameter) must match the property type.

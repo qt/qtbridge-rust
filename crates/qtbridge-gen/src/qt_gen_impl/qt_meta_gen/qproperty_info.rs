@@ -206,7 +206,7 @@ impl QPropertyInfo {
             // or member (if struct fields are accessible to the macro).
             Some(ty) => {
                 let t = remove_ref(ty);
-                quote! { <#t as QPropertyMember>::qmetatype() }
+                quote! { <#t as QProperty>::qmetatype() }
             },
             None => {
                 let member_var = member.as_ref()
@@ -283,7 +283,7 @@ impl QPropertyInfo {
         let input_conv_code = quote! {
             // SAFETY: value comes from the C++ metaobject dispatch, which
             // type-checks the property write before handing it to us.
-            let Some(value) = (unsafe { QPropertyMember::from_qvariant(value) }) else {
+            let Some(value) = (unsafe { QProperty::from_qvariant(value) }) else {
                 panic!("Failed to convert QVariant for qproperty '{}'", #name);
             };
         };
@@ -323,7 +323,7 @@ impl QPropertyInfo {
 
         Ok(Some(quote! {
             #input_conv_code
-            if !QPropertyMember::property_eq(&self.#member, &value) {
+            if !QProperty::property_eq(&self.#member, &value) {
                 self.#member = value;
                 #emit_signal_code
             }
