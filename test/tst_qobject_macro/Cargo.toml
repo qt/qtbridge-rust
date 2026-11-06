@@ -101,3 +101,8 @@ harness = false
 name = "non_default_tests"
 path = "tests/non_default_tests.rs"
 harness = false
+
+[[test]]
+name = "property_attributed_accessor_tests"
+path = "tests/property_attributed_accessor_tests.rs"
+harness = false

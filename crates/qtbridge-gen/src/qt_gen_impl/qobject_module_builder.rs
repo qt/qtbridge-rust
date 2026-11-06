@@ -263,13 +263,10 @@ impl QObjectModuleBuilder {
     }
 
     fn handle_impl_item_fn(&mut self, input: &syn::ImplItemFn) -> syn::Result<Option<syn::ImplItemFn>> {
-        if input.attrs.is_empty() {
-            // No attributes - then it is not a slot, signal or method
-            self.other_methods.push(input.sig.clone());
-            return Ok(Some(input.clone()))
-        }
-
         let Some(meta_attr) = Self::get_meta_attribute(&input.attrs)? else {
+            // No slot or signal attribute - a plain method, possibly a property
+            // getter or setter.
+            self.other_methods.push(input.sig.clone());
             return Ok(Some(input.clone()))
         };
         let func = syn::parse2::<FunctionWithAttributes>(input.to_token_stream())?;
