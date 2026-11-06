@@ -25,10 +25,32 @@ unsafe impl qtbridge::qtbridge_runtime::QMetaInfo for SomeStruct {
             "that_string_value_changed_by_value",
             &[<String as QMetaTypeCompatible>::compatible_qmetatype()],
         );
+        meta_obj.as_mut().register_signal(
+            "value_changed_with_doc",
+            &[<i32 as QMetaTypeCompatible>::compatible_qmetatype()],
+        );
+        meta_obj.as_mut().register_signal(
+            "value_changed_with_attribute",
+            &[<i32 as QMetaTypeCompatible>::compatible_qmetatype()],
+        );
         meta_obj.as_mut().register_slot(
             "onThatValueChanged",
             1u32,
             &[<String as QMetaTypeCompatible>::compatible_qmetatype()],
+            &qtbridge::qtbridge_type_lib::QMetaType::default(),
+            qtbridge::qtbridge_runtime::dynamicmetaobjectbuilder::Mutability::Mutable,
+        );
+        meta_obj.as_mut().register_slot(
+            "on_value_changed_with_doc",
+            2u32,
+            &[<i32 as QMetaTypeCompatible>::compatible_qmetatype()],
+            &qtbridge::qtbridge_type_lib::QMetaType::default(),
+            qtbridge::qtbridge_runtime::dynamicmetaobjectbuilder::Mutability::Mutable,
+        );
+        meta_obj.as_mut().register_slot(
+            "on_value_changed_with_attribute",
+            3u32,
+            &[<i32 as QMetaTypeCompatible>::compatible_qmetatype()],
             &qtbridge::qtbridge_type_lib::QMetaType::default(),
             qtbridge::qtbridge_runtime::dynamicmetaobjectbuilder::Mutability::Mutable,
         );
@@ -51,6 +73,13 @@ unsafe impl qtbridge::qtbridge_runtime::QMetaInfo for SomeStruct {
         meta_obj
             .as_mut()
             .add_class_info("DefaultProperty", "otherValue");
+        meta_obj.as_mut().register_property(
+            "value_with_comment",
+            3u32,
+            &(<i32 as QProperty>::qmetatype()),
+            false,
+            "value_changed_with_doc",
+        );
         meta_obj.as_mut().add_class_info("Author", "The Qt Company");
         meta_obj.as_mut().end_meta_registration();
     }

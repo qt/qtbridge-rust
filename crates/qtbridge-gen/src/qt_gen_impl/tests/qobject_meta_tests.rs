@@ -65,6 +65,36 @@ fn test() {
             pub fn set_value(&mut self, v: &String) {
                 self.value = v;
             }
+
+            qproperty!("value_with_comment", Read = get_value_with_comment, Write = set_value_with_attribute, Notify = value_changed_with_doc);
+
+            /// A signal with a doc comment.
+            #[qsignal]
+            fn value_changed_with_doc(&mut self, value: i32);
+
+            #[qsignal]
+            #[allow(dead_code)]
+            fn value_changed_with_attribute(&mut self, value: i32);
+
+            /// A slot with a doc comment.
+            #[qslot]
+            pub fn on_value_changed_with_doc(&mut self, value: i32) {
+            }
+
+            #[inline]
+            #[qslot]
+            pub fn on_value_changed_with_attribute(&mut self, value: i32) {
+            }
+
+            /// A property getter with a doc comment.
+            pub fn get_value_with_comment(&self) -> i32 {
+                self.value_with_comment
+            }
+
+            #[inline]
+            pub fn set_value_with_attribute(&mut self, v: i32) {
+                self.value_with_comment = v;
+            }
         }
     };
 
