@@ -65,14 +65,20 @@ pub fn try_derive_qmodelitem(input: TokenStream) -> syn::Result<TokenStream> {
         }
     }
 
+    // prop_mapping is role -> field, the code below needs field -> role.
+    let mut field_roles = vec![0; prop_mapping.len()];
+    for (role, &field) in prop_mapping.iter().enumerate() {
+        field_roles[field] = role;
+    }
+
     let mut typdefs = Vec::new();
     let mut getters = Vec::new();
     let mut setters = Vec::new();
 
     for (i, member) in members.iter().enumerate() {
-        let getter_fn_ident = format_ident!("get{}", prop_mapping[i]);
-        let setter_fn_ident = format_ident!("set{}", prop_mapping[i]);
-        let type_ident = format_ident!("T{}", prop_mapping[i]);
+        let getter_fn_ident = format_ident!("get{}", field_roles[i]);
+        let setter_fn_ident = format_ident!("set{}", field_roles[i]);
+        let type_ident = format_ident!("T{}", field_roles[i]);
         let ty = &field_types[i];
 
         typdefs.push(quote! { type #type_ident = #ty; });
@@ -88,7 +94,7 @@ pub fn try_derive_qmodelitem(input: TokenStream) -> syn::Result<TokenStream> {
     let mut role_tokens = Vec::new();
 
     for (i,f) in field_names.iter().enumerate() {
-        let idx = prop_mapping[i] as i32;
+        let idx = field_roles[i] as i32;
 
         role_tokens.push(quote! {
             (#idx, #f.into()),

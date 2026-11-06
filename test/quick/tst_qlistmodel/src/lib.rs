@@ -7,9 +7,11 @@ use quicktest::run_quick_test;
 
 #[derive(Clone, Debug, Default, QModelItem)]
 pub struct MyClass {
+    // Field order is deliberate: the default roles (display = 0,
+    // decoration = 1) must be placed by name, not by position.
     value: i32,
-    decoration: String,
     display: String,
+    decoration: String,
 }
 
 #[qobject(Base = QListModel, ConvertToCamelCase)]
