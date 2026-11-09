@@ -24,8 +24,8 @@ pub mod ffi {
         # [cxx_name = writeProperty]
         unsafe fn write_property(&self, prop_id: u32, value: &QVariant);
 
-        fn class_begin(&mut self);
-        fn component_complete(&mut self);
+        fn class_begin(&self);
+        fn component_complete(&self);
     }
 }
 unsafe impl cxx::ExternType for QParserStatusProxyRust {

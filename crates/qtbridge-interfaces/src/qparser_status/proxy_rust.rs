@@ -109,11 +109,11 @@ unsafe impl<T: QParserStatusAdapter + 'static> qtbridge_runtime::qproxies::Adapt
 }
 
 impl QParserStatusProxyRust {
-    pub fn class_begin(&mut self) {
+    pub fn class_begin(&self) {
         call_rust_trait_impl!(mut self, class_begin())
     }
 
-    pub fn component_complete(&mut self) {
+    pub fn component_complete(&self) {
         call_rust_trait_impl!(mut self, component_complete())
     }
 }
