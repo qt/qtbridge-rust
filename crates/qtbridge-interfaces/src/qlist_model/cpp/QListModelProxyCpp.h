@@ -24,20 +24,16 @@ public:
     ~QListModelProxyCpp();
 
     // Virtual methods
-    QModelIndex index(int32_t row, int32_t column, const QModelIndex& parent) const override;
     int32_t rowCount(const QModelIndex& parent) const override;
     QVariant data(const QModelIndex& index, int32_t role) const override;
     QHash<int32_t,QByteArray> roleNames() const override;
     bool setData(const QModelIndex& index, const QVariant& value, int32_t role) override;
     bool removeRows(int32_t first, int32_t count, const QModelIndex& parent) override;
-    QModelIndex sibling(int32_t row, int32_t column, const QModelIndex& idx) const override;
 
     // Access to base implementation of virtual functions
-    QModelIndex base_index(int32_t row, int32_t column, const QModelIndex& parent) const;
     QHash<int32_t,QByteArray> base_roleNames() const;
     bool base_setData(const QModelIndex& index, const QVariant& value, int32_t role);
     bool base_removeRows(int32_t first, int32_t count, const QModelIndex& parent);
-    QModelIndex base_sibling(int32_t row, int32_t column, const QModelIndex& idx) const;
 
     // Access to base implementation of non virtual functions
     void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);

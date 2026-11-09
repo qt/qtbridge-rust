@@ -11,10 +11,6 @@ QListModelProxyCpp::QListModelProxyCpp(QListModelProxyRust* rustProxy)
 QListModelProxyCpp::~QListModelProxyCpp() = default;
 
 // Virtual methods
-QModelIndex QListModelProxyCpp::index(int32_t row, int32_t column, const QModelIndex& parent) const
-{
-    return m_rustProxy->index(row, column, parent);
-}
 int32_t QListModelProxyCpp::rowCount(const QModelIndex& parent) const
 {
     return m_rustProxy->rowCount(parent);
@@ -35,16 +31,8 @@ bool QListModelProxyCpp::removeRows(int32_t first, int32_t count, const QModelIn
 {
     return m_rustProxy->removeRows(first, count, parent);
 }
-QModelIndex QListModelProxyCpp::sibling(int32_t row, int32_t column, const QModelIndex& idx) const
-{
-    return m_rustProxy->sibling(row, column, idx);
-}
 
 // Access to base implementation of virtual functions
-QModelIndex QListModelProxyCpp::base_index(int32_t row, int32_t column, const QModelIndex& parent) const
-{
-    return Base::index(row, column, parent);
-}
 QHash<int32_t,QByteArray> QListModelProxyCpp::base_roleNames() const
 {
     return Base::roleNames();
@@ -56,10 +44,6 @@ bool QListModelProxyCpp::base_setData(const QModelIndex& index, const QVariant& 
 bool QListModelProxyCpp::base_removeRows(int32_t first, int32_t count, const QModelIndex& parent)
 {
     return Base::removeRows(first, count, parent);
-}
-QModelIndex QListModelProxyCpp::base_sibling(int32_t row, int32_t column, const QModelIndex& idx) const
-{
-    return Base::sibling(row, column, idx);
 }
 
 // Access to base implementation of non virtual functions

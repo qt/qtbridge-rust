@@ -10,23 +10,16 @@ use qtbridge_type_lib::{QByteArray, QHash_i32_QByteArray, QModelIndex, QVariant}
 
 #[doc(hidden)]
 pub trait QListModelAdapter: DispatchMetaCall + 'static {
-    fn index(&self, row: i32, column: i32, parent: &QModelIndex) -> QModelIndex;
     fn row_count(&self, parent: &QModelIndex) -> i32;
     fn data(&self, index: &QModelIndex, role: i32) -> QVariant;
     fn role_names(&self) -> QHash_i32_QByteArray;
     fn set_data(&mut self, index: &QModelIndex, value: &QVariant, role: i32) -> bool;
     fn remove_rows(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool;
-    fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex;
 }
 
 impl<T> QListModelAdapter for T
 where
     T: QListModel + QObjectHolder<ProxyRust = QListModelProxyRust> {
-
-    fn index(&self, row: i32, column: i32, parent: &QModelIndex) -> QModelIndex {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &*proxy }.base_index(self, row, column, parent)
-    }
 
     fn row_count(&self, _parent: &QModelIndex) -> i32 {
         self.len() as i32
@@ -79,11 +72,6 @@ where
         }
         unsafe { &*proxy }.base_end_remove_rows(&mut *self);
         true
-    }
-
-    fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
-        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
-        unsafe { &*proxy }.base_sibling(self, row, column, idx)
     }
 }
 
@@ -388,9 +376,6 @@ unsafe impl<T: QListModelAdapter + 'static> qtbridge_runtime::qproxies::AdapterU
 }
 
 impl QListModelProxyRust {
-    pub fn index(&self, row: i32, column: i32, parent: &QModelIndex) -> QModelIndex {
-        call_rust_trait_impl!(self, index(row, column, parent))
-    }
     pub fn row_count(&self, parent: &QModelIndex) -> i32 {
         call_rust_trait_impl!(self, row_count(parent))
     }
@@ -406,9 +391,6 @@ impl QListModelProxyRust {
     pub fn remove_rows(&self, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_rust_trait_impl!(mut self, remove_rows(first, count, parent))
     }
-    pub fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
-        call_rust_trait_impl!(self, sibling(row, column, idx))
-    }
 
     pub fn base_index(&self, reference: &dyn QListModelAdapter, row: i32, column: i32, parent: &QModelIndex) -> QModelIndex {
         call_cpp_impl!(self, reference, base_index(row, column, parent))
@@ -421,9 +403,6 @@ impl QListModelProxyRust {
     }
     pub fn base_remove_rows(&self, mut_ref: &mut dyn QListModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_remove_rows(first, count, parent))
-    }
-    pub fn base_sibling(&self, reference: &dyn QListModelAdapter, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {
-        call_cpp_impl!(self, reference, base_sibling(row, column, idx))
     }
     pub fn base_data_changed(&self, mut_ref: &mut dyn QListModelAdapter, top_left: &QModelIndex, bottom_right: &QModelIndex) {
         call_cpp_impl!(mut self, mut_ref, base_data_changed(top_left, bottom_right))
