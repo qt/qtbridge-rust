@@ -30,9 +30,9 @@ pub mod ffi {
         # [cxx_name = roleNames]
         fn role_names(&self) -> QHash_i32_QByteArray;
         # [cxx_name = setData]
-        fn set_data(&mut self, index: &QModelIndex, value: &QVariant, role: i32) -> bool;
+        fn set_data(&self, index: &QModelIndex, value: &QVariant, role: i32) -> bool;
         # [cxx_name = removeRows]
-        fn remove_rows(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool;
+        fn remove_rows(&self, first: i32, count: i32, parent: &QModelIndex) -> bool;
         # [cxx_name = sibling]
         fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex;
 

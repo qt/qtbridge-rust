@@ -261,10 +261,10 @@ impl QAbstractItemModelProxyRust {
     pub fn role_names(&self) -> QHash_i32_QByteArray {
         call_rust_trait_impl!(self, role_names())
     }
-    pub fn set_data(&mut self, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
+    pub fn set_data(&self, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
         call_rust_trait_impl!(mut self, set_data(index, value, role))
     }
-    pub fn remove_rows(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool {
+    pub fn remove_rows(&self, first: i32, count: i32, parent: &QModelIndex) -> bool {
         call_rust_trait_impl!(mut self, remove_rows(first, count, parent))
     }
     pub fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex {

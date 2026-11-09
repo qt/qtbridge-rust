@@ -565,7 +565,7 @@ impl QTableModelProxyRust {
         call_cpp_impl!(mut self, mut_ref, base_end_insert_rows())
     }
     pub fn base_begin_move_columns(
-        &mut self,
+        &self,
         mut_ref: &mut dyn QTableModelAdapter,
         source_parent: &QModelIndex,
         source_first: i32,
