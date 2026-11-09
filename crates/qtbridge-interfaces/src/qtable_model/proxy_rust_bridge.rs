@@ -17,8 +17,6 @@ pub mod ffi {
         # [Self = QTableModelProxyRust]
         # [cxx_name = dropSelf]
         unsafe fn drop_self(self_ptr: *mut QTableModelProxyRust);
-        # [cxx_name = index]
-        fn index(&self, row: i32, column: i32, parent: &QModelIndex) -> QModelIndex;
         # [cxx_name = parent]
         fn parent(&self, child: &QModelIndex) -> QModelIndex;
         # [cxx_name = rowCount]
@@ -35,8 +33,6 @@ pub mod ffi {
         fn remove_columns(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool;
         # [cxx_name = removeRows]
         fn remove_rows(&mut self, first: i32, count: i32, parent: &QModelIndex) -> bool;
-        # [cxx_name = sibling]
-        fn sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex;
 
         # [cxx_name = invokeSlot]
         unsafe fn invoke_slot(&self, slot_id: u32, inputs: &[*const u8], outputs: &[*mut u8]);

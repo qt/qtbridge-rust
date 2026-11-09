@@ -58,8 +58,6 @@ pub mod ffi {
         fn base_removeColumns(self: Pin<&mut Self>, first: i32, count: i32, parent: &QModelIndex) -> bool;
         # [rust_name = base_remove_rows]
         fn base_removeRows(self: Pin<&mut Self>, first: i32, count: i32, parent: &QModelIndex) -> bool;
-        # [rust_name = base_sibling]
-        fn base_sibling(&self, row: i32, column: i32, idx: &QModelIndex) -> QModelIndex;
         # [rust_name = base_data_changed]
         fn dataChanged(self: Pin<&mut Self>, top_left: &QModelIndex, bottom_right: &QModelIndex);
         # [rust_name = base_begin_insert_columns]
