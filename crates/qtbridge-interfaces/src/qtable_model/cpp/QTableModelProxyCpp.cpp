@@ -48,84 +48,10 @@ bool QTableModelProxyCpp::removeRows(int32_t first, int32_t count, const QModelI
     return m_rustProxy->removeRows(first, count, parent);
 }
 
-// Access to base implementation of virtual functions
-QHash<int32_t,QByteArray> QTableModelProxyCpp::base_roleNames() const
-{
-    return Base::roleNames();
-}
-bool QTableModelProxyCpp::base_setData(const QModelIndex& index, const QVariant& value, int32_t role)
-{
-    return Base::setData(index, value, role);
-}
-bool QTableModelProxyCpp::base_removeColumns(int32_t first, int32_t count, const QModelIndex& parent)
-{
-    return Base::removeColumns(first, count, parent);
-}
-bool QTableModelProxyCpp::base_removeRows(int32_t first, int32_t count, const QModelIndex& parent)
-{
-    return Base::removeRows(first, count, parent);
-}
-
 // Access to base implementation of non virtual functions
 void QTableModelProxyCpp::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight)
 {
     Base::dataChanged(topLeft, bottomRight);
-}
-void QTableModelProxyCpp::beginInsertColumns(const QModelIndex& parent, int32_t first, int32_t last)
-{
-    Base::beginInsertColumns(parent, first, last);
-}
-void QTableModelProxyCpp::endInsertColumns()
-{
-    Base::endInsertColumns();
-}
-void QTableModelProxyCpp::beginInsertRows(const QModelIndex& parent, int32_t first, int32_t last)
-{
-    Base::beginInsertRows(parent, first, last);
-}
-void QTableModelProxyCpp::endInsertRows()
-{
-    Base::endInsertRows();
-}
-void QTableModelProxyCpp::beginMoveColumns(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild)
-{
-    Base::beginMoveColumns(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
-}
-void QTableModelProxyCpp::endMoveColumns()
-{
-    Base::endMoveColumns();
-}
-void QTableModelProxyCpp::beginMoveRows(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild)
-{
-    Base::beginMoveRows(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
-}
-void QTableModelProxyCpp::endMoveRows()
-{
-    Base::endMoveRows();
-}
-void QTableModelProxyCpp::beginRemoveColumns(const QModelIndex& parent, int32_t first, int32_t last)
-{
-    Base::beginRemoveColumns(parent, first, last);
-}
-void QTableModelProxyCpp::endRemoveColumns()
-{
-    Base::endRemoveColumns();
-}
-void QTableModelProxyCpp::beginRemoveRows(const QModelIndex& parent, int32_t first, int32_t last)
-{
-    Base::beginRemoveRows(parent, first, last);
-}
-void QTableModelProxyCpp::endRemoveRows()
-{
-    Base::endRemoveRows();
-}
-void QTableModelProxyCpp::beginResetModel()
-{
-    Base::beginResetModel();
-}
-void QTableModelProxyCpp::endResetModel()
-{
-    Base::endResetModel();
 }
 QModelIndex QTableModelProxyCpp::createIndex(int32_t row, int32_t column, size_t ptr) const
 {
