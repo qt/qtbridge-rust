@@ -72,62 +72,6 @@ void QAbstractItemModelProxyCpp::dataChanged(const QModelIndex& topLeft, const Q
 {
     Base::dataChanged(topLeft, bottomRight);
 }
-void QAbstractItemModelProxyCpp::beginInsertColumns(const QModelIndex& parent, int32_t first, int32_t last)
-{
-    Base::beginInsertColumns(parent, first, last);
-}
-void QAbstractItemModelProxyCpp::endInsertColumns()
-{
-    Base::endInsertColumns();
-}
-void QAbstractItemModelProxyCpp::beginInsertRows(const QModelIndex& parent, int32_t first, int32_t last)
-{
-    Base::beginInsertRows(parent, first, last);
-}
-void QAbstractItemModelProxyCpp::endInsertRows()
-{
-    Base::endInsertRows();
-}
-bool QAbstractItemModelProxyCpp::beginMoveColumns(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild)
-{
-    return Base::beginMoveColumns(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
-}
-void QAbstractItemModelProxyCpp::endMoveColumns()
-{
-    Base::endMoveColumns();
-}
-bool QAbstractItemModelProxyCpp::beginMoveRows(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild)
-{
-    return Base::beginMoveRows(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
-}
-void QAbstractItemModelProxyCpp::endMoveRows()
-{
-    Base::endMoveRows();
-}
-void QAbstractItemModelProxyCpp::beginRemoveColumns(const QModelIndex& parent, int32_t first, int32_t last)
-{
-    Base::beginRemoveColumns(parent, first, last);
-}
-void QAbstractItemModelProxyCpp::endRemoveColumns()
-{
-    Base::endRemoveColumns();
-}
-void QAbstractItemModelProxyCpp::beginRemoveRows(const QModelIndex& parent, int32_t first, int32_t last)
-{
-    Base::beginRemoveRows(parent, first, last);
-}
-void QAbstractItemModelProxyCpp::endRemoveRows()
-{
-    Base::endRemoveRows();
-}
-void QAbstractItemModelProxyCpp::beginResetModel()
-{
-    Base::beginResetModel();
-}
-void QAbstractItemModelProxyCpp::endResetModel()
-{
-    Base::endResetModel();
-}
 QModelIndex QAbstractItemModelProxyCpp::createIndex(int32_t row, int32_t column, size_t ptr) const
 {
     return Base::createIndex(row, column, ptr);

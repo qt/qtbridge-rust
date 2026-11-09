@@ -43,21 +43,24 @@ public:
     QModelIndex base_sibling(int32_t row, int32_t column, const QModelIndex& idx) const;
 
     // Access to base implementation of non virtual functions
+    // dataChanged needs a wrapper: the base signal has a defaulted roles argument.
     void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-    void beginInsertColumns(const QModelIndex& parent, int32_t first, int32_t last);
-    void endInsertColumns();
-    void beginInsertRows(const QModelIndex& parent, int32_t first, int32_t last);
-    void endInsertRows();
-    bool beginMoveColumns(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild);
-    void endMoveColumns();
-    bool beginMoveRows(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild);
-    void endMoveRows();
-    void beginRemoveColumns(const QModelIndex& parent, int32_t first, int32_t last);
-    void endRemoveColumns();
-    void beginRemoveRows(const QModelIndex& parent, int32_t first, int32_t last);
-    void endRemoveRows();
-    void beginResetModel();
-    void endResetModel();
+    using Base::beginInsertColumns;
+    using Base::endInsertColumns;
+    using Base::beginInsertRows;
+    using Base::endInsertRows;
+    using Base::beginMoveColumns;
+    using Base::endMoveColumns;
+    using Base::beginMoveRows;
+    using Base::endMoveRows;
+    using Base::beginRemoveColumns;
+    using Base::endRemoveColumns;
+    using Base::beginRemoveRows;
+    using Base::endRemoveRows;
+    using Base::beginResetModel;
+    using Base::endResetModel;
+    // createIndex needs a wrapper: Qt's id type quintptr is not size_t on
+    // every platform, which the bridge uses for usize.
     QModelIndex createIndex(int32_t row, int32_t column, size_t ptr) const;
 };
 
