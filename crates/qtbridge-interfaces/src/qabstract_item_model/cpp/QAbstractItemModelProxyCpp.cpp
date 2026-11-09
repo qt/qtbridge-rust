@@ -88,17 +88,17 @@ void QAbstractItemModelProxyCpp::endInsertRows()
 {
     Base::endInsertRows();
 }
-void QAbstractItemModelProxyCpp::beginMoveColumns(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild)
+bool QAbstractItemModelProxyCpp::beginMoveColumns(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild)
 {
-    Base::beginMoveColumns(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
+    return Base::beginMoveColumns(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
 }
 void QAbstractItemModelProxyCpp::endMoveColumns()
 {
     Base::endMoveColumns();
 }
-void QAbstractItemModelProxyCpp::beginMoveRows(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild)
+bool QAbstractItemModelProxyCpp::beginMoveRows(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild)
 {
-    Base::beginMoveRows(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
+    return Base::beginMoveRows(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
 }
 void QAbstractItemModelProxyCpp::endMoveRows()
 {

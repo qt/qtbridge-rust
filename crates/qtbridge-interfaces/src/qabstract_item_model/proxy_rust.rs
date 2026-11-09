@@ -148,8 +148,8 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         source_last: i32,
         destination_parent: &QModelIndex,
         destination_child: i32,
-    ) {
-        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
+    ) -> bool {
+        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
         unsafe { &*proxy }.base_begin_move_columns(
             &mut *self,
             source_parent,
@@ -170,8 +170,8 @@ pub trait QAbstractItemModelBase : QAbstractItemModel {
         source_last: i32,
         destination_parent: &QModelIndex,
         destination_child: i32,
-    ) {
-        let Some(proxy) = self.try_get_rust_proxy_ptr() else { return };
+    ) -> bool {
+        let proxy = self.try_get_rust_proxy_ptr().expect("No proxy");
         unsafe { &*proxy }.base_begin_move_rows(
             &mut *self,
             source_parent,
@@ -306,7 +306,7 @@ impl QAbstractItemModelProxyRust {
         source_last: i32,
         destination_parent: &QModelIndex,
         destination_child: i32,
-    ) {
+    ) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_begin_move_columns(source_parent, source_first, source_last, destination_parent, destination_child))
     }
     pub fn base_end_move_columns(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {
@@ -320,7 +320,7 @@ impl QAbstractItemModelProxyRust {
         source_last: i32,
         destination_parent: &QModelIndex,
         destination_child: i32,
-    ) {
+    ) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_begin_move_rows(source_parent, source_first, source_last, destination_parent, destination_child))
     }
     pub fn base_end_move_rows(&self, mut_ref: &mut dyn QAbstractItemModelAdapter) {

@@ -77,7 +77,7 @@ pub mod ffi {
             source_last: i32,
             destination_parent: &QModelIndex,
             destination_child: i32,
-        );
+        ) -> bool;
         # [rust_name = base_end_move_columns]
         fn endMoveColumns(self: Pin<&mut Self>);
         # [rust_name = base_begin_move_rows]
@@ -88,7 +88,7 @@ pub mod ffi {
             source_last: i32,
             destination_parent: &QModelIndex,
             destination_child: i32,
-        );
+        ) -> bool;
         # [rust_name = base_end_move_rows]
         fn endMoveRows(self: Pin<&mut Self>);
         # [rust_name = base_begin_remove_columns]

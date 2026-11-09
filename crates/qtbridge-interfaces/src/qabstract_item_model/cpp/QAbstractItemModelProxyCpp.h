@@ -48,9 +48,9 @@ public:
     void endInsertColumns();
     void beginInsertRows(const QModelIndex& parent, int32_t first, int32_t last);
     void endInsertRows();
-    void beginMoveColumns(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild);
+    bool beginMoveColumns(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild);
     void endMoveColumns();
-    void beginMoveRows(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild);
+    bool beginMoveRows(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild);
     void endMoveRows();
     void beginRemoveColumns(const QModelIndex& parent, int32_t first, int32_t last);
     void endRemoveColumns();
