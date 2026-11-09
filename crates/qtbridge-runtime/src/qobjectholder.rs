@@ -60,14 +60,14 @@ where
 
     /// Return a pointer to the Rust proxy associated with the specified object,
     /// or `None` if no proxy is registered.
-    fn try_get_rust_proxy_ptr_from_ptr(rust_obj_ptr: *const Self) -> Option<*mut Self::ProxyRust> {
+    fn try_get_rust_proxy_ptr_from_ptr(rust_obj_ptr: *const Self) -> Option<*const Self::ProxyRust> {
         let proxy_ptr = crate::registry::proxy_ptr(rust_obj_ptr as RustObjectAddress);
-        NonNull::new(proxy_ptr as *mut Self::ProxyRust).map(|nn| nn.as_ptr())
+        NonNull::new(proxy_ptr as *mut Self::ProxyRust).map(|nn| nn.as_ptr() as *const Self::ProxyRust)
     }
 
     /// Return a pointer to the Rust proxy associated with the specified object,
     /// or `None` if no proxy is registered.
-    fn try_get_rust_proxy_ptr(&self) -> Option<*mut Self::ProxyRust> {
+    fn try_get_rust_proxy_ptr(&self) -> Option<*const Self::ProxyRust> {
         Self::try_get_rust_proxy_ptr_from_ptr(std::ptr::from_ref(self))
     }
 
