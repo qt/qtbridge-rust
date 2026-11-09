@@ -395,15 +395,6 @@ impl QListModelProxyRust {
     pub fn base_index(&self, reference: &dyn QListModelAdapter, row: i32, column: i32, parent: &QModelIndex) -> QModelIndex {
         call_cpp_impl!(self, reference, base_index(row, column, parent))
     }
-    pub fn base_role_names(&self, reference: &dyn QListModelAdapter) -> QHash_i32_QByteArray {
-        call_cpp_impl!(self, reference, base_role_names())
-    }
-    pub fn base_set_data(&self, mut_ref: &mut dyn QListModelAdapter, index: &QModelIndex, value: &QVariant, role: i32) -> bool {
-        call_cpp_impl!(mut self, mut_ref, base_set_data(index, value, role))
-    }
-    pub fn base_remove_rows(&self, mut_ref: &mut dyn QListModelAdapter, first: i32, count: i32, parent: &QModelIndex) -> bool {
-        call_cpp_impl!(mut self, mut_ref, base_remove_rows(first, count, parent))
-    }
     pub fn base_data_changed(&self, mut_ref: &mut dyn QListModelAdapter, top_left: &QModelIndex, bottom_right: &QModelIndex) {
         call_cpp_impl!(mut self, mut_ref, base_data_changed(top_left, bottom_right))
     }
@@ -413,7 +404,7 @@ impl QListModelProxyRust {
     pub fn base_end_insert_rows(&self, mut_ref: &mut dyn QListModelAdapter) {
         call_cpp_impl!(mut self, mut_ref, base_end_insert_rows())
     }
-    pub fn base_begin_move_rows(&self, mut_ref: &mut dyn QListModelAdapter, source_parent: &QModelIndex, source_first: i32, source_last: i32, destination_parent: &QModelIndex, destination_child: i32) {
+    pub fn base_begin_move_rows(&self, mut_ref: &mut dyn QListModelAdapter, source_parent: &QModelIndex, source_first: i32, source_last: i32, destination_parent: &QModelIndex, destination_child: i32) -> bool {
         call_cpp_impl!(mut self, mut_ref, base_begin_move_rows(source_parent, source_first, source_last, destination_parent, destination_child))
     }
     pub fn base_end_move_rows(&self, mut_ref: &mut dyn QListModelAdapter) {

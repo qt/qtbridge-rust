@@ -30,21 +30,17 @@ public:
     bool setData(const QModelIndex& index, const QVariant& value, int32_t role) override;
     bool removeRows(int32_t first, int32_t count, const QModelIndex& parent) override;
 
-    // Access to base implementation of virtual functions
-    QHash<int32_t,QByteArray> base_roleNames() const;
-    bool base_setData(const QModelIndex& index, const QVariant& value, int32_t role);
-    bool base_removeRows(int32_t first, int32_t count, const QModelIndex& parent);
-
     // Access to base implementation of non virtual functions
+    // dataChanged needs a wrapper: the base signal has a defaulted roles argument.
     void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-    void beginInsertRows(const QModelIndex& parent, int32_t first, int32_t last);
-    void endInsertRows();
-    void beginMoveRows(const QModelIndex& sourceParent, int32_t sourceFirst, int32_t sourceLast, const QModelIndex& destinationParent, int32_t destinationChild);
-    void endMoveRows();
-    void beginRemoveRows(const QModelIndex& parent, int32_t first, int32_t last);
-    void endRemoveRows();
-    void beginResetModel();
-    void endResetModel();
+    using Base::beginInsertRows;
+    using Base::endInsertRows;
+    using Base::beginMoveRows;
+    using Base::endMoveRows;
+    using Base::beginRemoveRows;
+    using Base::endRemoveRows;
+    using Base::beginResetModel;
+    using Base::endResetModel;
 };
 
 } // namespace rust::bridge

@@ -52,12 +52,6 @@ pub mod ffi {
         fn emitSignal(self: Pin<&mut Self>, signal_name: &str, argv: &[*const u8]);
         # [rust_name = base_index]
         fn index(&self, row: i32, column: i32, parent: &QModelIndex) -> QModelIndex;
-        # [rust_name = base_role_names]
-        fn base_roleNames(&self) -> QHash_i32_QByteArray;
-        # [rust_name = base_set_data]
-        fn base_setData(self: Pin<&mut Self>, index: &QModelIndex, value: &QVariant, role: i32) -> bool;
-        # [rust_name = base_remove_rows]
-        fn base_removeRows(self: Pin<&mut Self>, first: i32, count: i32, parent: &QModelIndex) -> bool;
         # [rust_name = base_data_changed]
         fn dataChanged(self: Pin<&mut Self>, top_left: &QModelIndex, bottom_right: &QModelIndex);
         # [rust_name = base_begin_insert_rows]
@@ -72,7 +66,7 @@ pub mod ffi {
             source_last: i32,
             destination_parent: &QModelIndex,
             destination_child: i32,
-        );
+        ) -> bool;
         # [rust_name = base_end_move_rows]
         fn endMoveRows(self: Pin<&mut Self>);
         # [rust_name = base_begin_remove_rows]
