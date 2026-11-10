@@ -15,9 +15,9 @@ QModelIndex QTableModelProxyCpp::index(int32_t row, int32_t column, const QModel
 {
     return Base::createIndex(row, column);
 }
-QModelIndex QTableModelProxyCpp::parent(const QModelIndex& child) const
+QModelIndex QTableModelProxyCpp::parent(const QModelIndex&) const
 {
-    return m_rustProxy->parent(child);
+    return {};
 }
 int32_t QTableModelProxyCpp::rowCount(const QModelIndex& parent) const
 {

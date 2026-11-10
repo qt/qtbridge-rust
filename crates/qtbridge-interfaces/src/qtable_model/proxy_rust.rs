@@ -10,7 +10,6 @@ use qtbridge_type_lib::{QByteArray, QHash_i32_QByteArray, QModelIndex, QVariant}
 
 #[doc(hidden)]
 pub trait QTableModelAdapter: DispatchMetaCall + 'static {
-    fn parent(&self, child: &QModelIndex) -> QModelIndex;
     fn row_count(&self, parent: &QModelIndex) -> i32;
     fn column_count(&self, parent: &QModelIndex) -> i32;
     fn data(&self, index: &QModelIndex, role: i32) -> QVariant;
@@ -23,10 +22,6 @@ pub trait QTableModelAdapter: DispatchMetaCall + 'static {
 impl<T> QTableModelAdapter for T
 where
     T: QTableModel + QObjectHolder<ProxyRust = QTableModelProxyRust> {
-
-    fn parent(&self, _: &QModelIndex) -> QModelIndex {
-        QModelIndex::default()
-    }
 
     fn row_count(&self, _: &QModelIndex) -> i32 {
         self.row_count() as i32
@@ -524,9 +519,6 @@ unsafe impl<T: QTableModelAdapter + 'static> qtbridge_runtime::qproxies::Adapter
 }
 
 impl QTableModelProxyRust {
-    pub fn parent(&self, child: &QModelIndex) -> QModelIndex {
-        call_rust_trait_impl!(self, parent(child))
-    }
     pub fn row_count(&self, parent: &QModelIndex) -> i32 {
         call_rust_trait_impl!(self, row_count(parent))
     }

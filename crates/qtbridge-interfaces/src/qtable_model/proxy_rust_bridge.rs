@@ -17,8 +17,6 @@ pub mod ffi {
         # [Self = QTableModelProxyRust]
         # [cxx_name = dropSelf]
         unsafe fn drop_self(self_ptr: *mut QTableModelProxyRust);
-        # [cxx_name = parent]
-        fn parent(&self, child: &QModelIndex) -> QModelIndex;
         # [cxx_name = rowCount]
         fn row_count(&self, parent: &QModelIndex) -> i32;
         # [cxx_name = columnCount]
