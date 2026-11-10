@@ -35,7 +35,7 @@ fn main() {
     .expect("DEP_QTBRIDGE_TYPE_LIB_INCLUDE not set. This variable should have been set by qtbridge-type-lib");
 
     let runtime_include = std::env::var("DEP_QTBRIDGE_RUNTIME_INCLUDE")
-    .expect("DEP_QTBRIDGE_TYPE_LIB_INCLUDE not set - This variable should have been set by qtbridge-runtime");
+    .expect("DEP_QTBRIDGE_RUNTIME_INCLUDE not set - This variable should have been set by qtbridge-runtime");
 
     let cxx_qt_include_dir = get_cxx_qt_lib_include_path()
         .expect("Failed to get cxx-qt-lib include dir");
