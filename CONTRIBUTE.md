@@ -36,7 +36,7 @@ git clone "https://codereview.qt-project.org/qt/qtbridge-rust" && (cd "qtbridge-
  --git-dir`/hooks/commit-msg https://codereview.qt-project.org/tools/hooks/commit-msg && chmod +x \
  `git rev-parse --git-dir`/hooks/commit-msg)
 
-cd qtbridge-<lang>
+cd qtbridge-rust
 git checkout dev
 ```
 
