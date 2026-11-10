@@ -36,8 +36,8 @@ pub unsafe trait QCppProxy {
     /// # Safety
     ///
     /// rust_proxy must be a valid and live pointer to Self::ProxyRustType.
-    /// The QCppProxy must be droped first and will drop rust_proxy in its
-    /// destructor. Ensure that rust_proxy is not droped by anything but QCppProxy.
+    /// The QCppProxy must be dropped first and will drop rust_proxy in its
+    /// destructor. Ensure that rust_proxy is not dropped by anything but QCppProxy.
     unsafe fn create(rust_proxy: *mut Self::ProxyRustType, metaobject: &'static DynamicMetaObjectData) -> *mut Self;
     /// # Safety
     ///

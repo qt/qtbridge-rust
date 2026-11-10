@@ -27,7 +27,7 @@ pub unsafe trait DispatchMetaCall {
     ///
     /// The returned `QVariant` carries an untracked `QObject*` for
     /// `QObject`-backed properties. The caller must consume it and start
-    /// tracking its state before the object can be droped by the registry;
+    /// tracking its state before the object can be dropped by the registry;
     /// the C++ metaobject dispatch does so synchronously.
     unsafe fn read_property(&self, prop_id: u32) -> QVariant;
     /// # Safety

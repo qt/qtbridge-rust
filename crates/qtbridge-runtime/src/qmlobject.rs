@@ -11,7 +11,7 @@ pub trait QmlObject: QObjectHolder {
     /// [`QObject`](qtbridge_type_lib::QObject) eagerly.
     ///
     /// The returned `Rc<RefCell<Self>>` is an ordinary handle, shared with
-    /// QML. Droping the handle does not drop the instance if it is in use by
+    /// QML. Dropping the handle does not drop the instance if it is in use by
     /// QML or until the garbage collection delete the QML instance.
     fn default_with_attached_qobject() -> std::rc::Rc<std::cell::RefCell<Self>>
     where

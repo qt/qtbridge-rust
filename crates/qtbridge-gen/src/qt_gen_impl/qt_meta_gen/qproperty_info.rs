@@ -361,7 +361,7 @@ impl syn::parse::Parse for QPropertyInfo {
                 .map_err(|_err| token_begin.error("Expected comma while parsing qproperty attributes"))?;
 
             if input.is_empty() {
-                break; // Stop after a trailing coma
+                break; // Stop after a trailing comma
             }
 
             // Try to parse attribute name-value pair. Like

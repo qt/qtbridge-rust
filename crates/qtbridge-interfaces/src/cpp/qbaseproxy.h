@@ -52,7 +52,7 @@ public:
         if (meta)
             meta->emitSignal(*self, signalName, argv);
         else
-            qFatal() << "Error while emiting singal from Rust: The QObject does not contain a Rust dynamic meta object";
+            qFatal() << "Error while emitting signal from Rust: The QObject does not contain a Rust dynamic meta object";
     }
 
 

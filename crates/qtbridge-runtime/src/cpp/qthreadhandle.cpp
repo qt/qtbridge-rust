@@ -55,8 +55,7 @@ void post_closure(const QThreadHandleCpp &handle, rust::Box<QObjectClosureBox> c
     // The lock keeps the application alive until the event is posted.
     QMutexLocker lock(&g_appMutex);
     if (!g_app) {
-        qWarning("QThreadHandle: no QApplication is running, "
-                 "the calls is discarded");
+        qWarning("QThreadHandle: no QApplication is running, the calls are discarded");
         return; // no event loop running. Box can be dropped
     }
 
@@ -76,8 +75,7 @@ void post_void_closure(rust::Box<VoidClosureBox> closure)
 {
     QMutexLocker lock(&g_appMutex);
     if (!g_app) {
-        qWarning("QThreadHandle: no QApplication is running, "
-                 "the calls is discarded");
+        qWarning("QThreadHandle: no QApplication is running, the calls are discarded");
         return;
     }
 

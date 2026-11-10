@@ -144,7 +144,7 @@ where
     ///
     /// # Safety
     ///
-    /// If the QVariant contains an untracked, raw `QObject*`, it is your responsiblity
+    /// If the QVariant contains an untracked, raw `QObject*`, it is your responsibility
     /// to guarantee its lifetime and validity.
     pub unsafe fn write_property(&self, prop_id: u32, value: &QVariant) {
         unsafe { call_rust_trait_impl!(mut self, write_property(prop_id, value)) }

@@ -58,7 +58,7 @@ pub fn qproperty(_: TokenStream) -> TokenStream {
 ///
 /// ## Roles
 /// - **Named Field Struct:** The generated roles will match the names of the
-///   fileds (e.g., `name`, `age`, …). Fields named `display`, `decoration`,
+///   fields (e.g., `name`, `age`, …). Fields named `display`, `decoration`,
 ///   `edit`, `toolTip`, `statusTip`, or `whatsThis` are recognized as default
 ///   roles as used in Qt's default delegates.
 /// - **Tuple Structs:** The generated roles are `"_0"`, `"_1"`, `"_2"`, ...
