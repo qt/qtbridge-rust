@@ -208,8 +208,8 @@ pub fn live_count() -> usize {
     owned_count()
 }
 
-/// The number of objects the registry currently owns. Useful for leak
-/// checks.
+/// The number of objects with attached `QObject`, including both registry-owned and engine-owned
+/// entries. Useful for leak checks.
 pub fn live_proxy_count() -> usize {
     REGISTRY.with_borrow(|entries| entries.map.len())
 }
