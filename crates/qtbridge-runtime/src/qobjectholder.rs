@@ -8,7 +8,7 @@ use std::rc::Rc;
 use qtbridge_type_lib::{QMetaType, QObject};
 use qtbridge_type_lib::core::qobject;
 use crate::qproxies::{QCppProxy, QRustProxy, PlacementAddress, AdapterUpcast};
-use crate::registry::Owner;
+use crate::registry::{Owner, RustObjectAddress, RustProxyAddress};
 use crate::rustobjectgetter::get_rust_proxy;
 use crate::{DispatchMetaCall, DynamicMetaObjectData, QMetaInfo};
 
@@ -61,7 +61,7 @@ where
     /// Return a pointer to the Rust proxy associated with the specified object,
     /// or `None` if no proxy is registered.
     fn try_get_rust_proxy_ptr_from_ptr(rust_obj_ptr: *const Self) -> Option<*mut Self::ProxyRust> {
-        let proxy_ptr = crate::registry::proxy_ptr(rust_obj_ptr.cast::<u8>());
+        let proxy_ptr = crate::registry::proxy_ptr(rust_obj_ptr as RustObjectAddress);
         NonNull::new(proxy_ptr as *mut Self::ProxyRust).map(|nn| nn.as_ptr())
     }
 
@@ -129,7 +129,7 @@ where
 
         // Rust interest exists again: take ownership back if it was handed
         // to the engine.
-        crate::registry::repin(rc_adapter.as_ptr() as *const u8);
+        crate::registry::repin(rc_adapter.as_ptr() as RustObjectAddress);
 
         // SAFETY: the inherits check above proves the `QObject` is a `Self` (or
         // a QML-derived subclass of it) - and therefore the allocation behind
@@ -168,7 +168,7 @@ where
     unsafe fn register_instance_at(
         rust_obj_rc: Rc<RefCell<Self>>, owner: Owner, at_address: Option<PlacementAddress>,
     ) {
-        let key = (*rust_obj_rc).as_ptr() as *const u8;
+        let key = (*rust_obj_rc).as_ptr() as RustObjectAddress;
         let keep: Rc<RefCell<Self>> = rust_obj_rc.clone();
         let dyn_rc = <Self::ProxyRust as AdapterUpcast<Self>>::upcast(rust_obj_rc);
         let dynamic_meta = Self::get_shared_dynamic_meta_object_data();
@@ -177,7 +177,7 @@ where
         }));
         // SAFETY: We constructed proxy just above.
         let qobject = unsafe { &*proxy }.get_cpp_proxy() as *mut QObject;
-        crate::registry::register(key, proxy as *const u8, qobject,
+        crate::registry::register(key, proxy as RustProxyAddress, qobject,
             Rc::<RefCell<Self>>::downgrade(&keep), owner);
     }
 }

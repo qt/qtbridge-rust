@@ -9,7 +9,7 @@
 //! tear anything down. The registry observes each object through a `Weak`
 //! reference and decides when the `QObject`s of Rust-created objects die.
 //!
-//! Every entry names its [`Owner`]:
+//! Entries are grouped by their registration [`Owner`]:
 //!
 //! * [`Owner::RustRegistry`]: Rust-created. Pinned to `CppOwnership` while
 //!   Rust holds a handle, so the QML engine cannot delete it. The engine
@@ -106,53 +106,58 @@ pub fn install_gc_sentinel(engine: core::pin::Pin<&mut qtbridge_type_lib::QQmlAp
     /// The QML engine which deletes its own objects.
     Engine,
 }
+/// Address of the user Rust value, used as its registry key.
+pub(crate) type RustObjectAddress = *const u8;
+
+/// Address of the Rust proxy that connects the user value to its C++ QObject.
+pub(crate) type RustProxyAddress = *const u8;
 
 struct Entry {
     /// Type-erased pointer to the object's `RustProxy`.
-    proxy: *const u8,
+    proxy: RustProxyAddress,
     /// The attached [`QObject`]. Valid for as long as the entry exists: its
     /// deletion tears down the proxy, whose `on_drop` unregisters the entry.
     qobject: *mut QObject,
     /// Observe Rust usage. RustProxy holds the strong reference and
     /// guarantees liveness.
-    value: Weak<dyn Any>,
-    /// Initiator of deletion of this entry:
-    owner: Owner,
+    value: Weak<dyn Any>
 }
 
-/// Entries keyed by the address of the user value.
+/// Entries keyed by the address of the user value, grouped by owenerships.
+/// The sets retain their registration Owner druing Qt handovers.
 struct Entries {
-    map: HashMap<*const u8, Entry>,
-    /// Number of entries with a `shared_owner` for debugging and
-    /// collecting under pressure
-    owned: usize,
+    registry_owned: HashMap<RustObjectAddress, Entry>,
+    engine_owned: HashMap<RustObjectAddress, Entry>
+}
+
+impl Entries {
+    fn get(&self, key: RustObjectAddress)-> Option<&Entry> {
+        self.registry_owned.get(&key).or_else(||self.engine_owned.get(&key))
+    }
 }
 
 impl Drop for Entries {
     fn drop(&mut self) {
-        for (_, entry) in self.map.drain() {
-            if entry.owner == Owner::RustRegistry {
-                unsafe { qobject::delete(entry.qobject) };  // Deletes both proxies
-            }
+        for (_, entry) in self.registry_owned.drain() {
+            unsafe { qobject::delete(entry.qobject) };  // Deletes both proxies
         }
     }
 }
 
 thread_local! {
-    static REGISTRY: RefCell<Entries> = RefCell::new(Entries { map: HashMap::new(), owned: 0 });
+    static REGISTRY: RefCell<Entries> = RefCell::new(Entries {
+        registry_owned: HashMap::new(),
+        engine_owned: HashMap::new()
+    });
 }
 
 thread_local! {
     static COLLECT_THRESHOLD: Cell<usize> = const { Cell::new(64) };
 }
 
-fn owned_count() -> usize {
-    REGISTRY.with_borrow(|entries| entries.owned)
-}
-
 /// Registers an attached object
 pub(crate) fn register(
-    key: *const u8, proxy: *const u8, qobject: *mut QObject,
+    key: RustObjectAddress, proxy: RustProxyAddress, qobject: *mut QObject,
     value: Weak<dyn Any>, owner: Owner
 ) {
     let registry_owned = owner == Owner::RustRegistry;
@@ -160,22 +165,24 @@ pub(crate) fn register(
         unsafe { ffi::set_cpp_ownership(qobject) };
     }
     REGISTRY.with_borrow_mut(|entries| {
-        let old = entries.map.insert(key, Entry { proxy, qobject, value, owner });
-        debug_assert!(old.is_none(), "Object is already registered");
-        entries.owned += registry_owned as usize;
+        debug_assert!(entries.get(key).is_none(), "Object is already registered");
+        let map = match owner {
+            Owner::RustRegistry => &mut entries.registry_owned,
+            Owner::Engine => &mut entries.engine_owned,
+        };
+        map.insert(key, Entry { proxy, qobject, value });
     });
     // If we reach a certain amount of QObjects, we will trigger a collect to
     // clean up stale objects.
-    if registry_owned && owned_count() >= COLLECT_THRESHOLD.get() {
+    if registry_owned && live_object_count() >= COLLECT_THRESHOLD.get() {
         collect_garbage();
     }
 }
 
 /// Takes ownership back when a handed-over object re-enters Rust.
-pub(crate) fn repin(key: *const u8) {
+pub(crate) fn repin(key: RustObjectAddress) {
     REGISTRY.with_borrow(|entries| {
-        if let Some(entry) = entries.map.get(&key)
-            && entry.owner == Owner::RustRegistry {
+        if let Some(entry) = entries.registry_owned.get(&key) {
             unsafe { ffi::set_cpp_ownership(entry.qobject) };
         }
     });
@@ -185,33 +192,32 @@ pub(crate) fn repin(key: *const u8) {
 /// `QObject` is deleted (by [`collect_garbage`] or by the engine). Entries
 /// of objects freed by [`collect_garbage`] are already extracted by then,
 /// and during registry teardown the map is being drained.
-pub(crate) fn unregister(key: *const u8) {
+pub(crate) fn unregister(key: RustObjectAddress) {
     let _ = REGISTRY.try_with(|entries: &RefCell<Entries>| {
         let mut entries = entries.borrow_mut();
-        if let Some(entry) = entries.map.remove(&key) {
-            entries.owned -= (entry.owner == Owner::RustRegistry) as usize;
-        }
+        entries.registry_owned.remove(&key)
+            .or_else(|| entries.engine_owned.remove(&key));
     });
 }
 
 /// Returns the type-erased `RustProxy` pointer for `key`, or null when the
 /// object has no attached `QObject`.
-pub(crate) fn proxy_ptr(key: *const u8) -> *const u8 {
+pub(crate) fn proxy_ptr(key: RustObjectAddress) -> RustProxyAddress {
     REGISTRY.with_borrow(|entries| {
-        entries.map.get(&key).map_or(std::ptr::null(), |entry| entry.proxy)
+        entries.get(key).map_or(std::ptr::null(), |entry| entry.proxy)
     })
 }
 
 /// The number of objects the registry currently owns. Useful for leak
 /// checks.
-pub fn live_count() -> usize {
-    owned_count()
+pub fn live_object_count() -> usize {
+    REGISTRY.with_borrow(|entries| entries.registry_owned.len())
 }
 
 /// The number of objects with attached `QObject`, including both registry-owned and engine-owned
 /// entries. Useful for leak checks.
 pub fn live_proxy_count() -> usize {
-    REGISTRY.with_borrow(|entries| entries.map.len())
+    REGISTRY.with_borrow(|entries| entries.registry_owned.len() + entries.engine_owned.len())
 }
 
 
@@ -232,10 +238,7 @@ pub fn collect_garbage() {
         // Extract first, act outside the borrow: deleting a QObject
         // re-enters the registry through the proxy teardown's unregister.
         let doomed: Vec<(Weak<dyn Any>, *mut QObject)> = REGISTRY.with_borrow_mut(|entries| {
-            let extracted: Vec<_> = entries.map.extract_if(|_key, entry| {
-                    if entry.owner == Owner::Engine {
-                        return false;
-                    }
+            entries.registry_owned.extract_if(|_key, entry| {
                     debug_assert!(entry.value.strong_count() >= 1);
                     if entry.value.strong_count() > 1 {
                         return false;
@@ -258,9 +261,7 @@ pub fn collect_garbage() {
                 .map(|(_key, entry)| {
                     (entry.value, entry.qobject)
                 })
-                .collect();
-            entries.owned -= extracted.len();
-            extracted
+                .collect()
         });
         if doomed.is_empty() {
             break;
@@ -282,5 +283,5 @@ pub fn collect_garbage() {
     // The minimum value of 64 avoids collection on every few allocations.
     // TODO: We might have to re-evaluate the values or this simplistic
     // algorithm.
-    COLLECT_THRESHOLD.set((owned_count() * 2).max(64));
+    COLLECT_THRESHOLD.set((live_object_count() * 2).max(64));
 }

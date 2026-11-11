@@ -59,3 +59,8 @@ harness = false
 name = "lazy_attachment_tests"
 path = "tests/lazy_attachment_tests.rs"
 harness = false
+
+[[test]]
+name = "registry_count_tests"
+path = "tests/registry_count_tests.rs"
+harness = false
