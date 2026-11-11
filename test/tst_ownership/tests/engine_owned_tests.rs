@@ -7,6 +7,10 @@
 //! value lives exactly as long as their `QObject`: the engine's deletion
 //! frees it through the proxy's strong reference.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
@@ -118,8 +122,8 @@ fn engine_deletion_frees_the_value() {
 
 #[cfg(not(miri))]
 fn main() {
-    engine_created_object_is_never_collected();
-    engine_deletion_frees_the_value();
+    common::run_test!(engine_created_object_is_never_collected);
+    common::run_test!(engine_deletion_frees_the_value);
 }
 
 #[cfg(miri)]

@@ -5,6 +5,10 @@
 //! `Rc<RefCell<T>>`s whose drops never delete anything; `qtbridge::collect_garbage()`
 //! frees objects that nothing references anymore.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::Cell;
 use std::rc::Rc;
 
@@ -130,11 +134,11 @@ fn user_drop_impl_runs_at_collect_garbage() {
 
 #[cfg(not(miri))]
 fn main() {
-    drop_then_collect_deletes_object_and_qobject();
-    collect_spares_objects_with_rust_handles();
-    clone_keeps_object_alive_until_last_handle_and_collect_garbage();
-    weak_handle_expires_after_collect_garbage();
-    user_drop_impl_runs_at_collect_garbage();
+    common::run_test!(drop_then_collect_deletes_object_and_qobject);
+    common::run_test!(collect_spares_objects_with_rust_handles);
+    common::run_test!(clone_keeps_object_alive_until_last_handle_and_collect_garbage);
+    common::run_test!(weak_handle_expires_after_collect_garbage);
+    common::run_test!(user_drop_impl_runs_at_collect_garbage);
 }
 
 #[cfg(miri)]

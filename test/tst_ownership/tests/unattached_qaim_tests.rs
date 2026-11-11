@@ -4,6 +4,10 @@
 //! Item model mutations on instances without an attached `QObject`:
 //! the data changes are applied and the view notifications are skipped.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -76,7 +80,7 @@ fn model_mutations_without_attached_qobject_are_applied() {
 
 #[cfg(not(miri))]
 fn main() {
-    model_mutations_without_attached_qobject_are_applied();
+    common::run_test!(model_mutations_without_attached_qobject_are_applied);
 }
 
 #[cfg(miri)]

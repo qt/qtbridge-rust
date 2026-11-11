@@ -1,6 +1,10 @@
 // Copyright (C) 2026 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use qtbridge::qtbridge_runtime::{live_object_count, live_proxy_count};
 use qtbridge::{QApp, QmlElement, QmlObject, qobject};
 
@@ -45,8 +49,8 @@ fn engine_owned_object_increases_only_proxy_count() {
 
 #[cfg(not(miri))]
 fn main() {
-    rust_owned_object_increases_both_counts();
-    engine_owned_object_increases_only_proxy_count();
+    common::run_test!(rust_owned_object_increases_both_counts);
+    common::run_test!(engine_owned_object_increases_only_proxy_count);
 }
 
 #[cfg(miri)]

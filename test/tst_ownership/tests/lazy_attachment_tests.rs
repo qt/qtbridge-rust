@@ -7,6 +7,10 @@
 //! `Rc<RefCell<T>>`s need no ceremony, and an object whose `QObject` was
 //! deleted heals itself with a fresh one on its next exposure.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
@@ -177,10 +181,10 @@ fn destroyed_qml_component_is_healed_on_next_exposure() {
 
 #[cfg(not(miri))]
 fn main() {
-    unexposed_object_has_plain_rust_lifetime();
-    emit_before_exposure_is_a_noop();
-    object_heals_after_its_qobject_was_deleted();
-    destroyed_qml_component_is_healed_on_next_exposure();
+    common::run_test!(unexposed_object_has_plain_rust_lifetime);
+    common::run_test!(emit_before_exposure_is_a_noop);
+    common::run_test!(object_heals_after_its_qobject_was_deleted);
+    common::run_test!(destroyed_qml_component_is_healed_on_next_exposure);
 }
 
 #[cfg(miri)]

@@ -7,6 +7,10 @@
 //! while Rust holds handles. We set `CppOwnership` explicitly so the
 //! objects should survive.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use qtbridge::{QApp, QmlObject, qobject};
 use qtbridge::qtbridge_runtime::QObjectHolder;
 use std::cell::RefCell;
@@ -128,8 +132,8 @@ fn handed_over_object_reacquired_by_rust_is_repinned() {
 
 #[cfg(not(miri))]
 fn main() {
-    slot_returned_object_survives_gc_while_rust_holds_it();
-    handed_over_object_reacquired_by_rust_is_repinned();
+    common::run_test!(slot_returned_object_survives_gc_while_rust_holds_it);
+    common::run_test!(handed_over_object_reacquired_by_rust_is_repinned);
 }
 
 #[cfg(miri)]

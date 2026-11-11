@@ -9,6 +9,10 @@
 //!
 //! Test for QTBRIDGES-294
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -269,17 +273,17 @@ fn main() {
     Child::register();
 
     // Rust hands objects out ...
-    slot_return_survives_dropping_the_last_rc_in_flight();
-    vec_slot_return_survives_dropping_the_last_rcs_in_flight();
-    signal_argument_survives_dropping_the_last_rc_in_flight();
-    property_read_object_survives_rust_replacing_it();
+    common::run_test!(slot_return_survives_dropping_the_last_rc_in_flight);
+    common::run_test!(vec_slot_return_survives_dropping_the_last_rcs_in_flight);
+    common::run_test!(signal_argument_survives_dropping_the_last_rc_in_flight);
+    common::run_test!(property_read_object_survives_rust_replacing_it);
     // ... takes them back ...
-    slot_argument_reacquired_by_rust_stays_owned();
+    common::run_test!(slot_argument_reacquired_by_rust_stays_owned);
     // ... survives collection at the worst possible moment ...
-    collect_inside_a_dispatch_spares_running_and_inflight_objects();
+    common::run_test!(collect_inside_a_dispatch_spares_running_and_inflight_objects);
     // ... and never-arrived ones are reclaimed.
-    unconnected_signal_argument_is_reclaimed_by_collect_garbage();
-    unconnected_vec_signal_arguments_are_reclaimed_by_collect_garbage();
+    common::run_test!(unconnected_signal_argument_is_reclaimed_by_collect_garbage);
+    common::run_test!(unconnected_vec_signal_arguments_are_reclaimed_by_collect_garbage);
 }
 
 #[cfg(miri)]

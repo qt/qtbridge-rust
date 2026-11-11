@@ -6,6 +6,10 @@
 //! the method invoker, and reclamation. Show that `collect_garbage()` needs
 //! no application at all.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -112,10 +116,10 @@ fn appless_churn_is_bounded_by_allocation_pressure() {
 
 #[cfg(not(miri))]
 fn main() {
-    plain_lifecycle_works_without_application();
-    appless_churn_is_bounded_by_allocation_pressure();
-    object_signal_argument_without_application_is_reclaimed_by_collect_garbage();
-    thread_handle_without_application_does_not_crash();
+    common::run_test!(plain_lifecycle_works_without_application);
+    common::run_test!(appless_churn_is_bounded_by_allocation_pressure);
+    common::run_test!(object_signal_argument_without_application_is_reclaimed_by_collect_garbage);
+    common::run_test!(thread_handle_without_application_does_not_crash);
 }
 
 #[cfg(miri)]

@@ -4,6 +4,10 @@
 //! Behavior of `#[qobject]` instances without an attached `QObject`:
 //! they are plain Rust values and must not panic when used as such.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -34,7 +38,7 @@ fn emit_without_attached_qobject_is_a_noop() {
 
 #[cfg(not(miri))]
 fn main() {
-    emit_without_attached_qobject_is_a_noop();
+    common::run_test!(emit_without_attached_qobject_is_a_noop);
 }
 
 #[cfg(miri)]

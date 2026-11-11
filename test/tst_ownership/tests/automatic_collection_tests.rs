@@ -8,6 +8,10 @@
 //! `gc()` is called in the QmlEngine to simulate the otherwise automatically
 //! occuring garbage collector cycle.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
@@ -106,7 +110,7 @@ fn sentinel_reclaims_garbage_without_manual_collect_garbage() {
 
 #[cfg(not(miri))]
 fn main() {
-    sentinel_reclaims_garbage_without_manual_collect_garbage();
+    common::run_test!(sentinel_reclaims_garbage_without_manual_collect_garbage);
 }
 
 #[cfg(miri)]

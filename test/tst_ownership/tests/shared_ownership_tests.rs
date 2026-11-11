@@ -7,6 +7,10 @@
 //! engine destruction), and abandoned objects are reclaimed by a garbage
 //! collection followed by `collect_garbage()`.
 
+#[cfg(not(miri))]
+#[path = "../../common/mod.rs"]
+mod common;
+
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
@@ -231,12 +235,12 @@ fn qvariant_roundtrip_preserves_identity() {
 fn main() {
     Child::register();
     TestObject::register();
-    qml_reference_keeps_object_alive_after_last_rc_drop();
-    object_survives_gc_while_rust_holds_a_handle();
-    released_object_is_reclaimed_by_handover_plus_gc();
-    unreferenced_object_is_reclaimed_by_collect_garbage();
-    object_survives_engine_death();
-    qvariant_roundtrip_preserves_identity();
+    common::run_test!(qml_reference_keeps_object_alive_after_last_rc_drop);
+    common::run_test!(object_survives_gc_while_rust_holds_a_handle);
+    common::run_test!(released_object_is_reclaimed_by_handover_plus_gc);
+    common::run_test!(unreferenced_object_is_reclaimed_by_collect_garbage);
+    common::run_test!(object_survives_engine_death);
+    common::run_test!(qvariant_roundtrip_preserves_identity);
 }
 
 #[cfg(miri)]
