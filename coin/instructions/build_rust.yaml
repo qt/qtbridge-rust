@@ -2,7 +2,7 @@ type: Group
 instructions:
   # Download and install of rust, should go into qt5 provisioning
   - type: ExecuteCommand
-    command: "curl https://sh.rustup.rs -o rustup.rs -o rustup.rs"
+    command: "curl https://sh.rustup.rs -o rustup.rs"
     maxTimeInSeconds: 6000
     maxTimeBetweenOutput: 1200
     userMessageOnFailure: >
@@ -23,7 +23,7 @@ instructions:
       Failed to change file permission.
 
   - type: ExecuteCommand
-    command: "sh ./rustup.rs -y"
+    command: ["sh", "-c", "sh ./rustup.rs -y || command -v rustup"]
     maxTimeInSeconds: 6000
     maxTimeBetweenOutput: 1200
     disable_if:
@@ -34,7 +34,7 @@ instructions:
       Failed to install rust.
 
   - type: ExecuteCommand
-    command: "curl https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe -o C:\\utils\\rustup-init.exe "
+    command: "curl https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe -o C:\\utils\\rustup-init.exe"
     maxTimeInSeconds: 6000
     maxTimeBetweenOutput: 1200
     enable_if:
@@ -53,7 +53,7 @@ instructions:
       property: host.os
       equals_value: Windows
     userMessageOnFailure: >
-      Failed toinstall rust.
+      Failed to install rust.
 
   - type: PrependToEnvironmentVariable
     variableName: PATH

@@ -188,12 +188,10 @@ mod backend {
                         return self.create_index(row, column, ptr);
                     }
                 }
-            } else {
-                if (row as usize) < self.root.row_count() {
-                    let row_ref = &self.root.children[row as usize];
-                    let ptr = row_ref as *const Row as usize;
-                    return self.create_index(row, column, ptr)
-                }
+            } else if (row as usize) < self.root.row_count() {
+                let row_ref = &self.root.children[row as usize];
+                let ptr = row_ref as *const Row as usize;
+                return self.create_index(row, column, ptr)
             }
             QModelIndex::default()
         }

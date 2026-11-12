@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 #![doc = include_str!("../README.md")]
+// The README shows a complete main.rs on purpose.
+#![allow(clippy::needless_doctest_main)]
 
 #[doc(hidden)]
 pub use qtbridge_runtime;
