@@ -38,7 +38,7 @@ pub use qmodelitem::QModelItem;
 pub use qmetatype_compatible::QMetaTypeCompatible;
 pub use qpropertymember::{QPropertyMember, get_meta_type_of_fn_return_value};
 pub use qvariant_convert::{QVariantConvertible};
-pub use registry::{live_object_count, live_proxy_count};
+pub use registry::{registry_owned_count, attached_object_count};
 
 #[cfg(feature = "linkme")]
 pub use qmlprivate::QML_REGISTER_CALLBACKS;

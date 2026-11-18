@@ -16,7 +16,7 @@ use std::rc::Rc;
 
 use qtbridge::{QApp, QmlObject, QmlElement, collect_garbage, qobject};
 use qtbridge::qtbridge_runtime::QObjectHolder;
-use qtbridge::qtbridge_runtime::live_object_count;
+use qtbridge::qtbridge_runtime::registry_owned_count;
 
 thread_local! { static DROP_COUNT: Cell<u32> = Cell::new(0); }
 
@@ -76,12 +76,12 @@ pub use backend::Backend;
 /// Before any exposure, a `#[qobject]` type is a plain Rust value: no
 /// QObject, no registry entry, immediate `Drop` on the last handle.
 fn unexposed_object_has_plain_rust_lifetime() {
-    let baseline = live_object_count();
+    let baseline = registry_owned_count();
 
     let child = Rc::new(RefCell::new(Child::default()));
     assert!(child.borrow().get_qobject_ptr().is_null(),
         "no QObject may exist before the first exposure");
-    assert_eq!(live_object_count(), baseline,
+    assert_eq!(registry_owned_count(), baseline,
         "unexposed objects are not registry-owned");
 
     DROP_COUNT.with(|count| count.set(0));

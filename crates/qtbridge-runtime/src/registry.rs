@@ -174,7 +174,7 @@ pub(crate) fn register(
     });
     // If we reach a certain amount of QObjects, we will trigger a collect to
     // clean up stale objects.
-    if registry_owned && live_object_count() >= COLLECT_THRESHOLD.get() {
+    if registry_owned && registry_owned_count() >= COLLECT_THRESHOLD.get() {
         collect_garbage();
     }
 }
@@ -208,15 +208,15 @@ pub(crate) fn proxy_ptr(key: RustObjectAddress) -> RustProxyAddress {
     })
 }
 
-/// The number of objects the registry currently owns. Useful for leak
-/// checks.
-pub fn live_object_count() -> usize {
+/// The number of objects the registry currently owns. Engine-owned objects are not included.
+/// Useful for leak checks.
+pub fn registry_owned_count() -> usize {
     REGISTRY.with_borrow(|entries| entries.registry_owned.len())
 }
 
-/// The number of objects with attached `QObject`, including both registry-owned and engine-owned
+/// The number of objects with an attached `QObject`, including both registry-owned and engine-owned
 /// entries. Useful for leak checks.
-pub fn live_proxy_count() -> usize {
+pub fn attached_object_count() -> usize {
     REGISTRY.with_borrow(|entries| entries.registry_owned.len() + entries.engine_owned.len())
 }
 
@@ -283,5 +283,5 @@ pub fn collect_garbage() {
     // The minimum value of 64 avoids collection on every few allocations.
     // TODO: We might have to re-evaluate the values or this simplistic
     // algorithm.
-    COLLECT_THRESHOLD.set((live_object_count() * 2).max(64));
+    COLLECT_THRESHOLD.set((registry_owned_count() * 2).max(64));
 }

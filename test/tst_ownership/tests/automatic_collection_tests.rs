@@ -4,7 +4,7 @@
 //! End-to-end proof of automatic collection: under a real event loop, the
 //! GC-epoch sentinel must reclaim abandoned objects on its own without manually
 //! calling `collect_garbage()`. Doubles as a memory test: after creating a pile
-//! of garbage, the registry and proxy counts must return to their baselines.
+//! of garbage, both registry counts must return to their baselines.
 //! `gc()` is called in the QmlEngine to simulate the otherwise automatically
 //! occuring garbage collector cycle.
 
@@ -16,8 +16,8 @@ use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
 use qtbridge::{QApp, QmlObject, qobject};
-use qtbridge::qtbridge_runtime::live_object_count;
-use qtbridge::qtbridge_interfaces::live_proxy_count;
+use qtbridge::qtbridge_runtime::registry_owned_count;
+use qtbridge::qtbridge_interfaces::attached_object_count;
 
 const GARBAGE: usize = 100;
 
@@ -31,8 +31,8 @@ impl Child {
 #[derive(Default)]
 pub struct Backend {
     pub weaks: Vec<Weak<RefCell<Child>>>,
-    pub recorded_objects: Option<usize>,
-    pub recorded_proxies: Option<usize>,
+    pub recorded_registry_owned: Option<usize>,
+    pub recorded_attached: Option<usize>,
 }
 
 #[qobject]
@@ -49,16 +49,16 @@ impl Backend {
     /// Records the live counts after the sentinel had its turn.
     #[qslot(qml_name = "recordStats")]
     fn record_stats(&mut self) {
-        self.recorded_objects = Some(live_object_count());
-        self.recorded_proxies = Some(live_proxy_count());
+        self.recorded_registry_owned = Some(registry_owned_count());
+        self.recorded_attached = Some(attached_object_count());
     }
 }
 
 fn sentinel_reclaims_garbage_without_manual_collect_garbage() {
     let backend = Backend::default_with_attached_qobject();
 
-    let baseline_objects = live_object_count();
-    let baseline_proxies = live_proxy_count();
+    let baseline_registry_owned = registry_owned_count();
+    let baseline_attached = attached_object_count();
 
     // The QML: produce garbage and run a collection. The sentinel's
     // collect_garbage() hands the wrapped garbage to the engine; the second
@@ -95,14 +95,14 @@ fn sentinel_reclaims_garbage_without_manual_collect_garbage() {
     "#).as_bytes());
     qapp.run();
 
-    let recorded_objects = backend.borrow().recorded_objects
+    let recorded_registry_owned = backend.borrow().recorded_registry_owned
         .expect("the timer must have fired before quit");
-    let recorded_proxies = backend.borrow().recorded_proxies.unwrap();
+    let recorded_attached = backend.borrow().recorded_attached.unwrap();
 
-    assert_eq!(recorded_objects, baseline_objects,
+    assert_eq!(recorded_registry_owned, baseline_registry_owned,
         "the sentinel must have collected all {GARBAGE} garbage objects \
          without any manual collect_garbage()");
-    assert_eq!(recorded_proxies, baseline_proxies,
+    assert_eq!(recorded_attached, baseline_attached,
         "every garbage proxy pair must be gone");
     assert!(backend.borrow().weaks.iter().all(|weak| weak.upgrade().is_none()),
         "all garbage Rust objects must have been freed");

@@ -95,7 +95,7 @@
 //! `qtbridge_runtime::registry`.
 
 pub mod genericrustproxy;
-pub use qtbridge_runtime::live_proxy_count;
+pub use qtbridge_runtime::attached_object_count;
 
 pub mod qobject;
 

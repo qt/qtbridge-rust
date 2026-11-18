@@ -101,17 +101,17 @@ fn thread_handle_without_application_does_not_crash() {
 /// through objects must not grow memory without bound: the allocation-
 /// pressure trigger collects on its own.
 fn appless_churn_is_bounded_by_allocation_pressure() {
-    use qtbridge::qtbridge_runtime::live_object_count;
+    use qtbridge::qtbridge_runtime::registry_owned_count;
 
-    let baseline = live_object_count();
+    let baseline = registry_owned_count();
     for _ in 0..1000 {
         // Created, attached, dropped: no handle survives the iteration and
         // this test never calls collect_garbage().
         drop(Child::default_with_attached_qobject());
     }
-    assert!(live_object_count() < baseline + 128,
+    assert!(registry_owned_count() < baseline + 128,
         "allocation pressure must keep the appless registry bounded, got {}",
-        live_object_count());
+        registry_owned_count());
 }
 
 #[cfg(not(miri))]
